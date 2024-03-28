@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=13 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
+[ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
 sky_top_color = Color(0.87451, 0.890196, 0.894118, 1)
@@ -29,6 +30,7 @@ sky = SubResource("Sky_tpun5")
 
 [node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor")]
 script = ExtResource("3_w7hpc")
+_scrollSpeed = 100.0
 _cameraOrbitSpeed = 1.0
 _defaultCamDistance = 14.0
 _cameraNode = NodePath("SpringArm3D/Camera3D")
@@ -69,6 +71,14 @@ mouse_filter = 2
 theme = ExtResource("2_dlwy7")
 script = ExtResource("2_1i08n")
 
+[node name="FileDialog" type="FileDialog" parent="CanvasLayer/GUI"]
+title = "Open a File"
+size = Vector2i(355, 154)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
 [node name="TabContainer" type="TabContainer" parent="CanvasLayer/GUI"]
 layout_mode = 1
 anchors_preset = 15
@@ -78,13 +88,15 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
-_loadModelButton = NodePath("HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer/LoadModelBtn")
-_modelNameLabel = NodePath("HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer/Label")
-_fileDialog = NodePath("HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer/FileDialog")
+_loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/LoadModelBtn")
+_modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/LoadModelLabel")
+_fileDialog = NodePath("../../FileDialog")
+_modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer/MarginContainer/VBoxContainer")
+_modelListItem = ExtResource("6_bb754")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -95,43 +107,62 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
+[node name="Left Panel" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.33
 horizontal_scroll_mode = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer"]
+[node name="Margin" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
 layout_mode = 2
 text = "Load Model..."
 
-[node name="Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="LoadModelLabel" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
 layout_mode = 2
 text = "No Model Loaded"
 
-[node name="HSeparator" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
 layout_mode = 2
 
-[node name="FileDialog" type="FileDialog" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
-title = "Load Model..."
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-use_native_dialog = true
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+layout_mode = 2
+alignment = 2
 
-[node name="SeeThrough" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
+[node name="Label2" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_stretch_ratio = 2.73
+text = "Model Parts"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Scene View" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2

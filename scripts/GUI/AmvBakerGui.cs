@@ -1,5 +1,9 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace WildRP.AMVTool.GUI;
 
 public partial class AmvBakerGui : Control
 {
@@ -7,13 +11,18 @@ public partial class AmvBakerGui : Control
 	[Export] private Button _loadModelButton;
 	[Export] private Label _modelNameLabel;
 	[Export] private FileDialog _fileDialog;
+
+	[Export] private VBoxContainer _modelListContainer;
+	[Export] private PackedScene _modelListItem;
+
+	private List<ModelListItem> _modelListItems = new();
 	
 	public override void _Ready()
 	{
 		_fileDialog.AddFilter("*.glb; GLTF Binary");
 		_fileDialog.Title = "Load Model...";
 
-		_fileDialog.FileSelected += path => AMVBaker.Instance.LoadModel(path);
+		_fileDialog.FileSelected += LoadModel;
 		
 		_loadModelButton.Pressed += () =>
 		{
@@ -21,8 +30,25 @@ public partial class AmvBakerGui : Control
 		};
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+	void LoadModel(string path)
 	{
+		var (e, result) = AMVBaker.Instance.LoadModel(path);
+		
+		// Clear out the list from whatever model we had loaded before
+		foreach (var item in _modelListItems)
+		{
+			item.QueueFree();
+		}
+		
+		if (e != Error.Ok) return; // display an error message here probably
+		
+		foreach (var t in result)
+		{
+			if (_modelListItem.Instantiate() is not ModelListItem item) continue;
+			
+			item.Setup(t.Item1.Name, t.Item1, t.Item2);
+			_modelListContainer.AddChild(item);
+		}
 	}
+	
 }

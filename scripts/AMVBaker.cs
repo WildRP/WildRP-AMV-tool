@@ -1,5 +1,9 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using WildRP.AMVTool;
+using WildRP.AMVTool.GUI;
 
 public partial class AMVBaker : Node3D
 {
@@ -21,22 +25,49 @@ public partial class AMVBaker : Node3D
 	{
 	}
 
-	public Error LoadModel(string path)
+	public (Error, List<Tuple<MeshInstance3D, StaticBody3D>>) LoadModel(string path)
 	{
-		if (path.EndsWith(".glb") == false) return Error.InvalidParameter;
+		if (path.EndsWith(".glb") == false) return (Error.InvalidParameter, null);
 
 		_modelRoot?.QueueFree();
 		_placeholder.Visible = false;
 
 		var modelDoc = new GltfDocument();
 		var modelState = new GltfState();
+		modelState.CreateAnimations = false;
 
 		var error = modelDoc.AppendFromFile(path, modelState);
-		if (error != Error.Ok) return error;
+		if (error != Error.Ok) return (error, null);
 
+		modelState.Lights.Clear();
+		modelState.Cameras.Clear();
+		
 		_modelRoot = modelDoc.GenerateScene(modelState);
 		AddChild(_modelRoot);
 		
-		return error;
+		List<Node> nodes = new();
+		Utils.GetAllChildren(_modelRoot, nodes);
+
+		List<Tuple<MeshInstance3D, StaticBody3D>> result = new();
+		
+		var meshes = nodes.OfType<MeshInstance3D>().ToList();
+		foreach (var m in meshes)
+		{
+			var body = new StaticBody3D();
+			body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
+			
+			var shape = new CollisionShape3D();
+			var polygonShape = new ConcavePolygonShape3D();
+			polygonShape.BackfaceCollision = true;
+			polygonShape.Data = m.Mesh.GetFaces();
+
+			shape.Shape = polygonShape;
+			body.AddChild(shape);
+			AddChild(body);
+			
+			result.Add(new Tuple<MeshInstance3D, StaticBody3D>(m, body));
+		}
+		
+		return (error, result);
 	}
 }

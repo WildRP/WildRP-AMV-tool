@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://dj71k5dv71lby"]
+
+[ext_resource type="Script" path="res://scripts/GUI/ModelListItem.cs" id="1_0ic67"]
+
+[node name="ModelListItem" type="HBoxContainer" node_paths=PackedStringArray("_itemName", "_visibilityCheck", "_renderCheck")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0ic67")
+_itemName = NodePath("Label")
+_visibilityCheck = NodePath("VisibleBox")
+_renderCheck = NodePath("RenderBox")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Item Name that is super very long and doesnt oops"
+text_overrun_behavior = 3
+
+[node name="VisibleBox" type="CheckBox" parent="."]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+tooltip_text = "Toggle item visibility in the scene view."
+button_pressed = true
+flat = true
+alignment = 1
+icon_alignment = 1
+expand_icon = true
+
+[node name="RenderBox" type="CheckBox" parent="."]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+tooltip_text = "Toggle this item rendering in the AMV."
+button_pressed = true
+flat = true
+alignment = 1
