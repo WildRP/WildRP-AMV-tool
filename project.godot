@@ -11,9 +11,19 @@ config_version=5
 [application]
 
 config/name="WildRP-AMV-Tool"
-config/features=PackedStringArray("4.2", "Forward Plus")
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/stretch/aspect="expand"
 
 [dotnet]
 
 project/assembly_name="WildRP-AMV-Tool"
+
+[rendering]
+
+anti_aliasing/quality/use_taa=true
+anti_aliasing/quality/use_debanding=true

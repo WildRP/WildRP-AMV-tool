@@ -1,0 +1,131 @@
+[gd_scene load_steps=8 format=3 uid="uid://rkxojnujp02e"]
+
+[ext_resource type="Theme" uid="uid://bevmlifca33md" path="res://editor_theme_high_ppi.tres" id="1_olgg5"]
+[ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
+[ext_resource type="Script" path="res://scripts/OrbitCamera.cs" id="3_swvvk"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
+sky_top_color = Color(0.87451, 0.890196, 0.894118, 1)
+sky_horizon_color = Color(0.521569, 0.533333, 0.54902, 1)
+sky_curve = 0.738693
+ground_bottom_color = Color(0.109804, 0.109804, 0.109804, 1)
+ground_horizon_color = Color(0.521569, 0.533333, 0.54902, 1)
+ground_curve = 0.171483
+sun_angle_max = 0.0
+
+[sub_resource type="Sky" id="Sky_tpun5"]
+sky_material = SubResource("ProceduralSkyMaterial_hhw8l")
+
+[sub_resource type="Environment" id="Environment_8ejdi"]
+background_mode = 2
+sky = SubResource("Sky_tpun5")
+
+[sub_resource type="BoxMesh" id="BoxMesh_4veb7"]
+
+[node name="Root" type="CanvasLayer"]
+
+[node name="GUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_olgg5")
+script = ExtResource("2_1i08n")
+UiScale = 0.75
+
+[node name="TabContainer" type="TabContainer" parent="GUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AMV Baker" type="Control" parent="GUI/TabContainer"]
+layout_mode = 2
+
+[node name="HSplitContainer" type="HSplitContainer" parent="GUI/TabContainer/AMV Baker"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="GUI/TabContainer/AMV Baker/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.33
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="LoadModelBtn" type="Button" parent="GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Load Model..."
+
+[node name="RichTextLabel" type="Label" parent="GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "No Model Loaded"
+
+[node name="HSeparator" type="HSeparator" parent="GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Preview Container" type="SubViewportContainer" parent="GUI/TabContainer/AMV Baker/HSplitContainer" node_paths=PackedStringArray("_cameraNode", "_viewport", "_anchor")]
+layout_mode = 2
+size_flags_horizontal = 3
+stretch = true
+script = ExtResource("3_swvvk")
+_orbitSpeed = 0.33
+_defaultDistance = 10.0
+_cameraNode = NodePath("SubViewport/3D Root/SpringArm3D/Camera3D")
+_viewport = NodePath("SubViewport")
+_anchor = NodePath("SubViewport/3D Root/SpringArm3D")
+
+[node name="SubViewport" type="SubViewport" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container"]
+handle_input_locally = false
+size = Vector2i(865, 627)
+render_target_update_mode = 4
+
+[node name="3D Root" type="Node3D" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container/SubViewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container/SubViewport/3D Root"]
+environment = SubResource("Environment_8ejdi")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container/SubViewport/3D Root/WorldEnvironment"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container/SubViewport/3D Root"]
+mesh = SubResource("BoxMesh_4veb7")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container/SubViewport/3D Root"]
+collision_mask = 0
+
+[node name="Camera3D" type="Camera3D" parent="GUI/TabContainer/AMV Baker/HSplitContainer/Preview Container/SubViewport/3D Root/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+current = true
+fov = 60.0
+
+[node name="Map" type="Control" parent="GUI/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Help" type="Control" parent="GUI/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Settings" type="Control" parent="GUI/TabContainer"]
+visible = false
+layout_mode = 2
