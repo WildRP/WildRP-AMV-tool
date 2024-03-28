@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d2f7n2tveheyo"]
 
-[ext_resource type="Script" path="res://gui/SettingsGui.cs" id="1_50msa"]
+[ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
 
 [node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel")]
 anchors_preset = 15

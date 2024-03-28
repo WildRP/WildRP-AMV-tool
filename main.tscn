@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=12 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
+[ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
+[ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
 sky_top_color = Color(0.87451, 0.890196, 0.894118, 1)
@@ -28,7 +30,7 @@ sky = SubResource("Sky_tpun5")
 [node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor")]
 script = ExtResource("3_w7hpc")
 _cameraOrbitSpeed = 1.0
-_defaultCamDistance = 8.0
+_defaultCamDistance = 14.0
 _cameraNode = NodePath("SpringArm3D/Camera3D")
 _anchor = NodePath("SpringArm3D")
 
@@ -38,7 +40,11 @@ environment = SubResource("Environment_8ejdi")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
+script = ExtResource("2_1jkap")
+_placeholder = NodePath("Placeholder")
+
+[node name="Placeholder" type="MeshInstance3D" parent="Model Container"]
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
 
@@ -72,9 +78,13 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer"]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog")]
 layout_mode = 2
 mouse_filter = 1
+script = ExtResource("4_qsblh")
+_loadModelButton = NodePath("HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer/LoadModelBtn")
+_modelNameLabel = NodePath("HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer/Label")
+_fileDialog = NodePath("HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer/FileDialog")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -107,12 +117,19 @@ theme_override_constants/separation = 5
 layout_mode = 2
 text = "Load Model..."
 
-[node name="RichTextLabel" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "No Model Loaded"
 
 [node name="HSeparator" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="FileDialog" type="FileDialog" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/ScrollContainer/MarginContainer/VBoxContainer"]
+title = "Load Model..."
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
 
 [node name="SeeThrough" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
 layout_mode = 2
