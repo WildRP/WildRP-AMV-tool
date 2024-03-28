@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2f7n2tveheyo"]
+
+[ext_resource type="Script" path="res://gui/SettingsGui.cs" id="1_50msa"]
+
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_50msa")
+_uiScaleSlider = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Scale Slider")
+_uiScaleLabel = NodePath("MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/Scale Value")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "UI Scale
+"
+
+[node name="Scale Slider" type="HSlider" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.5
+max_value = 2.0
+step = 0.1
+value = 1.0
+tick_count = 16
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+theme_override_constants/margin_left = 20
+
+[node name="Scale Value" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+text = "1.0"
+
+[node name="LinkButton" type="LinkButton" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "View on GitHub"
+uri = "https://github.com/WildRP/WildRP-AMV-tool"
