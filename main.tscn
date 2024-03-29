@@ -1,21 +1,22 @@
-[gd_scene load_steps=15 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=17 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://d061t60hvnxg8" path="res://objects/amv_probe.tscn" id="3_wkun0"]
+[ext_resource type="Script" path="res://scripts/SceneView/AmvBounds.cs" id="4_0tn37"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
-sky_top_color = Color(0.87451, 0.890196, 0.894118, 1)
-sky_horizon_color = Color(0.521569, 0.533333, 0.54902, 1)
-sky_curve = 0.738693
-ground_bottom_color = Color(0.109804, 0.109804, 0.109804, 1)
-ground_horizon_color = Color(0.521569, 0.533333, 0.54902, 1)
-ground_curve = 0.171483
+sky_top_color = Color(0.945098, 0.952941, 0.952941, 1)
+sky_horizon_color = Color(0.501961, 0.501961, 0.501961, 1)
+sky_curve = 1.5
+ground_bottom_color = Color(0.352941, 0.352941, 0.352941, 1)
+ground_horizon_color = Color(0.501961, 0.501961, 0.501961, 1)
+ground_curve = 0.75
 sun_angle_max = 0.0
 
 [sub_resource type="Sky" id="Sky_tpun5"]
@@ -26,25 +27,44 @@ background_mode = 2
 sky = SubResource("Sky_tpun5")
 tonemap_mode = 3
 
-[sub_resource type="BoxMesh" id="BoxMesh_4veb7"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8xwos"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_he8th"]
+[sub_resource type="BoxMesh" id="BoxMesh_4veb7"]
+material = SubResource("StandardMaterial3D_8xwos")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iwv2c"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.8, 0.8, 0.294118)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nun7o"]
 
-[node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor")]
+[node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor", "_sceneViewPanel")]
 script = ExtResource("3_w7hpc")
 _scrollSpeed = 100.0
 _cameraOrbitSpeed = 1.0
 _defaultCamDistance = 14.0
 _cameraNode = NodePath("SpringArm3D/Camera3D")
 _anchor = NodePath("SpringArm3D")
+_sceneViewPanel = NodePath("CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Scene View")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_8ejdi")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.5, -0.707107, -0.5, 0, 0, 0)
 
 [node name="Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_1jkap")
@@ -55,10 +75,11 @@ _probeScene = ExtResource("3_wkun0")
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Model Container/Placeholder"]
+[node name="AmbientMaskVolume" type="Node3D" parent="Model Container"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Model Container/Placeholder/StaticBody3D"]
-shape = SubResource("BoxShape3D_he8th")
+[node name="Bounds" type="MeshInstance3D" parent="Model Container/AmbientMaskVolume"]
+script = ExtResource("4_0tn37")
+_color = Color(0.945098, 0.745098, 0.227451, 1)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="."]
 collision_mask = 0
@@ -102,12 +123,12 @@ tab_focus_mode = 1
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
-_loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/LoadModelBtn")
-_modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/LoadModelLabel")
+_loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
+_modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
 _fileDialog = NodePath("../../FileDialog")
-_modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer/MarginContainer/VBoxContainer")
+_modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
 _modelListItem = ExtResource("6_bb754")
-_testButton = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/BakeButton")
+_testButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BakeButton")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -131,56 +152,101 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin"]
+[node name="Left Panel Organizer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="BakeButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+[node name="BakeButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 text = "Bake Test Probe"
 
-[node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+[node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 text = "Load Model..."
 
-[node name="LoadModelLabel" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+[node name="LoadModelLabel" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 text = "No Model Loaded"
 
-[node name="HSeparator" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
-layout_mode = 2
-alignment = 2
-
-[node name="Label2" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer/HBoxContainer"]
+[node name="Model Parts" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 size_flags_horizontal = 2
 size_flags_stretch_ratio = 2.73
 text = "Model Parts"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
-custom_minimum_size = Vector2(0, 100)
+[node name="Item List" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_iwv2c")
 horizontal_scroll_mode = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_right = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="AMVs" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_stretch_ratio = 2.73
+text = "AMVs
+"
+
+[node name="AMV List" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_iwv2c")
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 0
+
+[node name="ItemList" type="ItemList" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer"]
+layout_mode = 2
+auto_height = true
+item_count = 2
+item_0/text = "AMV 1"
+item_1/text = "AMV 2"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+alignment = 1
+
+[node name="New" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/HBoxContainer"]
+layout_mode = 2
+text = "New..."
+
+[node name="Bake Selected" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/HBoxContainer"]
+layout_mode = 2
+text = "Bake Selected
+"
+
+[node name="Bake All" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Bake All"
+
+[node name="HSeparator2" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
 
 [node name="Scene View" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 2
+mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_nun7o")
 
 [node name="Map" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer"]

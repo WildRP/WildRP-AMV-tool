@@ -81,8 +81,16 @@ public partial class AMVProbe : MeshInstance3D
 
 			l.Scale = scale;
 		}
-		
-		return hit == null ? 1f : 0f;
+
+		// TODO: Far away walls should affect AO less
+		/*if (hit != null)
+		{
+			var dist = GlobalPosition.DistanceTo(hit.Position);
+			var distFactor = Mathf.Pow(dist / _maxDistance, 1f);
+			return distFactor;
+		}*/
+
+		return hit == null ? 0 : 1;
 	}
 	
 	private static PhysicsDirectSpaceState3D _spaceState;

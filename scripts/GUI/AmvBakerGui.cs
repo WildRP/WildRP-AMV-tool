@@ -47,6 +47,8 @@ public partial class AmvBakerGui : Control
 		}
 		
 		if (e != Error.Ok) return; // display an error message here probably
+
+		_modelNameLabel.Text = path.GetFile();
 		
 		foreach (var t in result)
 		{

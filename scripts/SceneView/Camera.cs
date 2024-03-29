@@ -11,7 +11,9 @@ public partial class SceneView
     [Export] private float _defaultCamDistance = 20;
     [Export] private Camera3D _cameraNode;
     [Export] private SpringArm3D _anchor;
+    [Export] private PanelContainer _sceneViewPanel;
     
+    private bool _canScroll = false;
     private Vector2 _currentCamOrbitInput;
     private Vector3 _cameraRotation;
     private bool _rotatingCamera;
@@ -21,6 +23,10 @@ public partial class SceneView
     {
         _anchor.SpringLength = _defaultCamDistance;
         _cameraRotation = _anchor.Transform.Basis.GetRotationQuaternion().GetEuler();
+
+        _sceneViewPanel.MouseEntered += () => _canScroll = true;
+        _sceneViewPanel.MouseExited += () => _canScroll = false;
+
     }
 
     void ProcessCamera(float delta)
@@ -52,7 +58,7 @@ public partial class SceneView
                     _rotatingCamera = Input.MouseMode == Input.MouseModeEnum.Captured;
                 }
 
-                if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp)
+                if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && _canScroll)
                     _scrollInput = mouseButton.ButtonIndex == MouseButton.WheelDown ? -1 : 1;
                 
                 GetViewport().SetInputAsHandled();

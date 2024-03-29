@@ -21,6 +21,7 @@ public struct ProbeSample
         Z = 0;
     }
 
+    // For quickly feeding these into the shader
     public Vector3 GetPositiveVector()
     {
         return new Vector3(X.Positive, Y.Positive, Z.Positive);

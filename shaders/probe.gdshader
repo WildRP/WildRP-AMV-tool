@@ -23,14 +23,13 @@ void fragment() {
 	
 	vec3 pos_blend = clamp(sign(worldNormal), 0, 1);
 	vec3 neg_blend = clamp(sign(-worldNormal), 0, 1);
-	vec3 blend = pow(abs(worldNormal), vec3(2.0));
-	blend /= dot(blend, vec3(1.0));
-	
 	float x = positive_occlusion.x * pos_blend.x + negative_occlusion.x * neg_blend.x;
 	float y = positive_occlusion.y * pos_blend.y + negative_occlusion.y * neg_blend.y;
 	float z = positive_occlusion.z * pos_blend.z + negative_occlusion.z * neg_blend.z;
 	
-	//ALBEDO = pos_blend;
+	
+	vec3 blend = pow(abs(worldNormal), vec3(2.0));
+	blend /= dot(blend, vec3(1.0));
 	float result = x * blend.x + y * blend.y + z * blend.z;
 	
 	if (OUTPUT_IS_SRGB) result = ToSRGB(result);
