@@ -8,6 +8,7 @@ using WildRP.AMVTool.GUI;
 public partial class AMVBaker : Node3D
 {
 	[Export] private Node3D _placeholder;
+	[Export(PropertyHint.Layers3DPhysics)] private uint _rayMask;
 	private Node _modelRoot;
 	
 	public static AMVBaker Instance { get; private set; }

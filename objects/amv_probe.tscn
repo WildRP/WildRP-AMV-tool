@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://d061t60hvnxg8"]
+
+[ext_resource type="Script" path="res://scripts/AMVProbe.cs" id="1_ebpcq"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_oeibh"]
+radius = 0.2
+height = 0.4
+
+[node name="AMVProbe" type="Node3D"]
+script = ExtResource("1_ebpcq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_oeibh")

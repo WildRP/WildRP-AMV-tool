@@ -16,6 +16,8 @@ public partial class AmvBakerGui : Control
 	[Export] private PackedScene _modelListItem;
 
 	private List<ModelListItem> _modelListItems = new();
+
+	public float MaxOcclusionDistance = -1;
 	
 	public override void _Ready()
 	{
