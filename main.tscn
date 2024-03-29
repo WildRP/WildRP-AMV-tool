@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=15 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
+[ext_resource type="PackedScene" uid="uid://d061t60hvnxg8" path="res://objects/amv_probe.tscn" id="3_wkun0"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
@@ -23,8 +24,11 @@ sky_material = SubResource("ProceduralSkyMaterial_hhw8l")
 [sub_resource type="Environment" id="Environment_8ejdi"]
 background_mode = 2
 sky = SubResource("Sky_tpun5")
+tonemap_mode = 3
 
 [sub_resource type="BoxMesh" id="BoxMesh_4veb7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_he8th"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nun7o"]
 
@@ -45,10 +49,16 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 
 [node name="Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_1jkap")
 _placeholder = NodePath("Placeholder")
+_probeScene = ExtResource("3_wkun0")
 
 [node name="Placeholder" type="MeshInstance3D" parent="Model Container"]
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Model Container/Placeholder"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Model Container/Placeholder/StaticBody3D"]
+shape = SubResource("BoxShape3D_he8th")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="."]
 collision_mask = 0
@@ -88,7 +98,7 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_testButton")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -97,6 +107,7 @@ _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/Load
 _fileDialog = NodePath("../../FileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/ScrollContainer/MarginContainer/VBoxContainer")
 _modelListItem = ExtResource("6_bb754")
+_testButton = NodePath("HSplitContainer/Left Panel/Margin/VBoxContainer/BakeButton")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -124,6 +135,10 @@ theme_override_constants/margin_right = 10
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
+
+[node name="BakeButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
+layout_mode = 2
+text = "Bake Test Probe"
 
 [node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/VBoxContainer"]
 layout_mode = 2

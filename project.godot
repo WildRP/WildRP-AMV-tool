@@ -30,5 +30,5 @@ project/assembly_name="WildRP-AMV-Tool"
 
 [rendering]
 
-anti_aliasing/quality/use_taa=true
+anti_aliasing/quality/screen_space_aa=1
 anti_aliasing/quality/use_debanding=true

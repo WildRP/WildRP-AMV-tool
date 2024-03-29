@@ -1,13 +1,19 @@
-[gd_scene load_steps=3 format=3 uid="uid://d061t60hvnxg8"]
+[gd_scene load_steps=6 format=3 uid="uid://d061t60hvnxg8"]
 
 [ext_resource type="Script" path="res://scripts/AMVProbe.cs" id="1_ebpcq"]
+[ext_resource type="Shader" path="res://shaders/probe.gdshader" id="2_p0dd0"]
+[ext_resource type="PackedScene" uid="uid://d2coqbwpovb74" path="res://objects/probe_debug_draw.tscn" id="3_6bk5k"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ekt6t"]
+render_priority = 0
+shader = ExtResource("2_p0dd0")
 
 [sub_resource type="SphereMesh" id="SphereMesh_oeibh"]
+material = SubResource("ShaderMaterial_ekt6t")
 radius = 0.2
 height = 0.4
 
-[node name="AMVProbe" type="Node3D"]
-script = ExtResource("1_ebpcq")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="AMVProbe" type="MeshInstance3D"]
 mesh = SubResource("SphereMesh_oeibh")
+script = ExtResource("1_ebpcq")
+_debugLine = ExtResource("3_6bk5k")

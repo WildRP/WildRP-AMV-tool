@@ -8,10 +8,14 @@ using WildRP.AMVTool.GUI;
 public partial class AMVBaker : Node3D
 {
 	[Export] private Node3D _placeholder;
-	[Export(PropertyHint.Layers3DPhysics)] private uint _rayMask;
+	[Export(PropertyHint.Layers3DPhysics)] private uint _rayMask = 1;
+	[Export] private PackedScene _probeScene;
+	
 	private Node _modelRoot;
 	
 	public static AMVBaker Instance { get; private set; }
+
+	private List<AMVProbe> _probes = new();
 	
 	public override void _Ready()
 	{
@@ -19,11 +23,6 @@ public partial class AMVBaker : Node3D
 			Instance = this;
 		else
 			QueueFree();
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
 	}
 
 	public (Error, List<Tuple<MeshInstance3D, StaticBody3D>>) LoadModel(string path)
@@ -56,6 +55,7 @@ public partial class AMVBaker : Node3D
 		{
 			var body = new StaticBody3D();
 			body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
+			body.CollisionLayer = 1;
 			
 			var shape = new CollisionShape3D();
 			var polygonShape = new ConcavePolygonShape3D();
@@ -70,5 +70,33 @@ public partial class AMVBaker : Node3D
 		}
 		
 		return (error, result);
+	}
+
+	public void Bake()
+	{
+
+		for (int x = 0; x < 8; x++)
+		{
+			for (int y = 0; y < 4; y++)
+			{
+				for (int z = 0; z < 8; z++)
+				{
+				
+					var p = _probeScene.Instantiate() as AMVProbe;
+					AddChild(p);
+					p.GlobalPosition = new Vector3(x - 4, y - 2, z - 4);
+					_probes.Add(p);
+				}
+			}
+		}
+		
+		foreach (var probe in _probes)
+		{
+			for (int i = 0; i < 512; i++)
+			{
+				probe.CaptureSample();
+			}
+			probe.UpdateAverage();
+		}
 	}
 }

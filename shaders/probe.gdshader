@@ -1,11 +1,42 @@
 shader_type spatial;
 
+render_mode unshaded;
+
+instance uniform vec3 positive_occlusion;
+instance uniform vec3 negative_occlusion;
+
+float ToSRGB(float RGB)
+{
+  float S1 = sqrt(RGB);
+  float S2 = sqrt(S1);
+  float S3 = sqrt(S2);
+  return 0.662002687 * S1 + 0.684122060 * S2 - 0.323583601 * S3 - 0.0225411470 * RGB;
+}
+
 void vertex() {
 	// Called for every vertex the material is visible on.
 }
 
 void fragment() {
-	// Called for every pixel the material is visible on.
+	
+	vec3 worldNormal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
+	
+	vec3 pos_blend = clamp(worldNormal, 0.0, 1.0);
+	vec3 neg_blend = clamp(-worldNormal, 0.0, 1.0);
+	vec3 blend = pow(abs(worldNormal), vec3(2.0));
+	blend /= dot(blend, vec3(1.0));
+	
+	float x = positive_occlusion.x * pos_blend.x + negative_occlusion.x * neg_blend.x;
+	float y = positive_occlusion.y * pos_blend.y + negative_occlusion.y * neg_blend.y;
+	float z = positive_occlusion.z * pos_blend.z + negative_occlusion.z * neg_blend.z;
+	
+	//ALBEDO = pos_blend;
+	float result = x * blend.x + y * blend.y + z * blend.z;
+	
+	if (OUTPUT_IS_SRGB) result = ToSRGB(result);
+	
+	ALBEDO = vec3(result);
+	
 }
 
 //void light() {

@@ -15,6 +15,8 @@ public partial class AmvBakerGui : Control
 	[Export] private VBoxContainer _modelListContainer;
 	[Export] private PackedScene _modelListItem;
 
+	[Export] private Button _testButton;
+	
 	private List<ModelListItem> _modelListItems = new();
 
 	public float MaxOcclusionDistance = -1;
@@ -30,6 +32,8 @@ public partial class AmvBakerGui : Control
 		{
 			_fileDialog.Popup();
 		};
+
+		_testButton.Pressed += () => AMVBaker.Instance.Bake();
 	}
 
 	void LoadModel(string path)

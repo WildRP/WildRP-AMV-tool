@@ -6,23 +6,17 @@ using Godot.Collections;
 
 namespace WildRP.AMVTool;
 
-public partial class AMVProbe : Node3D
+public partial class AMVProbe : MeshInstance3D
 {
-	private uint _rayMask;
-	private float _maxDistance = 150f;
+	[Export] private bool _drawDebugLines = false;
+	[Export] private PackedScene _debugLine;
+	
+	
+	private uint _rayMask = 1;
+	private float _maxDistance = 5;
 	private ProbeSample _averageValue = new();
-	private List<ProbeSample> _samples = new ();
-
-	public override void _Ready()
-	{
-		for (int i = 0; i < 10; i++)
-		{
-			CaptureSample();
-		}
-		UpdateAverage();
-		GD.Print(_averageValue);
-	}
-
+	private readonly List<ProbeSample> _samples = new ();
+	
 	public void CaptureSample()
 	{
 		ProbeSample sample;
@@ -37,14 +31,19 @@ public partial class AMVProbe : Node3D
 		_samples.Add(sample);
 	}
 
-	private void UpdateAverage()
+	public void UpdateAverage()
 	{
 		if (_samples.Count == 0)
 		{
-			_averageValue = 0;
+			_averageValue = 1.0f;
 			return;
 		}
 		_averageValue = _samples.Aggregate((current, sample) => current + sample) / _samples.Count;
+		
+		SetInstanceShaderParameter("positive_occlusion", _averageValue.GetPositiveVector());
+		SetInstanceShaderParameter("negative_occlusion", _averageValue.GetNegativeVector());
+		
+		GD.Print(_averageValue);
 	}
 
 	Vector3 SampleHemisphere(Vector3 norm, float alpha = 0.0f)
@@ -60,11 +59,30 @@ public partial class AMVProbe : Node3D
 		return ph * new Basis(tangent, bitangent, norm);
 	}
 	
-	private int RayHit(Vector3 dir)
+	private float RayHit(Vector3 dir)
 	{
 		var d = SampleHemisphere(dir).Normalized();
+		
 		var hit = Raycast(GlobalPosition, d * _maxDistance, this, _rayMask);
-		return hit != null ? 1 : 0;
+
+		if (_drawDebugLines)
+		{
+			var l = _debugLine.Instantiate() as Node3D;
+			AddChild(l);
+			
+			l.LookAt(GlobalPosition + d);
+
+			var scale = l.Scale;
+
+			if (hit != null)
+				scale.Z = GlobalPosition.DistanceTo(hit.Position);
+			else
+				scale.Z = _maxDistance;
+
+			l.Scale = scale;
+		}
+		
+		return hit == null ? 1f : 0f;
 	}
 	
 	private static PhysicsDirectSpaceState3D _spaceState;

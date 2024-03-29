@@ -1,4 +1,5 @@
 using System;
+using Godot;
 
 namespace WildRP.AMVTool;
 
@@ -18,6 +19,16 @@ public struct ProbeSample
         X = 0;
         Y = 0;
         Z = 0;
+    }
+
+    public Vector3 GetPositiveVector()
+    {
+        return new Vector3(X.Positive, Y.Positive, Z.Positive);
+    }
+    
+    public Vector3 GetNegativeVector()
+    {
+        return new Vector3(X.Negative, Y.Negative, Z.Negative);
     }
     
     public static ProbeSample operator +(ProbeSample a) => a;

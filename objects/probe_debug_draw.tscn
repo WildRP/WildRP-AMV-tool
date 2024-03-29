@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://d2coqbwpovb74"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8yslj"]
+shading_mode = 0
+albedo_color = Color(0.733333, 0.266667, 0.447059, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mg588"]
+material = SubResource("StandardMaterial3D_8yslj")
+top_radius = 0.002
+bottom_radius = 0.002
+height = 1.0
+
+[node name="Node3D" type="Node3D"]
+
+[node name="ProbeDebugDraw" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, -0.000218282, -0.000165764, 0.000165716, -0.000268964, 1, -0.000218318, -1, -0.000268934, 0, 0, -0.5)
+mesh = SubResource("CylinderMesh_mg588")
