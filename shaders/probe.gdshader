@@ -21,8 +21,8 @@ void fragment() {
 	
 	vec3 worldNormal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
 	
-	vec3 pos_blend = clamp(worldNormal, 0.0, 1.0);
-	vec3 neg_blend = clamp(-worldNormal, 0.0, 1.0);
+	vec3 pos_blend = clamp(sign(worldNormal), 0, 1);
+	vec3 neg_blend = clamp(sign(-worldNormal), 0, 1);
 	vec3 blend = pow(abs(worldNormal), vec3(2.0));
 	blend /= dot(blend, vec3(1.0));
 	

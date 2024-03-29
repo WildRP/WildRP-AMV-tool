@@ -13,7 +13,7 @@ public partial class AMVProbe : MeshInstance3D
 	
 	
 	private uint _rayMask = 1;
-	private float _maxDistance = 5;
+	private float _maxDistance = 50;
 	private ProbeSample _averageValue = new();
 	private readonly List<ProbeSample> _samples = new ();
 	
