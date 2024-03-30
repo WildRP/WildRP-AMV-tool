@@ -10,8 +10,8 @@ shader = ExtResource("2_p0dd0")
 
 [sub_resource type="SphereMesh" id="SphereMesh_oeibh"]
 material = SubResource("ShaderMaterial_ekt6t")
-radius = 0.2
-height = 0.4
+radius = 0.1
+height = 0.2
 
 [node name="AMVProbe" type="MeshInstance3D"]
 mesh = SubResource("SphereMesh_oeibh")

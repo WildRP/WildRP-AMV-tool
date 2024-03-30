@@ -18,8 +18,8 @@ public partial class SceneView
     private Vector3 _cameraRotation;
     private bool _rotatingCamera;
     private float _scrollInput;
-    
-    void SetupCamera()
+
+    private void SetupCamera()
     {
         _anchor.SpringLength = _defaultCamDistance;
         _cameraRotation = _anchor.Transform.Basis.GetRotationQuaternion().GetEuler();
@@ -29,7 +29,7 @@ public partial class SceneView
 
     }
 
-    void ProcessCamera(float delta)
+    private void ProcessCamera(float delta)
     {
 
         _cameraRotation.X += -_currentCamOrbitInput.Y * delta * _cameraOrbitSpeed;
@@ -44,7 +44,7 @@ public partial class SceneView
         _anchor.Basis = new Basis(Quaternion.FromEuler(_cameraRotation));
     }
 
-    void CameraInput(InputEvent @event)
+    private void CameraInput(InputEvent @event)
     {
         switch (@event)
         {

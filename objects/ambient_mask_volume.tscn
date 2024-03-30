@@ -1,9 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://nsvut1wbybbw"]
+[gd_scene load_steps=5 format=3 uid="uid://nsvut1wbybbw"]
 
 [ext_resource type="Script" path="res://scripts/SceneView/AmvBounds.cs" id="1_0248w"]
+[ext_resource type="Script" path="res://scripts/AmbientMaskVolume.cs" id="1_mwthb"]
+[ext_resource type="Material" uid="uid://da5cdqdajnai4" path="res://materials/BoundsPlane.tres" id="3_5x413"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_3w8s2"]
+material = ExtResource("3_5x413")
 
 [node name="AmbientMaskVolume" type="Node3D"]
+script = ExtResource("1_mwthb")
 
 [node name="Bounds" type="MeshInstance3D" parent="."]
 script = ExtResource("1_0248w")
 _color = Color(0.945098, 0.745098, 0.227451, 1)
+
+[node name="Y+ Plane" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_3w8s2")

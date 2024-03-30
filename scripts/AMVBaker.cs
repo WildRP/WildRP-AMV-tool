@@ -1,7 +1,9 @@
 using Godot;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using WildRP.AMVTool;
 using WildRP.AMVTool.GUI;
 
@@ -12,11 +14,11 @@ public partial class AMVBaker : Node3D
 	[Export] private PackedScene _probeScene;
 	
 	private Node _modelRoot;
+	private Dictionary<string, AmbientMaskVolume> _ambientMaskVolumes = new();
 	
 	public static AMVBaker Instance { get; private set; }
 
-	private List<AMVProbe> _probes = new();
-	
+	public Dictionary<string, AmbientMaskVolume> AmbientMaskVolumes => _ambientMaskVolumes;
 	public override void _Ready()
 	{
 		if (Instance == null)
@@ -72,31 +74,14 @@ public partial class AMVBaker : Node3D
 		return (error, result);
 	}
 
-	public void BakeTestProbes()
+	public void RegisterAmv(AmbientMaskVolume amv)
 	{
+		AmbientMaskVolumes.Add(amv.ListName, amv);
+		amv.OnDeleted += volume => AmbientMaskVolumes.Remove(volume.ListName);
+	}
 
-		for (int x = 0; x < 8; x++)
-		{
-			for (int y = 0; y < 4; y++)
-			{
-				for (int z = 0; z < 8; z++)
-				{
-				
-					var p = _probeScene.Instantiate() as AMVProbe;
-					AddChild(p);
-					p.GlobalPosition = new Vector3(x - 4, y - 2, z - 4);
-					_probes.Add(p);
-				}
-			}
-		}
-		
-		foreach (var probe in _probes)
-		{
-			for (int i = 0; i < 512; i++)
-			{
-				probe.CaptureSample();
-			}
-			probe.UpdateAverage();
-		}
+	public AmbientMaskVolume GetVolume(string name)
+	{
+		return AmbientMaskVolumes[name];
 	}
 }

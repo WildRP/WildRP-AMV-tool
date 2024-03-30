@@ -43,12 +43,12 @@ public partial class Settings : Node
         SaveSettings();
     }
 
-    static void SetDefaults()
+    private static void SetDefaults()
     {
         UiScale = Defaults.UiScale;
     }
 
-    static void SaveSettings()
+    private static void SaveSettings()
     {
         if (_dirty == false) return;
 

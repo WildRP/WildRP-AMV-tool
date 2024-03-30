@@ -1,13 +1,16 @@
-[gd_scene load_steps=16 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=19 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://d061t60hvnxg8" path="res://objects/amv_probe.tscn" id="3_wkun0"]
+[ext_resource type="PackedScene" uid="uid://nsvut1wbybbw" path="res://objects/ambient_mask_volume.tscn" id="4_htupu"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
+[ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="9_isvef"]
+[ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
 sky_top_color = Color(0.945098, 0.952941, 0.952941, 1)
@@ -65,6 +68,8 @@ environment = SubResource("Environment_8ejdi")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.5, -0.707107, -0.5, 0, 0, 0)
 
+[node name="AMV Container" type="Node3D" parent="."]
+
 [node name="Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_1jkap")
 _placeholder = NodePath("Placeholder")
@@ -112,17 +117,20 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_testButton", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvList")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_amvList", "_amvListContextMenu", "_newAmvButton")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
-_testButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BakeButton")
+_modelListItem = ExtResource("6_bb754")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
 _fileDialog = NodePath("../../FileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
-_modelListItem = ExtResource("6_bb754")
+_amvScene = ExtResource("4_htupu")
+_amvContainerNode = NodePath("../../../../AMV Container")
 _amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
+_amvListContextMenu = NodePath("../../AMVListContextMenu")
+_newAmvButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -137,6 +145,7 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.33
+mouse_filter = 0
 horizontal_scroll_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel"]
@@ -212,6 +221,7 @@ theme_override_constants/margin_right = 0
 [node name="ItemList" type="ItemList" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer"]
 layout_mode = 2
 auto_height = true
+script = ExtResource("9_isvef")
 
 [node name="AMV Buttons" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
@@ -252,9 +262,19 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="PopupMenu" type="PopupMenu" parent="CanvasLayer/GUI"]
-item_count = 2
+[node name="AMVListContextMenu" type="PopupMenu" parent="CanvasLayer/GUI"]
+item_count = 5
 item_0/text = "Bake"
 item_0/id = 0
-item_1/text = "Delete"
-item_1/id = 1
+item_1/text = "Include in full bake"
+item_1/checkable = 1
+item_1/checked = true
+item_1/id = 4
+item_2/text = ""
+item_2/id = 2
+item_2/separator = true
+item_3/text = "Rename"
+item_3/id = 3
+item_4/text = "Delete"
+item_4/id = 1
+script = ExtResource("11_gkj68")

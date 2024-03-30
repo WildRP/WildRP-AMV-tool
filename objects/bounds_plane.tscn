@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwhhknqfgympx"]
+
+[ext_resource type="Material" uid="uid://da5cdqdajnai4" path="res://materials/BoundsPlane.tres" id="1_rkmry"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_3w8s2"]
+material = ExtResource("1_rkmry")
+
+[node name="Bounds Plane" type="MeshInstance3D"]
+mesh = SubResource("QuadMesh_3w8s2")

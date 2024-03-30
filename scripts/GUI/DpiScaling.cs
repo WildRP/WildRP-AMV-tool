@@ -16,6 +16,6 @@ public partial class DpiScaling : Control
         float baseDPI = 72;
         float currentDPI = DisplayServer.ScreenGetDpi();
 
-        return (currentDPI / baseDPI) * Settings.UiScale;
+        return Settings.UiScale;
     }
 }

@@ -46,7 +46,7 @@ public partial class AMVProbe : MeshInstance3D
 		GD.Print(_averageValue);
 	}
 
-	Vector3 SampleHemisphere(Vector3 norm, float alpha = 0.0f)
+	private Vector3 SampleHemisphere(Vector3 norm, float alpha = 0.0f)
 	{
 		Vector4 rand = new Vector4(GD.Randf(), GD.Randf(), GD.Randf(), GD.Randf());
 		float r = Mathf.Pow(rand.W, 1.0f / (1.0f + alpha));
