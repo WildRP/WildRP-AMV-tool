@@ -28,6 +28,11 @@ window/stretch/aspect="expand"
 
 project/assembly_name="WildRP-AMV-Tool"
 
+[layer_names]
+
+3d_physics/layer_1="AMV Geo"
+3d_physics/layer_2="Bounds Planes"
+
 [rendering]
 
 anti_aliasing/quality/screen_space_aa=1

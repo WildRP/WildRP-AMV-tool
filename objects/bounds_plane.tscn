@@ -1,9 +1,23 @@
-[gd_scene load_steps=3 format=3 uid="uid://bwhhknqfgympx"]
+[gd_scene load_steps=5 format=3 uid="uid://bwhhknqfgympx"]
 
 [ext_resource type="Material" uid="uid://da5cdqdajnai4" path="res://materials/BoundsPlane.tres" id="1_rkmry"]
+[ext_resource type="Script" path="res://scripts/SceneView/BoundsPlane.cs" id="2_ikq61"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_3w8s2"]
 material = ExtResource("1_rkmry")
 
-[node name="Bounds Plane" type="MeshInstance3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_p4nun"]
+
+[node name="Bounds Plane" type="MeshInstance3D" node_paths=PackedStringArray("_staticBody3D", "_collisionShape3D")]
 mesh = SubResource("QuadMesh_3w8s2")
+script = ExtResource("2_ikq61")
+_staticBody3D = NodePath("StaticBody3D")
+_collisionShape3D = NodePath("StaticBody3D/CollisionShape3D")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(0.998217, 0, 0, 0, 0.998217, 0, 0, 0, 0.998217, 0, 0, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_p4nun")

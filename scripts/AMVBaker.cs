@@ -58,6 +58,7 @@ public partial class AMVBaker : Node3D
 			var body = new StaticBody3D();
 			body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
 			body.CollisionLayer = 1;
+			body.InputRayPickable = false;
 			
 			var shape = new CollisionShape3D();
 			var polygonShape = new ConcavePolygonShape3D();
@@ -77,7 +78,7 @@ public partial class AMVBaker : Node3D
 	public void RegisterAmv(AmbientMaskVolume amv)
 	{
 		AmbientMaskVolumes.Add(amv.ListName, amv);
-		amv.OnDeleted += volume => AmbientMaskVolumes.Remove(volume.ListName);
+		amv.Deleted += volume => AmbientMaskVolumes.Remove(volume.ListName);
 	}
 
 	public AmbientMaskVolume GetVolume(string name)

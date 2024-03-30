@@ -24,21 +24,16 @@ public partial class AmvBakerGui : Control
 			[Export] private Button _newAmvButton;
 	
 	private readonly List<ModelListItem> _modelListItems = new();
-
-	private AmbientMaskVolume _selectedAmv;
-	private AmbientMaskVolume SelectedAmv
+	
+	public static AmbientMaskVolume SelectedAmv
 	{
-		get => _selectedAmv;
-		set
-		{
-			if (SelectedAmv != null) SelectedAmv.Selected = false;
-			value.Selected = true;
-			_selectedAmv = value;
-		}
+		get;
+		private set;
 	}
 	
 	public override void _Ready()
 	{
+		// File dialog
 		_fileDialog.AddFilter("*.gltf, *.glb; GLTF Model File");
 		_fileDialog.Title = "Load Model...";
 
@@ -49,9 +44,14 @@ public partial class AmvBakerGui : Control
 			_fileDialog.Popup();
 		};
 
+		
 		_newAmvButton.Pressed += CreateNewAmv;
 
-		_amvList.ItemSelected += SelectAmv;
+		// AMV Select and deselect
+		_amvList.ItemSelected += index => SelectedAmv = AMVBaker.Instance.GetVolume(_amvList.GetItemText((int)index));
+		_amvList.EmptyClicked += (position, index) => SelectedAmv = null;
+		
+		// AMV List Context Menu
 		_amvList.OnRightClickItem += (name, pos) =>
 		{
 			_amvListContextMenu.Popup();
@@ -94,7 +94,7 @@ public partial class AmvBakerGui : Control
 		
 		AMVBaker.Instance.RegisterAmv(amv);
 
-		amv.OnDeleted += volume =>
+		amv.Deleted += volume =>
 		{
 			for (int i = 0; i < _amvList.ItemCount; i++)
 			{
@@ -103,12 +103,6 @@ public partial class AmvBakerGui : Control
 				break;
 			}
 		};
-	}
-
-	private void SelectAmv(long listIdx)
-	{
-		var volume = AMVBaker.Instance.GetVolume(_amvList.GetItemText((int)listIdx));
-		SelectedAmv = volume;
 	}
 
 	string EnsureUniqueName(string name)
