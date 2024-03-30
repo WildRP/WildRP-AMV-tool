@@ -16,7 +16,7 @@ public partial class SceneView
     private bool _canScroll = false;
     private Vector2 _currentCamOrbitInput;
     private Vector3 _cameraRotation;
-    private bool _rotatingCamera;
+    public static bool RotatingCamera { get; private set; }
     private float _scrollInput;
 
     private void SetupCamera()
@@ -55,7 +55,7 @@ public partial class SceneView
                         ? Input.MouseModeEnum.Captured
                         : Input.MouseModeEnum.Visible;
 
-                    _rotatingCamera = Input.MouseMode == Input.MouseModeEnum.Captured;
+                    RotatingCamera = Input.MouseMode == Input.MouseModeEnum.Captured;
                 }
 
                 if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && _canScroll)
@@ -63,7 +63,7 @@ public partial class SceneView
                 
                 GetViewport().SetInputAsHandled();
                 break;
-            case InputEventMouseMotion mouseMotion when _rotatingCamera:
+            case InputEventMouseMotion mouseMotion when RotatingCamera:
                 _currentCamOrbitInput = mouseMotion.Relative;
                 GetViewport().SetInputAsHandled();
                 break;

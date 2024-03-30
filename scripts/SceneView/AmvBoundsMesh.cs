@@ -18,9 +18,10 @@ public partial class AmvBoundsMesh : MeshInstance3D
         _mesh = new ImmediateMesh();
         Mesh = _mesh;
         SetupMaterial();
-        CreateMesh();
+        
         
         _parentVolume = GetParent<AmbientMaskVolume>();
+        _parentVolume.SizeChanged += UpdateMesh;
 
         for (int i = 0; i < 6; i++)
         {
@@ -28,6 +29,7 @@ public partial class AmvBoundsMesh : MeshInstance3D
             plane.Setup(_parentVolume, (BoundsPlane.PlaneDirection) i);
             _planesNode.AddChild(plane);
         }
+        UpdateMesh();
     }
 
     private void SetupMaterial()
@@ -55,15 +57,17 @@ public partial class AmvBoundsMesh : MeshInstance3D
         _mesh.SurfaceAddVertex(to);
     }
 
-    private void CreateMesh()
+    private void UpdateMesh()
     {
         _mesh.ClearSurfaces();
         _mesh.SurfaceBegin(Mesh.PrimitiveType.Lines, _material);
+
+        var s = _parentVolume.Size;
         
-        var frontLeft = new Vector3(-.5f, -.5f, -.5f);
-        var frontRight = new Vector3(.5f, -.5f, -.5f);
-        var backLeft = new Vector3(-.5f, -.5f, .5f);
-        var backRight = new Vector3(.5f, -.5f, .5f);
+        var frontLeft = new Vector3(s.X * -.5f, s.Y * -.5f, s.Z * -.5f);
+        var frontRight = new Vector3(s.X * .5f, s.Y * -.5f, s.Z * -.5f);
+        var backLeft = new Vector3(s.X * -.5f, s.Y * -.5f, s.Z * .5f);
+        var backRight = new Vector3(s.X * .5f, s.Y * -.5f, s.Z * .5f);
         
         // Draw bottom square
         DrawLine(frontLeft, frontRight);
@@ -71,10 +75,10 @@ public partial class AmvBoundsMesh : MeshInstance3D
         DrawLine(backRight, backLeft);
         DrawLine(backLeft, frontLeft);
 
-        frontLeft += Vector3.Up;
-        frontRight += Vector3.Up;
-        backLeft += Vector3.Up;
-        backRight += Vector3.Up;
+        frontLeft += s.Y * Vector3.Up;
+        frontRight += s.Y * Vector3.Up;
+        backLeft += s.Y * Vector3.Up;
+        backRight += s.Y * Vector3.Up;
         
         // Top square
         DrawLine(frontLeft, frontRight);
@@ -83,10 +87,10 @@ public partial class AmvBoundsMesh : MeshInstance3D
         DrawLine(backLeft, frontLeft);
         
         // Pillars
-        DrawLine(frontLeft, frontLeft + Vector3.Down);
-        DrawLine(frontRight, frontRight + Vector3.Down);
-        DrawLine(backRight, backRight + Vector3.Down);
-        DrawLine(backLeft, backLeft + Vector3.Down);
+        DrawLine(frontLeft, frontLeft + s.Y * Vector3.Down);
+        DrawLine(frontRight, frontRight + s.Y * Vector3.Down);
+        DrawLine(backRight, backRight + s.Y * Vector3.Down);
+        DrawLine(backLeft, backLeft + s.Y * Vector3.Down);
         
         _mesh.SurfaceEnd();
     }

@@ -24,7 +24,9 @@ public partial class BoundsPlane : MeshInstance3D
     private AmbientMaskVolume _volume;
     private QuadMesh _quadMesh;
     private BoxShape3D _colliderBox;
-    private bool _hovered;
+    private bool _mouseHovering;
+    private bool _dragging;
+    private Vector3 _normal;
 
     private const float _minColliderSize = 0.01f;
     
@@ -63,18 +65,55 @@ public partial class BoundsPlane : MeshInstance3D
 
         _planeDirection = dir;
         
-        _staticBody3D.MouseEntered += () => _hovered = true;
-        _staticBody3D.MouseExited += () => _hovered = false;
+        _staticBody3D.MouseEntered += () => _mouseHovering = true;
+        _staticBody3D.MouseExited += () => _mouseHovering = false;
         
         UpdatePlane();
+        _normal = Position.Normalized();
+        _volume.RotateY(Mathf.Pi * .12f);
     }
 
     public override void _Process(double delta)
     {
         if (_volume.Selected)
-            Transparency = _hovered ? 0f : 0.5f;
+            Transparency = _mouseHovering ? 0f : 0.5f;
         else
             Transparency = .9f;
+
+        _staticBody3D.InputRayPickable = _volume.Selected;
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton { ButtonIndex: MouseButton.Left } btn)
+        {
+            _dragging = btn.Pressed && _mouseHovering && SceneView.RotatingCamera == false;
+        }
+        
+        if (@event is InputEventMouseMotion motion && _dragging)
+        {
+            var mouseMotion = motion.Relative / GetViewport().GetWindow().Size;
+            mouseMotion *= 8;
+            
+            bool positive = _planeDirection is PlaneDirection.XPos or PlaneDirection.YPos or PlaneDirection.ZPos;
+            var move = 0f;
+
+            var camGlobalRight = GetViewport().GetCamera3D().GlobalBasis.X;
+            
+            if (_planeDirection is PlaneDirection.YNeg or PlaneDirection.YPos)
+            {
+                move = -mouseMotion.Y;
+            }
+            else
+            {
+                move = mouseMotion.X;
+                move *= Mathf.Sign(_normal.Dot(camGlobalRight));
+                if (positive) move *= -1;
+                GD.Print(Mathf.Sign(ToGlobal(_normal).Dot(camGlobalRight)));
+            }
+            
+            _volume.ChangeSize(_normal * move, positive);
+        }
     }
 
     private void UpdatePlane()
@@ -93,7 +132,7 @@ public partial class BoundsPlane : MeshInstance3D
             case PlaneDirection.YPos:
             case PlaneDirection.YNeg:
                 _quadMesh.Size = new Vector2(_volume.Size.X, _volume.Size.Z);
-                pos.Y += _volume.Size.X * (_planeDirection == PlaneDirection.YNeg ? -.5f : .5f);
+                pos.Y += _volume.Size.Y * (_planeDirection == PlaneDirection.YNeg ? -.5f : .5f);
                 boxSize.Y = _minColliderSize;
                 break;
             case PlaneDirection.ZPos:

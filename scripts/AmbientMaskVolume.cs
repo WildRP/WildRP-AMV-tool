@@ -16,10 +16,23 @@ public partial class AmbientMaskVolume : Node3D
 
 	public event Action<AmbientMaskVolume> Deleted;
 	public event Action SizeChanged;
-	
+
 	public void Delete()
 	{
 		QueueFree();
 		Deleted(this);
+	}
+
+	public void ChangeSize(Vector3 diff, bool positive)
+	{
+		
+		Size += diff;
+		
+		if (positive)
+			diff *= -1;
+		
+		Position -= Basis * (diff / 2);
+		
+		SizeChanged();
 	}
 }
