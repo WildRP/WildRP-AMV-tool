@@ -160,9 +160,18 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="BakeButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+[node name="SaveLoad" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
-text = "Bake Test Probe"
+
+[node name="Save" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Save Project"
+
+[node name="Load" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load Project"
 
 [node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
@@ -243,6 +252,170 @@ text = "Export All
 
 [node name="HSeparator2" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
+
+[node name="AMV Info Panel" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Pos Label2" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Texture Name"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "Randomize texture name"
+text = "?"
+
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1e+18
+max_value = 9.22337e+18
+value = 1e+18
+rounded = true
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
+layout_mode = 2
+
+[node name="Pos Label3" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Rotation"
+
+[node name="SpinBox2" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+allow_greater = true
+
+[node name="Pos Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Center Offset"
+
+[node name="Pos Container" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+alignment = 1
+
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+layout_mode = 2
+max_value = 0.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+prefix = "X:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+layout_mode = 2
+max_value = 0.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+prefix = "Y:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+layout_mode = 2
+max_value = 0.0
+allow_greater = true
+allow_lesser = true
+prefix = "Z:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Size Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Size
+"
+
+[node name="Size Container" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+alignment = 1
+
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+layout_mode = 2
+max_value = 0.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+prefix = "X:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+layout_mode = 2
+max_value = 0.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+prefix = "Y:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+layout_mode = 2
+max_value = 0.0
+step = 0.1
+allow_greater = true
+allow_lesser = true
+prefix = "Z:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Spacing" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Node Spacing"
+
+[node name="Size Container2" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+alignment = 1
+
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container2"]
+layout_mode = 2
+min_value = 1.0
+max_value = 10.0
+step = 0.1
+value = 1.0
+prefix = "X:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container2"]
+layout_mode = 2
+min_value = 1.0
+max_value = 10.0
+step = 0.1
+value = 1.0
+prefix = "Y:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container2"]
+layout_mode = 2
+min_value = 1.0
+max_value = 10.0
+step = 0.1
+value = 1.0
+prefix = "Z:"
+custom_arrow_step = 0.1
+select_all_on_focus = true
+
+[node name="Bottom Filler" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_nun7o")
 
 [node name="Scene View" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer"]
 layout_mode = 2
