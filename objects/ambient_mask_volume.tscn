@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://nsvut1wbybbw"]
+
+[ext_resource type="Script" path="res://scripts/SceneView/AmvBounds.cs" id="1_0248w"]
+
+[node name="AmbientMaskVolume" type="Node3D"]
+
+[node name="Bounds" type="MeshInstance3D" parent="."]
+script = ExtResource("1_0248w")
+_color = Color(0.945098, 0.745098, 0.227451, 1)

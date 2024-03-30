@@ -95,7 +95,8 @@ public partial class AMVProbe : MeshInstance3D
 	
 	private static PhysicsDirectSpaceState3D _spaceState;
 	private static ulong _lastRaycastFrame = 0;
-	public static RaycastHit Raycast(Vector3 from, Vector3 dirLength, Node3D caster, uint mask)
+
+	private static RaycastHit Raycast(Vector3 from, Vector3 dirLength, Node3D caster, uint mask)
 	{
 		if (_lastRaycastFrame != Engine.GetPhysicsFrames() || Engine.GetPhysicsFrames() == 0)
 			_spaceState = caster.GetWorld3D().DirectSpaceState;
@@ -110,20 +111,12 @@ public partial class AMVProbe : MeshInstance3D
 	}
 
 	// I made this because the syntax of getting this out of the dictionary every time SUCKS
-	public class RaycastHit
+	public class RaycastHit(Dictionary d)
 	{
-		public Node Collider;
-		public Vector3 Normal;
-		public Vector3 Position;
-		public int FaceIndex;
-		public Rid Rid;
-		public RaycastHit(Dictionary d)
-		{
-			Collider = d["collider"].As<Node>();
-			Normal = d["normal"].AsVector3();
-			Position = d["position"].AsVector3();
-			FaceIndex = d["face_index"].AsInt32();
-			Rid = d["rid"].AsRid();
-		}
+		public Node Collider = d["collider"].As<Node>();
+		public Vector3 Normal = d["normal"].AsVector3();
+		public Vector3 Position = d["position"].AsVector3();
+		public int FaceIndex = d["face_index"].AsInt32();
+		public Rid Rid = d["rid"].AsRid();
 	}
 }

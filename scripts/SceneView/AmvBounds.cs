@@ -52,6 +52,7 @@ public partial class AmvBounds : MeshInstance3D
 
         var c = _bounds.GetCenter();
         
+        // Draw a cube. I figured this out by hand but I'm sure this could be done algorithmically lol
         DrawLine(_bounds.GetEndpoint(3) - c, _bounds.GetEndpoint(7) - c);
         DrawLine(_bounds.GetEndpoint(3) - c, _bounds.GetEndpoint(2) - c);
         DrawLine(_bounds.GetEndpoint(3) - c, _bounds.GetEndpoint(1) - c);

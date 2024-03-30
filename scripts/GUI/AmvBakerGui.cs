@@ -7,6 +7,8 @@ namespace WildRP.AMVTool.GUI;
 
 public partial class AmvBakerGui : Control
 {
+	[Export] private Button _testButton;
+	
 	[ExportGroup("Model loading")]
 	[Export] private Button _loadModelButton;
 	[Export] private Label _modelNameLabel;
@@ -15,15 +17,19 @@ public partial class AmvBakerGui : Control
 	[Export] private VBoxContainer _modelListContainer;
 	[Export] private PackedScene _modelListItem;
 
-	[Export] private Button _testButton;
+	[ExportGroup("AMV")]
+	[Export] private ItemList _amvList;
+	[Export] private PopupMenu _amvListContextMenu;
+	[Export] private Button _newAmvButton;
 	
-	private List<ModelListItem> _modelListItems = new();
+	private readonly List<ModelListItem> _modelListItems = new();
+	private readonly List<AmbientMaskVolume> _ambientMaskVolumes = new();
 
 	public float MaxOcclusionDistance = -1;
 	
 	public override void _Ready()
 	{
-		_fileDialog.AddFilter("*.glb; GLTF Binary");
+		_fileDialog.AddFilter("*.gltf, *.glb; GLTF Model File");
 		_fileDialog.Title = "Load Model...";
 
 		_fileDialog.FileSelected += LoadModel;
@@ -33,7 +39,7 @@ public partial class AmvBakerGui : Control
 			_fileDialog.Popup();
 		};
 
-		_testButton.Pressed += () => AMVBaker.Instance.Bake();
+		_testButton.Pressed += () => AMVBaker.Instance.BakeTestProbes();
 	}
 
 	void LoadModel(string path)
@@ -56,6 +62,7 @@ public partial class AmvBakerGui : Control
 			
 			item.Setup(t.Item1.Name, t.Item1, t.Item2);
 			_modelListContainer.AddChild(item);
+			_modelListItems.Add(item);
 		}
 	}
 	

@@ -3,22 +3,12 @@ using Godot;
 
 namespace WildRP.AMVTool;
 
-public struct ProbeSample
+public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
 {
-    public SampleAxis X, Y, Z;
+    public SampleAxis X = x, Y = y, Z = z;
 
-    public ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
+    public ProbeSample() : this(0, 0, 0)
     {
-        X = x;
-        Y = y;
-        Z = z;
-    }
-    
-    public ProbeSample()
-    {
-        X = 0;
-        Y = 0;
-        Z = 0;
     }
 
     // For quickly feeding these into the shader
@@ -33,16 +23,16 @@ public struct ProbeSample
     }
     
     public static ProbeSample operator +(ProbeSample a) => a;
-    public static ProbeSample operator -(ProbeSample a) => new ProbeSample(-a.X, -a.Y, -a.Z);
+    public static ProbeSample operator -(ProbeSample a) => new(-a.X, -a.Y, -a.Z);
 
     public static ProbeSample operator +(ProbeSample a, ProbeSample b) =>
-        new ProbeSample(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
 
     public static ProbeSample operator -(ProbeSample a, ProbeSample b) =>
-        new ProbeSample(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        new(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
 
     public static ProbeSample operator *(ProbeSample a, ProbeSample b) =>
-        new ProbeSample(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+        new(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
     
     public static ProbeSample operator /(ProbeSample a, ProbeSample b)
     {
@@ -54,12 +44,12 @@ public struct ProbeSample
     
     // Float operators
     public static ProbeSample operator +(ProbeSample a, float b) =>
-        new ProbeSample(a.X + b, a.Y + b, a.Z + b);
+        new(a.X + b, a.Y + b, a.Z + b);
 
     public static ProbeSample operator -(ProbeSample a, float b) =>
-        new ProbeSample(a.X - b, a.Y - b, a.Z - b);
+        new(a.X - b, a.Y - b, a.Z - b);
     
-    public static ProbeSample operator *(ProbeSample a, float b) => new ProbeSample(a.X * b, a.Y * b, a.Z * b);
+    public static ProbeSample operator *(ProbeSample a, float b) => new(a.X * b, a.Y * b, a.Z * b);
     
     public static ProbeSample operator /(ProbeSample a, float b)
     {
@@ -69,7 +59,7 @@ public struct ProbeSample
         return new ProbeSample(a.X / b, a.Y / b, a.Z / b);
     }
 
-    public static implicit operator ProbeSample(float f) => new ProbeSample(f, f, f);
+    public static implicit operator ProbeSample(float f) => new(f, f, f);
     
     public override string ToString()
     {
@@ -77,33 +67,25 @@ public struct ProbeSample
     }
 }
 
-public struct SampleAxis
+public struct SampleAxis(float positive, float negative)
 {
-    public float Positive, Negative;
+    public float Positive = positive, Negative = negative;
 
-    public SampleAxis(float positive, float negative)
+    public SampleAxis() : this(0, 0)
     {
-        Positive = positive;
-        Negative = negative;
-    }
-
-    public SampleAxis()
-    {
-        Positive = 0;
-        Negative = 0;
     }
 
     public static SampleAxis operator +(SampleAxis a) => a;
-    public static SampleAxis operator -(SampleAxis a) => new SampleAxis(-a.Positive, -a.Negative);
+    public static SampleAxis operator -(SampleAxis a) => new(-a.Positive, -a.Negative);
 
     public static SampleAxis operator +(SampleAxis a, SampleAxis b) =>
-        new SampleAxis(a.Positive + b.Positive, a.Negative + b.Negative);
+        new(a.Positive + b.Positive, a.Negative + b.Negative);
 
     public static SampleAxis operator -(SampleAxis a, SampleAxis b) =>
-        new SampleAxis(a.Positive - b.Positive, a.Negative - b.Negative);
+        new(a.Positive - b.Positive, a.Negative - b.Negative);
 
     public static SampleAxis operator *(SampleAxis a, SampleAxis b) =>
-        new SampleAxis(a.Positive * b.Positive, a.Negative * b.Negative);
+        new(a.Positive * b.Positive, a.Negative * b.Negative);
     
     public static SampleAxis operator /(SampleAxis a, SampleAxis b)
     {
@@ -123,12 +105,12 @@ public struct SampleAxis
 
     // Float operators
     public static SampleAxis operator +(SampleAxis a, float b) =>
-        new SampleAxis(a.Positive + b, a.Negative + b);
+        new(a.Positive + b, a.Negative + b);
 
     public static SampleAxis operator -(SampleAxis a, float b) =>
-        new SampleAxis(a.Positive - b, a.Negative - b);
+        new(a.Positive - b, a.Negative - b);
     
-    public static SampleAxis operator *(SampleAxis a, float b) => new SampleAxis(a.Positive * b, a.Negative * b);
+    public static SampleAxis operator *(SampleAxis a, float b) => new(a.Positive * b, a.Negative * b);
     
     public static SampleAxis operator /(SampleAxis a, float b)
     {
@@ -138,7 +120,7 @@ public struct SampleAxis
         return new SampleAxis(a.Positive / b, a.Negative / b);
     }
 
-    public static implicit operator SampleAxis(float f) => new SampleAxis(f, f);
+    public static implicit operator SampleAxis(float f) => new(f, f);
     
     public override string ToString()
     {

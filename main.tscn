@@ -1,11 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=16 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://d061t60hvnxg8" path="res://objects/amv_probe.tscn" id="3_wkun0"]
-[ext_resource type="Script" path="res://scripts/SceneView/AmvBounds.cs" id="4_0tn37"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
@@ -75,12 +74,6 @@ _probeScene = ExtResource("3_wkun0")
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
 
-[node name="AmbientMaskVolume" type="Node3D" parent="Model Container"]
-
-[node name="Bounds" type="MeshInstance3D" parent="Model Container/AmbientMaskVolume"]
-script = ExtResource("4_0tn37")
-_color = Color(0.945098, 0.745098, 0.227451, 1)
-
 [node name="SpringArm3D" type="SpringArm3D" parent="."]
 collision_mask = 0
 
@@ -119,16 +112,17 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_testButton")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_testButton", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvList")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
+_testButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BakeButton")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
 _fileDialog = NodePath("../../FileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
 _modelListItem = ExtResource("6_bb754")
-_testButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BakeButton")
+_amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -218,27 +212,24 @@ theme_override_constants/margin_right = 0
 [node name="ItemList" type="ItemList" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer"]
 layout_mode = 2
 auto_height = true
-item_count = 2
-item_0/text = "AMV 1"
-item_1/text = "AMV 2"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+[node name="AMV Buttons" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 alignment = 1
 
-[node name="New" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/HBoxContainer"]
+[node name="New" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
 layout_mode = 2
-text = "New..."
+text = "New"
 
-[node name="Bake Selected" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/HBoxContainer"]
-layout_mode = 2
-text = "Bake Selected
-"
-
-[node name="Bake All" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/HBoxContainer"]
+[node name="Bake All" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Bake All"
+
+[node name="Export All" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
+layout_mode = 2
+text = "Export All
+"
 
 [node name="HSeparator2" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
@@ -260,3 +251,10 @@ layout_mode = 2
 [node name="Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("4_oxe1r")]
 visible = false
 layout_mode = 2
+
+[node name="PopupMenu" type="PopupMenu" parent="CanvasLayer/GUI"]
+item_count = 2
+item_0/text = "Bake"
+item_0/id = 0
+item_1/text = "Delete"
+item_1/id = 1

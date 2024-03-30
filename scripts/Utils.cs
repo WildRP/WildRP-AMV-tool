@@ -19,6 +19,6 @@ public static class Utils
     }
 
     // These do the same thing (swap Z and Y) but the different names help show intent
-    public static Vector3 ToRDR(this Vector3 a) => new Vector3(a.X, a.Z, a.Y);
-    public static Vector3 ToGodot(this Vector3 a) => new Vector3(a.X, a.Z, a.Y);
+    public static Vector3 ToRDR(this Vector3 a) => new(a.X, a.Z, a.Y);
+    public static Vector3 ToGodot(this Vector3 a) => new(a.X, a.Z, a.Y);
 }

@@ -72,7 +72,7 @@ public partial class AMVBaker : Node3D
 		return (error, result);
 	}
 
-	public void Bake()
+	public void BakeTestProbes()
 	{
 
 		for (int x = 0; x < 8; x++)
