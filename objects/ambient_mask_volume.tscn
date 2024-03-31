@@ -1,12 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://nsvut1wbybbw"]
+[gd_scene load_steps=5 format=3 uid="uid://nsvut1wbybbw"]
 
 [ext_resource type="Script" path="res://scripts/AmbientMaskVolume.cs" id="1_mwthb"]
 [ext_resource type="Script" path="res://scripts/SceneView/AmvBoundsMesh.cs" id="2_4ih80"]
+[ext_resource type="PackedScene" uid="uid://d061t60hvnxg8" path="res://objects/amv_probe.tscn" id="2_p0a8u"]
 [ext_resource type="PackedScene" uid="uid://bwhhknqfgympx" path="res://objects/bounds_plane.tscn" id="3_bdopw"]
 
 [node name="AmbientMaskVolume" type="Node3D" node_paths=PackedStringArray("_boundsMesh")]
 script = ExtResource("1_mwthb")
 _boundsMesh = NodePath("Bounds")
+_probeScene = ExtResource("2_p0a8u")
 
 [node name="Bounds" type="MeshInstance3D" parent="." node_paths=PackedStringArray("_planesNode")]
 script = ExtResource("2_4ih80")

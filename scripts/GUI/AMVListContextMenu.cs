@@ -28,6 +28,7 @@ public partial class AMVListContextMenu : PopupMenu
 				break;
 			// Index 4 is a separator item and not clickable
 			case 3: // Rename
+				_selectedVolume.GenerateProbes();
 				break;
 			case 4: // Delete
 				_selectedVolume.Delete();

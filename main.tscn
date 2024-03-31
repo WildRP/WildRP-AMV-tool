@@ -116,7 +116,7 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_amvList", "_amvListContextMenu", "_newAmvButton", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_spacingX", "_spacingY", "_spacingZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_amvList", "_amvListContextMenu", "_newAmvButton", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -140,9 +140,9 @@ _positionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AM
 _sizeX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container/X")
 _sizeY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container/Y")
 _sizeZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container/Z")
-_spacingX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Spacing Container/X")
-_spacingY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Spacing Container/Y")
-_spacingZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Spacing Container/Z")
+_probesX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container/X")
+_probesY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container/Y")
+_probesZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container/Z")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
 layout_mode = 1
@@ -298,7 +298,10 @@ text = "Rotation"
 
 [node name="Rotation" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
-allow_greater = true
+min_value = -180.0
+max_value = 180.0
+step = 0.0
+custom_arrow_step = 1.0
 script = ExtResource("10_ir2tt")
 
 [node name="Pos Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
@@ -383,45 +386,44 @@ prefix = "Z:"
 custom_arrow_step = 0.1
 script = ExtResource("10_ir2tt")
 
-[node name="Spacing" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Probe Count" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
-text = "Node Spacing"
+text = "Probe Count (Texture Resolution)"
 
-[node name="Spacing Container" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Count Container" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Spacing Container"]
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
-min_value = 1.0
-max_value = 10.0
-step = 0.1
-value = 1.0
+min_value = 2.0
+value = 4.0
+allow_greater = true
 prefix = "X:"
-custom_arrow_step = 0.1
+custom_arrow_step = 1.0
 script = ExtResource("10_ir2tt")
 
-[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Spacing Container"]
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
-min_value = 1.0
+min_value = 2.0
 max_value = 10.0
-step = 0.1
-value = 1.0
+value = 4.0
+allow_greater = true
 prefix = "Y:"
-custom_arrow_step = 0.1
+custom_arrow_step = 1.0
 script = ExtResource("10_ir2tt")
 
-[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Spacing Container"]
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
-min_value = 1.0
+min_value = 2.0
 max_value = 10.0
-step = 0.1
-value = 1.0
+value = 4.0
+allow_greater = true
 prefix = "Z:"
-custom_arrow_step = 0.1
+custom_arrow_step = 1.0
 script = ExtResource("10_ir2tt")
 
 [node name="Button" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]

@@ -37,11 +37,11 @@ public partial class AmvBakerGui : Control
 				[Export] private SpinBox _sizeY;
 				[Export] private SpinBox _sizeZ;
 			[ExportSubgroup("Size")]
-				[Export] private SpinBox _spacingX;
-				[Export] private SpinBox _spacingY;
-				[Export] private SpinBox _spacingZ;
+				[Export] private SpinBox _probesX;
+				[Export] private SpinBox _probesY;
+				[Export] private SpinBox _probesZ;
 	
-	private readonly List<ModelListItem> _modelListItems = new();
+	private readonly List<ModelListItem> _modelListItems = [];
 	
 	public static AmbientMaskVolume SelectedAmv
 	{
@@ -124,10 +124,11 @@ public partial class AmvBakerGui : Control
 		{
 			for (int i = 0; i < _amvList.ItemCount; i++)
 			{
-				if (_amvList.GetItemText(i) != volume.ListName) continue;
+				if (_amvList.GetItemText(i) != volume.GuiListName) continue;
 				_amvList.RemoveItem(i);
 				break;
 			}
+			if (SelectedAmv == amv) SelectAmv(null);
 		};
 		
 		_amvList.Select(item);
@@ -156,7 +157,7 @@ public partial class AmvBakerGui : Control
 		return true;
 	}
 
-	private void SelectAmv(AmbientMaskVolume volume)
+	public void SelectAmv(AmbientMaskVolume volume)
 	{
 		if (SelectedAmv != null)
 			SelectedAmv.SizeChanged -= UpdateAmvGuiValues;
@@ -169,6 +170,8 @@ public partial class AmvBakerGui : Control
 		UpdateAmvGuiValues();
 	}
 
+	
+	
 	private void UpdateAmvGuiValues()
 	{
 		// v for valid
@@ -186,9 +189,9 @@ public partial class AmvBakerGui : Control
 		_sizeY.SetValueNoSignal(v ? SelectedAmv.Size.Z : 0);
 		_sizeZ.SetValueNoSignal(v ? SelectedAmv.Size.Y : 0);
 		
-		_spacingX.SetValueNoSignal(v ? SelectedAmv.Spacing.X : 0);
-		_spacingY.SetValueNoSignal(v ? SelectedAmv.Spacing.Z : 0);
-		_spacingZ.SetValueNoSignal(v ? SelectedAmv.Spacing.Y : 0);
+		_probesX.SetValueNoSignal(v ? SelectedAmv.ProbeCount.X : 0);
+		_probesY.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Z : 0);
+		_probesZ.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Y : 0);
 	}
 
 	private void ConnectAmvGui()
@@ -201,9 +204,18 @@ public partial class AmvBakerGui : Control
 		_sizeY.ValueChanged += value => SelectedAmv?.SetSizeZ(value);
 		_sizeZ.ValueChanged += value => SelectedAmv?.SetSizeY(value);
 		
-		_spacingX.ValueChanged += value => SelectedAmv?.SetSpacingX(value);
-		_spacingY.ValueChanged += value => SelectedAmv?.SetSpacingZ(value);
-		_spacingZ.ValueChanged += value => SelectedAmv?.SetSpacingY(value);
+		_probesX.ValueChanged += value => SelectedAmv?.SetProbesX(value);
+		_probesY.ValueChanged += value => SelectedAmv?.SetProbesY(value);
+		_probesZ.ValueChanged += value => SelectedAmv?.SetProbesZ(value);
+
+		_rotation.ValueChanged += value => SelectedAmv?.SetRotation(value);
+
+		_textureName.ValueChanged += value => SelectedAmv.TextureName = Convert.ToUInt64(Math.Round(value));
+
+		_randomizeTextureNameButton.Pressed += () =>
+		{
+			_textureName.Value = Random.Shared.NextInt64(Convert.ToInt64(_textureName.MinValue), Convert.ToInt64(_textureName.MaxValue));
+		};
 	}
 	
 }

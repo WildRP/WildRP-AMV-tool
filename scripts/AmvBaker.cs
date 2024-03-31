@@ -47,10 +47,10 @@ public partial class AmvBaker : Node3D
 		_modelRoot = modelDoc.GenerateScene(modelState);
 		AddChild(_modelRoot);
 		
-		List<Node> nodes = new();
+		List<Node> nodes = [];
 		Utils.GetAllChildren(_modelRoot, nodes);
 
-		List<Tuple<MeshInstance3D, StaticBody3D>> result = new();
+		List<Tuple<MeshInstance3D, StaticBody3D>> result = [];
 		
 		var meshes = nodes.OfType<MeshInstance3D>().ToList();
 		foreach (var m in meshes)
@@ -77,8 +77,8 @@ public partial class AmvBaker : Node3D
 
 	public void RegisterAmv(AmbientMaskVolume amv)
 	{
-		AmbientMaskVolumes.Add(amv.ListName, amv);
-		amv.Deleted += volume => AmbientMaskVolumes.Remove(volume.ListName);
+		AmbientMaskVolumes.Add(amv.GuiListName, amv);
+		amv.Deleted += volume => AmbientMaskVolumes.Remove(volume.GuiListName);
 	}
 
 	public AmbientMaskVolume GetVolume(string name)

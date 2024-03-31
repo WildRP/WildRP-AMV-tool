@@ -14,8 +14,8 @@ public partial class AmvProbe : MeshInstance3D
 	private uint _rayMask = 1;
 	private float _maxDistance = 50;
 	private ProbeSample _averageValue = new();
-	private readonly List<ProbeSample> _samples = new ();
-	
+	private readonly List<ProbeSample> _samples = [];
+
 	public void CaptureSample()
 	{
 		ProbeSample sample;
@@ -60,7 +60,7 @@ public partial class AmvProbe : MeshInstance3D
 	
 	private float RayHit(Vector3 dir)
 	{
-		var d = SampleHemisphere(dir).Normalized();
+		var d = SampleHemisphere(ToGlobal(dir)).Normalized();
 		
 		var hit = Raycast(GlobalPosition, d * _maxDistance, this, _rayMask);
 
