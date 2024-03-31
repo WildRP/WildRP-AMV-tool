@@ -12,21 +12,42 @@ public partial class AmbientMaskVolume : Node3D
 	public bool Selected => AmvBakerGui.SelectedAmv == this;
 	public bool IncludeInFullBake { get; set; } = true;
 	public void Setup(string name) => ListName = name;
-	public Vector3 Size { get; private set; } = Vector3.One;
+
+	private Vector3 _size = Vector3.One;
+
+	public Vector3 Size
+	{
+		get => _size;
+		set
+		{
+			SizeChanged();
+			_size = value;
+		} 
+		
+	}
+	
+	private Vector3 _spacing = Vector3.One;
+	public Vector3 Spacing
+	{
+		get;
+		set;
+	}
+
+	public ulong TextureName { get; set; }
 
 	public event Action<AmbientMaskVolume> Deleted;
 	public event Action SizeChanged;
-
+	
 	public void Delete()
 	{
 		QueueFree();
 		Deleted(this);
 	}
 
-	public void ChangeSize(Vector3 diff, bool positive)
+	public void ChangeSizeWithGizmo(Vector3 diff, bool positive)
 	{
 		
-		Size += diff;
+		_size += diff;
 		
 		if (positive)
 			diff *= -1;

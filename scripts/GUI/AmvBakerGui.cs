@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace WildRP.AMVTool.GUI;
@@ -22,6 +23,22 @@ public partial class AmvBakerGui : Control
 			[Export] private AmvList _amvList;
 			[Export] private AMVListContextMenu _amvListContextMenu;
 			[Export] private Button _newAmvButton;
+	[ExportGroup("AMV Details")]
+		[Export] private SpinBox _textureName;
+		[Export] private SpinBox _rotation;
+		[Export] private Button _randomizeTextureNameButton;
+		[ExportSubgroup("Position")]
+			[Export] private SpinBox _positionX;
+			[Export] private SpinBox _positionY;
+			[Export] private SpinBox _positionZ;
+		[ExportSubgroup("Size")]
+			[Export] private SpinBox _sizeX;
+			[Export] private SpinBox _sizeY;
+			[Export] private SpinBox _sizeZ;
+		[ExportSubgroup("Size")]
+			[Export] private SpinBox _spacingX;
+			[Export] private SpinBox _spacingY;
+			[Export] private SpinBox _spacingZ;
 	
 	private readonly List<ModelListItem> _modelListItems = new();
 	
@@ -48,8 +65,8 @@ public partial class AmvBakerGui : Control
 		_newAmvButton.Pressed += CreateNewAmv;
 
 		// AMV Select and deselect
-		_amvList.ItemSelected += index => SelectedAmv = AMVBaker.Instance.GetVolume(_amvList.GetItemText((int)index));
-		_amvList.EmptyClicked += (position, index) => SelectedAmv = null;
+		_amvList.ItemSelected += index => SelectAmv(AmvBaker.Instance.GetVolume(_amvList.GetItemText((int)index)));
+		_amvList.EmptyClicked += (position, index) => SelectAmv(null);
 		
 		// AMV List Context Menu
 		_amvList.OnRightClickItem += (name, pos) =>
@@ -62,7 +79,7 @@ public partial class AmvBakerGui : Control
 
 	private void LoadModel(string path)
 	{
-		var (e, result) = AMVBaker.Instance.LoadModel(path);
+		var (e, result) = AmvBaker.Instance.LoadModel(path);
 		
 		// Clear out the list from whatever model we had loaded before
 		foreach (var item in _modelListItems)
@@ -88,11 +105,11 @@ public partial class AmvBakerGui : Control
 	{
 		var amv = _amvScene.Instantiate() as AmbientMaskVolume;
 		string name = EnsureUniqueName($"AMV {_amvList.ItemCount+1}");
-		_amvList.AddItem(name);
+		var item =_amvList.AddItem(name);
 		amv.Setup(name);
 		_amvContainerNode.AddChild(amv);
 		
-		AMVBaker.Instance.RegisterAmv(amv);
+		AmvBaker.Instance.RegisterAmv(amv);
 
 		amv.Deleted += volume =>
 		{
@@ -103,6 +120,9 @@ public partial class AmvBakerGui : Control
 				break;
 			}
 		};
+		
+		_amvList.Select(item);
+		SelectAmv(amv);
 	}
 
 	string EnsureUniqueName(string name)
@@ -125,5 +145,37 @@ public partial class AmvBakerGui : Control
 		}
 
 		return true;
+	}
+
+	private void SelectAmv(AmbientMaskVolume volume)
+	{
+		if (SelectedAmv != null)
+			SelectedAmv.SizeChanged -= UpdateAmvGuiValues;
+		
+		SelectedAmv = volume;
+		SelectedAmv.SizeChanged += UpdateAmvGuiValues;
+		UpdateAmvGuiValues();
+	}
+
+	private void UpdateAmvGuiValues()
+	{
+		// v for valid
+		bool v = SelectedAmv != null;
+
+		_textureName.GetLineEdit().Text = v ? SelectedAmv.TextureName.ToString(CultureInfo.InvariantCulture) : _textureName.MinValue.ToString(CultureInfo.InvariantCulture);
+		_rotation.GetLineEdit().Text = v ? SelectedAmv.Rotation.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		
+		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user
+		_positionX.GetLineEdit().Text = v ? SelectedAmv.Position.X.ToString(CultureInfo.InvariantCulture) : "0";
+		_positionY.GetLineEdit().Text = v ? SelectedAmv.Position.Z.ToString(CultureInfo.InvariantCulture) : "0";
+		_positionZ.GetLineEdit().Text = v ? SelectedAmv.Position.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		
+		_sizeX.GetLineEdit().Text = v ? SelectedAmv.Size.X.ToString(CultureInfo.InvariantCulture) : "0";
+		_sizeY.GetLineEdit().Text = v ? SelectedAmv.Size.Z.ToString(CultureInfo.InvariantCulture) : "0";
+		_sizeZ.GetLineEdit().Text = v ? SelectedAmv.Size.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		
+		_spacingX.GetLineEdit().Text = v ? SelectedAmv.Spacing.X.ToString(CultureInfo.InvariantCulture) : "0";
+		_spacingY.GetLineEdit().Text = v ? SelectedAmv.Spacing.Z.ToString(CultureInfo.InvariantCulture) : "0";
+		_spacingZ.GetLineEdit().Text = v ? SelectedAmv.Spacing.Y.ToString(CultureInfo.InvariantCulture) : "0";
 	}
 }

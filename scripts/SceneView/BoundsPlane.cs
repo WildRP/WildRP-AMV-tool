@@ -70,7 +70,6 @@ public partial class BoundsPlane : MeshInstance3D
         
         UpdatePlane();
         _normal = Position.Normalized();
-        _volume.RotateY(Mathf.Pi * .12f);
     }
 
     public override void _Process(double delta)
@@ -92,6 +91,8 @@ public partial class BoundsPlane : MeshInstance3D
         
         if (@event is InputEventMouseMotion motion && _dragging)
         {
+            // TODO: This is very much a first implementation. Drag directions become inverted if the bounds rotate too far.
+            // Would happily accept a pull request to make this work consistently.
             var mouseMotion = motion.Relative / GetViewport().GetWindow().Size;
             mouseMotion *= 8;
             
@@ -106,13 +107,12 @@ public partial class BoundsPlane : MeshInstance3D
             }
             else
             {
-                move = mouseMotion.X;
+                move = -mouseMotion.X;
                 move *= Mathf.Sign(_normal.Dot(camGlobalRight));
                 if (positive) move *= -1;
-                GD.Print(Mathf.Sign(ToGlobal(_normal).Dot(camGlobalRight)));
             }
             
-            _volume.ChangeSize(_normal * move, positive);
+            _volume.ChangeSizeWithGizmo(_normal * move, positive);
         }
     }
 

@@ -6,11 +6,10 @@ using Godot.Collections;
 
 namespace WildRP.AMVTool;
 
-public partial class AMVProbe : MeshInstance3D
+public partial class AmvProbe : MeshInstance3D
 {
 	[Export] private bool _drawDebugLines = false;
 	[Export] private PackedScene _debugLine;
-	
 	
 	private uint _rayMask = 1;
 	private float _maxDistance = 50;

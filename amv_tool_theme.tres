@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=51 format=3 uid="uid://b0c4jwsh62jan"]
+[gd_resource type="Theme" load_steps=52 format=3 uid="uid://b0c4jwsh62jan"]
 
 [ext_resource type="FontFile" uid="uid://ce0k46ki1ggwb" path="res://font/inter/Inter-Regular.ttf" id="1_glfyd"]
 
@@ -421,6 +421,8 @@ content_margin_bottom = 0.0
 bg_color = Color(0.1, 0.1, 0.1, 0.6)
 corner_detail = 5
 
+[sub_resource type="ImageTexture" id="ImageTexture_3n1np"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fejrw"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_els1s"]
@@ -565,6 +567,7 @@ ProgressBar/styles/fill = SubResource("StyleBoxFlat_xdk0w")
 RichTextLabel/styles/focus = SubResource("StyleBoxFlat_tx2dl")
 RichTextLabel/styles/normal = SubResource("StyleBoxFlat_tx2dl")
 ScrollContainer/styles/panel = SubResource("StyleBoxFlat_pbqj2")
+SpinBox/icons/updown = SubResource("ImageTexture_3n1np")
 TabBar/styles/tab_focus = SubResource("StyleBoxEmpty_fejrw")
 TabContainer/colors/font_unselected_color = Color(1, 1, 1, 0.235294)
 TabContainer/styles/panel = SubResource("StyleBoxEmpty_els1s")

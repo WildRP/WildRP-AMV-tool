@@ -1,6 +1,11 @@
 # WildRP AMV Tool
 
-This tool was created to help bake **Ambient Mask Volumes** for use in Red Dead Redemption 2 modding. AMVs are used by the game to create ambient lighting - they are essentially 3D textures with baked ambient occlusion.
+This tool was created to help bake **Ambient Mask Volumes** for use in Red Dead Redemption 2 modding. AMVs are used 
+by the game to create ambient lighting - they are essentially 3D textures with baked ambient occlusion.
+
+The tool has been written using the Godot engine, which uses a different coordinate system from Red Dead Redemption 
+2 - where RDR2 is using Z as up, Godot uses a Y-up coordinate system. Thus, the tool internally uses Godot's 
+coordinates, but presents the coordinates to the end user as Z-up.
 
 ## License
 

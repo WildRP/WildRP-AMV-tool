@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using WildRP.AMVTool;
 using WildRP.AMVTool.GUI;
 
-public partial class AMVBaker : Node3D
+public partial class AmvBaker : Node3D
 {
 	[Export] private Node3D _placeholder;
 	[Export(PropertyHint.Layers3DPhysics)] private uint _rayMask = 1;
@@ -16,7 +16,7 @@ public partial class AMVBaker : Node3D
 	private Node _modelRoot;
 	private Dictionary<string, AmbientMaskVolume> _ambientMaskVolumes = new();
 	
-	public static AMVBaker Instance { get; private set; }
+	public static AmvBaker Instance { get; private set; }
 
 	public Dictionary<string, AmbientMaskVolume> AmbientMaskVolumes => _ambientMaskVolumes;
 	public override void _Ready()

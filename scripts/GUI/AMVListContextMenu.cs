@@ -13,7 +13,7 @@ public partial class AMVListContextMenu : PopupMenu
 
 	public void Select(string name)
 	{
-		_selectedVolume = AMVBaker.Instance.GetVolume(name);
+		_selectedVolume = AmvBaker.Instance.GetVolume(name);
 		SetItemChecked(1, _selectedVolume.IncludeInFullBake);
 	}
 
