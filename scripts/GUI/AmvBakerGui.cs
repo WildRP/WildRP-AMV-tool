@@ -23,22 +23,23 @@ public partial class AmvBakerGui : Control
 			[Export] private AmvList _amvList;
 			[Export] private AMVListContextMenu _amvListContextMenu;
 			[Export] private Button _newAmvButton;
-	[ExportGroup("AMV Details")]
-		[Export] private SpinBox _textureName;
-		[Export] private SpinBox _rotation;
-		[Export] private Button _randomizeTextureNameButton;
-		[ExportSubgroup("Position")]
-			[Export] private SpinBox _positionX;
-			[Export] private SpinBox _positionY;
-			[Export] private SpinBox _positionZ;
-		[ExportSubgroup("Size")]
-			[Export] private SpinBox _sizeX;
-			[Export] private SpinBox _sizeY;
-			[Export] private SpinBox _sizeZ;
-		[ExportSubgroup("Size")]
-			[Export] private SpinBox _spacingX;
-			[Export] private SpinBox _spacingY;
-			[Export] private SpinBox _spacingZ;
+		[ExportGroup("AMV Details")] 
+			[Export] private Control _amvInfoPanel;
+			[Export] private SpinBox _textureName;
+			[Export] private SpinBox _rotation;
+			[Export] private Button _randomizeTextureNameButton;
+			[ExportSubgroup("Position")]
+				[Export] private SpinBox _positionX;
+				[Export] private SpinBox _positionY;
+				[Export] private SpinBox _positionZ;
+			[ExportSubgroup("Size")]
+				[Export] private SpinBox _sizeX;
+				[Export] private SpinBox _sizeY;
+				[Export] private SpinBox _sizeZ;
+			[ExportSubgroup("Size")]
+				[Export] private SpinBox _spacingX;
+				[Export] private SpinBox _spacingY;
+				[Export] private SpinBox _spacingZ;
 	
 	private readonly List<ModelListItem> _modelListItems = new();
 	
@@ -66,7 +67,11 @@ public partial class AmvBakerGui : Control
 
 		// AMV Select and deselect
 		_amvList.ItemSelected += index => SelectAmv(AmvBaker.Instance.GetVolume(_amvList.GetItemText((int)index)));
-		_amvList.EmptyClicked += (position, index) => SelectAmv(null);
+		_amvList.EmptyClicked += (position, index) =>
+		{
+			SelectAmv(null);
+			_amvList.DeselectAll();
+		};
 		
 		// AMV List Context Menu
 		_amvList.OnRightClickItem += (name, pos) =>
@@ -75,6 +80,9 @@ public partial class AmvBakerGui : Control
 			_amvListContextMenu.Position = new Vector2I(Mathf.RoundToInt(pos.X), Mathf.RoundToInt(pos.Y));
 			_amvListContextMenu.Select(name);
 		};
+		
+		ConnectAmvGui();
+		_amvInfoPanel.Visible = false;
 	}
 
 	private void LoadModel(string path)
@@ -107,6 +115,7 @@ public partial class AmvBakerGui : Control
 		string name = EnsureUniqueName($"AMV {_amvList.ItemCount+1}");
 		var item =_amvList.AddItem(name);
 		amv.Setup(name);
+		amv.TextureName = (ulong) _textureName.MinValue;
 		_amvContainerNode.AddChild(amv);
 		
 		AmvBaker.Instance.RegisterAmv(amv);
@@ -151,9 +160,12 @@ public partial class AmvBakerGui : Control
 	{
 		if (SelectedAmv != null)
 			SelectedAmv.SizeChanged -= UpdateAmvGuiValues;
+
+		_amvInfoPanel.Visible = volume != null;
 		
 		SelectedAmv = volume;
-		SelectedAmv.SizeChanged += UpdateAmvGuiValues;
+		if (SelectedAmv != null)
+			SelectedAmv.SizeChanged += UpdateAmvGuiValues;
 		UpdateAmvGuiValues();
 	}
 
@@ -166,16 +178,32 @@ public partial class AmvBakerGui : Control
 		_rotation.GetLineEdit().Text = v ? SelectedAmv.Rotation.Y.ToString(CultureInfo.InvariantCulture) : "0";
 		
 		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user
-		_positionX.GetLineEdit().Text = v ? SelectedAmv.Position.X.ToString(CultureInfo.InvariantCulture) : "0";
-		_positionY.GetLineEdit().Text = v ? SelectedAmv.Position.Z.ToString(CultureInfo.InvariantCulture) : "0";
-		_positionZ.GetLineEdit().Text = v ? SelectedAmv.Position.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		_positionX.SetValueNoSignal(v ? SelectedAmv.Position.X : 0);
+		_positionY.SetValueNoSignal(v ? SelectedAmv.Position.Z : 0);
+		_positionZ.SetValueNoSignal(v ? SelectedAmv.Position.Y : 0);
 		
-		_sizeX.GetLineEdit().Text = v ? SelectedAmv.Size.X.ToString(CultureInfo.InvariantCulture) : "0";
-		_sizeY.GetLineEdit().Text = v ? SelectedAmv.Size.Z.ToString(CultureInfo.InvariantCulture) : "0";
-		_sizeZ.GetLineEdit().Text = v ? SelectedAmv.Size.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		_sizeX.SetValueNoSignal(v ? SelectedAmv.Size.X : 0);
+		_sizeY.SetValueNoSignal(v ? SelectedAmv.Size.Z : 0);
+		_sizeZ.SetValueNoSignal(v ? SelectedAmv.Size.Y : 0);
 		
-		_spacingX.GetLineEdit().Text = v ? SelectedAmv.Spacing.X.ToString(CultureInfo.InvariantCulture) : "0";
-		_spacingY.GetLineEdit().Text = v ? SelectedAmv.Spacing.Z.ToString(CultureInfo.InvariantCulture) : "0";
-		_spacingZ.GetLineEdit().Text = v ? SelectedAmv.Spacing.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		_spacingX.SetValueNoSignal(v ? SelectedAmv.Spacing.X : 0);
+		_spacingY.SetValueNoSignal(v ? SelectedAmv.Spacing.Z : 0);
+		_spacingZ.SetValueNoSignal(v ? SelectedAmv.Spacing.Y : 0);
 	}
+
+	private void ConnectAmvGui()
+	{
+		_positionX.ValueChanged += value => SelectedAmv?.SetPositionX(value);
+		_positionY.ValueChanged += value => SelectedAmv?.SetPositionZ(value);
+		_positionZ.ValueChanged += value => SelectedAmv?.SetPositionY(value);
+		
+		_sizeX.ValueChanged += value => SelectedAmv?.SetSizeX(value);
+		_sizeY.ValueChanged += value => SelectedAmv?.SetSizeZ(value);
+		_sizeZ.ValueChanged += value => SelectedAmv?.SetSizeY(value);
+		
+		_spacingX.ValueChanged += value => SelectedAmv?.SetSpacingX(value);
+		_spacingY.ValueChanged += value => SelectedAmv?.SetSpacingZ(value);
+		_spacingZ.ValueChanged += value => SelectedAmv?.SetSpacingY(value);
+	}
+	
 }

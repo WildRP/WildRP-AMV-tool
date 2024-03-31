@@ -1,10 +1,9 @@
-[gd_scene load_steps=20 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=19 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
-[ext_resource type="Script" path="res://scripts/AMVBaker.cs" id="2_1jkap"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
+[ext_resource type="Script" path="res://scripts/AmvBaker.cs" id="2_lwufd"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
-[ext_resource type="PackedScene" uid="uid://d061t60hvnxg8" path="res://objects/amv_probe.tscn" id="3_wkun0"]
 [ext_resource type="PackedScene" uid="uid://nsvut1wbybbw" path="res://objects/ambient_mask_volume.tscn" id="4_htupu"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
@@ -72,9 +71,8 @@ transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.
 [node name="AMV Container" type="Node3D" parent="."]
 
 [node name="Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
-script = ExtResource("2_1jkap")
+script = ExtResource("2_lwufd")
 _placeholder = NodePath("Placeholder")
-_probeScene = ExtResource("3_wkun0")
 
 [node name="Placeholder" type="MeshInstance3D" parent="Model Container"]
 mesh = SubResource("BoxMesh_4veb7")
@@ -118,7 +116,7 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_amvList", "_amvListContextMenu", "_newAmvButton", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_spacingX", "_spacingY", "_spacingZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_amvList", "_amvListContextMenu", "_newAmvButton", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_spacingX", "_spacingY", "_spacingZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -132,9 +130,10 @@ _amvContainerNode = NodePath("../../../../AMV Container")
 _amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 _amvListContextMenu = NodePath("../../AMVListContextMenu")
 _newAmvButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
+_amvInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel")
 _textureName = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2/Rotation")
-_randomizeTextureNameButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Button")
+_randomizeTextureNameButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Button")
 _positionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/X")
 _positionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Y")
 _positionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Z")
@@ -159,7 +158,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.33
 mouse_filter = 0
-scroll_vertical = 50
 horizontal_scroll_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel"]
@@ -426,7 +424,7 @@ prefix = "Z:"
 custom_arrow_step = 0.1
 script = ExtResource("10_ir2tt")
 
-[node name="Button" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+[node name="Button" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
 tooltip_text = "Randomize texture name"
 text = "Randomize Texture Name"

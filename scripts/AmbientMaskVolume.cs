@@ -56,4 +56,80 @@ public partial class AmbientMaskVolume : Node3D
 		
 		SizeChanged();
 	}
+	
+	// These are used to connect to the UI
+	#region UIConnectFunctions
+
+	public void SetSizeX(double n)
+	{
+		var v = Size;
+		v.X = (float)n;
+		Size = v;
+		SizeChanged();
+	}
+	
+	public void SetSizeY(double n)
+	{
+		var v = Size;
+		v.Y = (float)n;
+		Size = v;
+		SizeChanged();
+	}
+	
+	public void SetSizeZ(double n)
+	{
+		var v = Size;
+		v.Z = (float)n;
+		Size = v;
+		SizeChanged();
+	}
+	
+	public void SetPositionX(double n)
+	{
+		var v = Position;
+		v.X = (float)n;
+		Position = v;
+		SizeChanged();
+	}
+	
+	public void SetPositionY(double n)
+	{
+		var v = Position;
+		v.Y = (float)n;
+		Position = v;
+		SizeChanged();
+	}
+	
+	public void SetPositionZ(double n)
+	{
+		var v = Position;
+		v.Z = (float)n;
+		Position = v;
+		SizeChanged();
+	}
+	
+	public void SetSpacingX(double n)
+	{
+		var v = Spacing;
+		v.X = (float)n;
+		Spacing = v;
+		SizeChanged();
+	}
+	
+	public void SetSpacingY(double n)
+	{
+		var v = Spacing;
+		v.Y = (float)n;
+		Spacing = v;
+		SizeChanged();
+	}
+	
+	public void SetSpacingZ(double n)
+	{
+		var v = Spacing;
+		v.Z = (float)n;
+		Spacing = v;
+		SizeChanged();
+	}
+	#endregion
 }

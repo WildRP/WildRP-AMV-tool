@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://d061t60hvnxg8"]
+[gd_scene load_steps=5 format=3 uid="uid://d061t60hvnxg8"]
 
-[ext_resource type="Script" path="res://scripts/AMVProbe.cs" id="1_ebpcq"]
+[ext_resource type="Script" path="res://scripts/AmvProbe.cs" id="2_15a21"]
 [ext_resource type="Shader" path="res://shaders/probe.gdshader" id="2_p0dd0"]
-[ext_resource type="PackedScene" uid="uid://d2coqbwpovb74" path="res://objects/probe_debug_draw.tscn" id="3_6bk5k"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ekt6t"]
 render_priority = 0
@@ -15,5 +14,4 @@ height = 0.2
 
 [node name="AMVProbe" type="MeshInstance3D"]
 mesh = SubResource("SphereMesh_oeibh")
-script = ExtResource("1_ebpcq")
-_debugLine = ExtResource("3_6bk5k")
+script = ExtResource("2_15a21")
