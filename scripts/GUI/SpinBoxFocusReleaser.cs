@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using Range = Godot.Range;
 
 namespace WildRP.AMVTool.GUI;
 

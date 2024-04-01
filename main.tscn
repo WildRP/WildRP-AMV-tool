@@ -117,7 +117,7 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -137,6 +137,7 @@ _amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV 
 _amvListContextMenu = NodePath("../../AMVListContextMenu")
 _newAmvButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
 _bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
+_exportTexturesBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Export All")
 _bakeProgressBar = NodePath("BakeProgress/ProgressBar")
 _amvInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel")
 _textureName = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/Texture Name")

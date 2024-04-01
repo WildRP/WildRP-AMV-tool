@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using WildRP.AMVTool;
 
 public partial class AMVListContextMenu : PopupMenu

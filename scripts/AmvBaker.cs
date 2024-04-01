@@ -1,12 +1,9 @@
 using Godot;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using WildRP.AMVTool;
 using WildRP.AMVTool.Autoloads;
-using WildRP.AMVTool.GUI;
 
 public partial class AmvBaker : Node3D
 {
@@ -72,6 +69,14 @@ public partial class AmvBaker : Node3D
 	public void Clear()
 	{
 		_ambientMaskVolumes.Clear();
+	}
+
+	public void GenerateTextures()
+	{
+		foreach (var volumes in _ambientMaskVolumes)
+		{
+			volumes.Value.GenerateTextures();
+		}
 	}
 	
 	public (Error, List<Tuple<MeshInstance3D, StaticBody3D>>) LoadModel(string path)

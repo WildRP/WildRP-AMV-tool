@@ -2,7 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace WildRP.AMVTool.GUI;
 
@@ -32,6 +31,7 @@ public partial class AmvBakerGui : Control
 			[Export] private AMVListContextMenu _amvListContextMenu;
 			[Export] private Button _newAmvButton;
 			[Export] private Button _bakeAllButton;
+			[Export] private Button _exportTexturesBtn;
 			[Export] private ProgressBar _bakeProgressBar;
 		[ExportGroup("AMV Details")] 
 			[Export] private Control _amvInfoPanel;
@@ -117,6 +117,11 @@ public partial class AmvBakerGui : Control
 		_loadProjectBtn.Pressed += () => _projectPanel.Visible = true;
 		
 		_projectFolderBtn.Pressed += () => OS.ShellOpen(SaveManager.GetGlobalizedProjectPath());
+
+		_exportTexturesBtn.Pressed += () =>
+		{
+			AmvBaker.Instance.GenerateTextures();
+		};
 	}
 
 	private void UnloadModel()

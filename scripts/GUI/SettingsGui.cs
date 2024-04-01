@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.Globalization;
 using WildRP.AMVTool.Autoloads;
 
 namespace WildRP.AMVTool.GUI;

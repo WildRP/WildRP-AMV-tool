@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using Godot;
 
 namespace WildRP.AMVTool.Sceneview;

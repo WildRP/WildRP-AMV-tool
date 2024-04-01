@@ -1,5 +1,5 @@
 using Godot;
-using System;
+
 // ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace WildRP.AMVTool.Autoloads;

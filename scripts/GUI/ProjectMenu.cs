@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using WildRP.AMVTool.GUI;
 
 public partial class ProjectMenu : Control
 {

@@ -6,7 +6,6 @@ using System.Linq;
 using WildRP.AMVTool;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using WildRP.AMVTool.GUI;
 using FileAccess = Godot.FileAccess;
 
 public partial class SaveManager : Node
@@ -18,7 +17,7 @@ public partial class SaveManager : Node
 	private const string ProjectsFolder = "user://projects";
 	private const string JsonFileName = "project.json";
 
-	private static string GetProjectPath() => $"{ProjectsFolder}/{_currentProject.Name}";
+	public static string GetProjectPath() => $"{ProjectsFolder}/{_currentProject.Name}";
 	public static string GetGlobalizedProjectPath() => ProjectSettings.GlobalizePath(GetProjectPath());
 	public override void _Ready()
 	{

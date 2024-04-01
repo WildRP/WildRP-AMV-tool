@@ -2,10 +2,10 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Godot.Collections;
-using WildRP.AMVTool.Autoloads;
+using SimpleImageIO;
 using WildRP.AMVTool.GUI;
 using WildRP.AMVTool.Sceneview;
+using FileAccess = Godot.FileAccess;
 
 namespace WildRP.AMVTool;
 
@@ -59,6 +59,54 @@ public partial class AmbientMaskVolume : Node3D
 	public event Action<AmbientMaskVolume> Deleted;
 	public event Action SizeChanged;
 
+	public void GenerateTextures()
+	{
+		// Channel mapping:
+		// Tex 0: RGB = XZY+
+		// Tex 1: RGB = XZY-
+		// Remember: Y is up in Godot. Z is up in RDR2.
+
+		var tex0Dir = $"{SaveManager.GetProjectPath()}/{TextureName.ToString()}_0";
+		var tex0DirG = ProjectSettings.GlobalizePath(tex0Dir);
+		var tex1Dir = $"{SaveManager.GetProjectPath()}/{TextureName.ToString()}_1";
+		var tex1DirG = ProjectSettings.GlobalizePath(tex1Dir);
+
+		if (DirAccess.DirExistsAbsolute(tex0Dir) == false)
+			DirAccess.MakeDirAbsolute(tex0Dir);
+
+		if (DirAccess.DirExistsAbsolute(tex1Dir) == false)
+			DirAccess.MakeDirAbsolute(tex1Dir);
+		
+		for (int y = 0; y < ProbeCount.Y; y++)
+		{
+			// Generate a new iamge per layer
+			RgbImage img0 = new(ProbeCount.X, ProbeCount.Z);
+			RgbImage img1 = new(ProbeCount.X, ProbeCount.Z);
+			
+			for (int x = 0; x < ProbeCount.X; x++)
+			{
+				for (int z = 0; z < ProbeCount.Z; z++)
+				{
+					var idx = CellToIndex(new Vector3I(x, y, z));
+					var p = _probes[idx].GetValue();
+
+					var col0 = new RgbColor(p.X.Positive, p.Z.Positive, p.Y.Positive);
+					var col1 = new RgbColor(p.X.Negative, p.Z.Negative, p.Y.Negative);
+					
+					img0.SetPixel(x,z, col0);
+					img1.SetPixel(x,z, col1);
+				}
+			}
+
+			img0.WriteToFile($"{tex0DirG}/slice_{y}.hdr");
+			img1.WriteToFile($"{tex1DirG}/slice_{y}.hdr");
+			
+			img0.Dispose();
+			img1.Dispose();
+		}
+		
+	}
+	
 	public void CaptureSample()
 	{
 		foreach (var probe in _probes)
@@ -122,7 +170,7 @@ public partial class AmbientMaskVolume : Node3D
 					var probe = _probeScene.Instantiate() as AmvProbe;
 					AddChild(probe);
 
-					probe.BoundsPosition = new Vector3I(x, y, z);
+					probe.BoundsPosition = new(x, y, z);
 					
 					_probes.Add(probe);
 					
@@ -136,7 +184,7 @@ public partial class AmbientMaskVolume : Node3D
 
 	private Vector3I IndexToCell(int idx)
 	{
-		return new Vector3I()
+		return new()
 		{
 			X = Mathf.PosMod(idx, ProbeCount.X),
 			Y = Mathf.PosMod(idx / ProbeCount.X, ProbeCount.Y),
@@ -146,9 +194,9 @@ public partial class AmbientMaskVolume : Node3D
 
 	private int CellToIndex(Vector3I cell)
 	{
-		if (cell.X < ProbeCount.X || cell.X > ProbeCount.X ||
-		    cell.Y < ProbeCount.Y || cell.Y > ProbeCount.Y ||
-		    cell.Z < ProbeCount.Z || cell.Z > ProbeCount.Z) return -1;
+		if (cell.X < 0 || cell.X > ProbeCount.X ||
+		    cell.Y < 0 || cell.Y > ProbeCount.Y ||
+		    cell.Z < 0 || cell.Z > ProbeCount.Z) return -1;
 		
 		return cell.X + cell.Y * ProbeCount.X + cell.Z * ProbeCount.X * ProbeCount.Y;
 	}
@@ -198,6 +246,8 @@ public partial class AmbientMaskVolume : Node3D
 
 		return data;
 	}
+
+	
 	
 	public class AmvData // Used for save and load
 	{

@@ -9,4 +9,7 @@
   <ItemGroup>
     <Content Include="README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SimpleImageIO" Version="1.5.5" />
+  </ItemGroup>
 </Project>

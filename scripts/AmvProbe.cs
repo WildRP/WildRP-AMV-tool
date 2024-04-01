@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot.Collections;
@@ -59,6 +58,11 @@ public partial class AmvProbe : MeshInstance3D
 		SetInstanceShaderParameter("positive_occlusion", _averageValue.GetPositiveVector());
 		SetInstanceShaderParameter("negative_occlusion", _averageValue.GetNegativeVector());
 		
+	}
+
+	public ProbeSample GetValue()
+	{
+		return _averageValue;
 	}
 
 	private Vector3 SampleHemisphere(Vector3 norm, float alpha = 0.0f)
