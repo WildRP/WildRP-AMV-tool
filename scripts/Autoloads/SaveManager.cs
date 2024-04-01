@@ -17,6 +17,9 @@ public partial class SaveManager : Node
 
 	private const string ProjectsFolder = "user://projects";
 	private const string JsonFileName = "project.json";
+
+	private static string GetProjectPath() => $"{ProjectsFolder}/{_currentProject.Name}";
+	public static string GetGlobalizedProjectPath() => ProjectSettings.GlobalizePath(GetProjectPath());
 	public override void _Ready()
 	{
 		if (DirAccess.DirExistsAbsolute(ProjectsFolder) == false)
@@ -28,13 +31,11 @@ public partial class SaveManager : Node
 	public static bool SaveProject()
 	{
 		if (_currentProject.ModelPath == "" && _currentProject.Volumes.Count == 0) return false;
-		
-		var name = _currentProject.Name;
 
-		if (DirAccess.DirExistsAbsolute($"{ProjectsFolder}/{name}") == false)
-			DirAccess.MakeDirAbsolute($"{ProjectsFolder}/{name}");
+		if (DirAccess.DirExistsAbsolute(GetProjectPath()) == false)
+			DirAccess.MakeDirAbsolute(GetProjectPath());
 		
-		using var f = FileAccess.Open($"{ProjectsFolder}/{name}/{JsonFileName}", FileAccess.ModeFlags.Write);
+		using var f = FileAccess.Open($"{GetProjectPath()}/{JsonFileName}", FileAccess.ModeFlags.Write);
 		if (f == null) return false;
 		
 		var serialized = JsonSerializer.Serialize(_currentProject);

@@ -117,13 +117,14 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
 _saveProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Save")
 _loadProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Load")
 _projectPanel = NodePath("../../Project Menu")
+_projectFolderBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/ProjectFolderBtn")
 _modelListItem = ExtResource("6_bb754")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
@@ -191,6 +192,10 @@ text = "Save Project"
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Load Project... "
+
+[node name="ProjectFolderBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+text = "Open Project Folder"
 
 [node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
