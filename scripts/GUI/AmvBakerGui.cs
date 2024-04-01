@@ -8,6 +8,11 @@ namespace WildRP.AMVTool.GUI;
 
 public partial class AmvBakerGui : Control
 {
+	[ExportGroup("Save & Load")]
+		[Export] private Button _saveProjectBtn;
+		[Export] private Button _loadProjectBtn;
+		[Export] private Control _projectPanel;
+	
 	[ExportGroup("Model loading")]
 		[Export] private PackedScene _modelListItem;
 		[ExportSubgroup("UI Elements")]
@@ -55,6 +60,8 @@ public partial class AmvBakerGui : Control
 	
 	public override void _Ready()
 	{
+		SaveManager.ProjectLoaded += LoadProject;
+		
 		// File dialog
 		_fileDialog.AddFilter("*.gltf, *.glb; GLTF Model File");
 		_fileDialog.Title = "Load Model...";
@@ -99,20 +106,37 @@ public partial class AmvBakerGui : Control
 		
 		ConnectAmvGui();
 		_amvInfoPanel.Visible = false;
+
+		_saveProjectBtn.Pressed += () =>
+		{
+			AmvBaker.Instance.UpdateProjectAmvs();
+			SaveManager.SaveProject();
+		};
+
+		_loadProjectBtn.Pressed += () => _projectPanel.Visible = true;
+	}
+
+	private void UnloadModel()
+	{
+		// Clear out the list from whatever model we had loaded before
+		foreach (var item in _modelListItems)
+		{
+			item.Remove();
+		}
+		
+		SaveManager.SetModel("");
 	}
 	
 	private void LoadModel(string path)
 	{
 		var (e, result) = AmvBaker.Instance.LoadModel(path);
 		
-		// Clear out the list from whatever model we had loaded before
-		foreach (var item in _modelListItems)
-		{
-			item.QueueFree();
-		}
+		UnloadModel();
 		
 		if (e != Error.Ok) return; // display an error message here probably
-
+		
+		SaveManager.SetModel(path);
+		
 		_modelNameLabel.Text = path.GetFile();
 		
 		foreach (var t in result)
@@ -124,34 +148,59 @@ public partial class AmvBakerGui : Control
 			_modelListItems.Add(item);
 		}
 	}
-
+	
 	private void CreateNewAmv()
 	{
 		var amv = _amvScene.Instantiate() as AmbientMaskVolume;
 		string name = EnsureUniqueName($"AMV {_amvList.ItemCount+1}");
-		var item =_amvList.AddItem(name);
+		
 		amv.Setup(name);
 		amv.TextureName = (ulong) _textureName.MinValue;
 		_amvContainerNode.AddChild(amv);
 		
 		AmvBaker.Instance.RegisterAmv(amv);
+		SaveManager.UpdateAmv(amv.GuiListName, amv.Save());
 
-		amv.Deleted += volume =>
-		{
-			for (int i = 0; i < _amvList.ItemCount; i++)
-			{
-				if (_amvList.GetItemText(i) != volume.GuiListName) continue;
-				_amvList.RemoveItem(i);
-				break;
-			}
-			if (SelectedAmv == amv) SelectAmv(null);
-		};
+		amv.Deleted += OnDeleteAmv;
 		
+		var item =_amvList.AddItem(name);
 		_amvList.Select(item);
 		SelectAmv(amv);
 	}
 
-	string EnsureUniqueName(string name)
+	private void LoadProject(SaveManager.Project project)
+	{
+		var path = project.ModelPath;
+		if (path.Length > 0 && (path.EndsWith(".glb") || path.EndsWith(".gltf")))
+			LoadModel(project.ModelPath);
+		else
+			UnloadModel(); // Project doesn't have a valid model file
+		
+		foreach (var data in project.Volumes)
+		{
+			var amv = _amvScene.Instantiate() as AmbientMaskVolume;
+			amv.Load(data);
+			
+			var item =_amvList.AddItem(data.Key);
+			
+			_amvContainerNode.AddChild(amv);
+			AmvBaker.Instance.RegisterAmv(amv);
+			amv.Deleted += OnDeleteAmv;
+		}
+	}
+
+	private void OnDeleteAmv(AmbientMaskVolume volume)
+	{
+		for (int i = 0; i < _amvList.ItemCount; i++)
+		{
+			if (_amvList.GetItemText(i) != volume.GuiListName) continue;
+			_amvList.RemoveItem(i);
+			break;
+		}
+		if (SelectedAmv == volume) SelectAmv(null);
+	}
+
+	private string EnsureUniqueName(string name)
 	{
 		var n = name;
 		var i = 1;

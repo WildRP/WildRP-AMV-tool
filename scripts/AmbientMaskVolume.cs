@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Godot.Collections;
 using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
@@ -38,7 +39,7 @@ public partial class AmbientMaskVolume : Node3D
 
 	private Vector3 _size = Vector3.One;
 
-	private readonly List<AmvProbe> _probes = [];
+	private List<AmvProbe> _probes = [];
 
 	public Vector3 Size
 	{
@@ -68,7 +69,7 @@ public partial class AmbientMaskVolume : Node3D
 		Samples++;
 	}
 
-	public void FinalizeBake()
+	public void UpdateAverages()
 	{
 		foreach (var probe in _probes)
 		{
@@ -133,18 +134,29 @@ public partial class AmbientMaskVolume : Node3D
 		}
 	}
 
-	int CellToIndex(Vector3I cell)
+	private Vector3I IndexToCell(int idx)
+	{
+		return new Vector3I()
+		{
+			X = Mathf.PosMod(idx, ProbeCount.X),
+			Y = Mathf.PosMod(idx / ProbeCount.X, ProbeCount.Y),
+			Z = Mathf.PosMod(idx / ProbeCount.X / ProbeCount.Y, ProbeCount.Z)
+		};
+	}
+
+	private int CellToIndex(Vector3I cell)
 	{
 		if (cell.X < ProbeCount.X || cell.X > ProbeCount.X ||
 		    cell.Y < ProbeCount.Y || cell.Y > ProbeCount.Y ||
 		    cell.Z < ProbeCount.Z || cell.Z > ProbeCount.Z) return -1;
 		
-		return cell.X + cell.Y * ProbeCount.Y + cell.Z * ProbeCount.Y * ProbeCount.Z;
+		return cell.X + cell.Y * ProbeCount.X + cell.Z * ProbeCount.X * ProbeCount.Y;
 	}
 	
 	public void Delete()
 	{
 		QueueFree();
+		SaveManager.DeleteAmv(GuiListName);
 		Deleted(this);
 	}
 
@@ -159,6 +171,46 @@ public partial class AmbientMaskVolume : Node3D
 		Position -= Basis * (diff / 2);
 		
 		SizeChanged();
+	}
+
+	public void Load(KeyValuePair<string, AmvData> data)
+	{
+		GuiListName = data.Key;
+		TextureName = data.Value.TextureName;
+		Position = data.Value.Position;
+		Size = data.Value.Size;
+		ProbeCount = data.Value.ProbeCount;
+
+		var rot = RotationDegrees;
+		rot.Y = data.Value.Rotation;
+		RotationDegrees = rot;
+	}
+
+	public AmvData Save()
+	{
+		var data = new AmvData();
+		
+		data.TextureName = TextureName;
+		data.Position = Position;
+		data.Size = Size;
+		data.ProbeCount = ProbeCount;
+		data.Rotation = RotationDegrees.Y;
+
+		return data;
+	}
+	
+	public class AmvData // Used for save and load
+	{
+		[JsonInclude]
+		public ulong TextureName;
+		[JsonInclude]
+		public float Rotation;
+		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
+		public Vector3 Position;
+		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
+		public Vector3 Size;
+		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3IJsonConverter))]
+		public Vector3I ProbeCount;
 	}
 	
 	// These are used to connect to the UI

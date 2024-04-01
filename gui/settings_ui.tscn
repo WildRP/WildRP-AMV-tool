@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://d2f7n2tveheyo"]
+[gd_scene load_steps=3 format=3 uid="uid://d2f7n2tveheyo"]
 
+[ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_7xdh4"]
 [ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
 
 [node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown")]
@@ -8,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_7xdh4")
 script = ExtResource("1_50msa")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/Scale Slider")
 _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/Scale Value")

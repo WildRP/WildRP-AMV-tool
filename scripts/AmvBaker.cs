@@ -41,14 +41,16 @@ public partial class AmvBaker : Node3D
 				if (amv.Baked)
 				{
 					GD.Print("BAKED!");
-					amv.FinalizeBake();
+					amv.UpdateAverages();
 					_bakeQueue.Remove(amv);
 				}
 				else
 				{
 					amv.CaptureSample();
+					
+					if (bakedSamples % 8 == 0) amv.UpdateAverages();
+					
 					bakedSamples++;
-					GD.Print($"Baked {bakedSamples} out of {totalSamples} - {(float)bakedSamples / totalSamples}");
 				}
 			}
 
@@ -67,6 +69,11 @@ public partial class AmvBaker : Node3D
 			QueueFree();
 	}
 
+	public void Clear()
+	{
+		_ambientMaskVolumes.Clear();
+	}
+	
 	public (Error, List<Tuple<MeshInstance3D, StaticBody3D>>) LoadModel(string path)
 	{
 		if (path.EndsWith(".glb") == false) return (Error.InvalidParameter, null);
@@ -120,11 +127,21 @@ public partial class AmvBaker : Node3D
 		AmbientMaskVolumes.Add(amv.GuiListName, amv);
 		amv.Deleted += volume => AmbientMaskVolumes.Remove(volume.GuiListName);
 	}
+
+	public void UpdateProjectAmvs()
+	{
+		foreach (var v in _ambientMaskVolumes)
+		{
+			SaveManager.UpdateAmv(v.Key, v.Value.Save());
+		}
+	}
 	
 	public void BakeAll()
 	{
 		foreach (var v in _ambientMaskVolumes)
 		{
+			if (v.Value.IncludeInFullBake == false) continue;
+			
 			v.Value.ClearSamples();
 			_bakeQueue.Add(v.Value);
 		}

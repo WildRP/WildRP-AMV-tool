@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=20 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="9_isvef"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="10_ir2tt"]
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
+[ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
 sky_top_color = Color(0.945098, 0.952941, 0.952941, 1)
@@ -116,10 +117,13 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
+_saveProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Save")
+_loadProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Load")
+_projectPanel = NodePath("../../Project Menu")
 _modelListItem = ExtResource("6_bb754")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
@@ -176,7 +180,6 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
 [node name="SaveLoad" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
-visible = false
 layout_mode = 2
 
 [node name="Save" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
@@ -187,7 +190,7 @@ text = "Save Project"
 [node name="Load" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Load Project"
+text = "Load Project... "
 
 [node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
@@ -502,3 +505,7 @@ item_3/id = 3
 item_4/text = "Delete"
 item_4/id = 1
 script = ExtResource("11_gkj68")
+
+[node name="Project Menu" parent="CanvasLayer/GUI" instance=ExtResource("12_vi4p3")]
+visible = false
+layout_mode = 1

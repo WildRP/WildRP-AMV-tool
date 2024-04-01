@@ -1,10 +1,12 @@
 using System;
+using System.Text.Json.Serialization;
 using Godot;
 
 namespace WildRP.AMVTool;
 
 public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
 {
+    [JsonInclude]
     public SampleAxis X = x, Y = y, Z = z;
 
     public ProbeSample() : this(0, 0, 0)
@@ -69,6 +71,7 @@ public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
 
 public struct SampleAxis(float positive, float negative)
 {
+    [JsonInclude]
     public float Positive = positive, Negative = negative;
 
     public SampleAxis() : this(0, 0)

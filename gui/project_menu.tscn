@@ -1,0 +1,118 @@
+[gd_scene load_steps=5 format=3 uid="uid://coyv6kr8unfcu"]
+
+[ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_nvmlv"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectMenu.cs" id="2_vgmhc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ecpsl"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.101961, 0.101961, 0.101961, 1)
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iwv2c"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.8, 0.8, 0.294118)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="Project Menu" type="PanelContainer" node_paths=PackedStringArray("_projectList", "_loadProjectBtn", "_newProjectBtn", "_returnToCurrentBtn", "_newProjectPanel", "_newProjectNameBox", "_createButton", "_cancelButton")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_nvmlv")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ecpsl")
+script = ExtResource("2_vgmhc")
+_projectList = NodePath("AspectRatioContainer/VBoxContainer/MarginContainer/ScrollContainer/ItemList")
+_loadProjectBtn = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/Load")
+_newProjectBtn = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/New")
+_returnToCurrentBtn = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/Cancel")
+_newProjectPanel = NodePath("NewProjectView")
+_newProjectNameBox = NodePath("NewProjectView/CenterContainer/HBoxContainer/LineEdit")
+_createButton = NodePath("NewProjectView/CenterContainer/HBoxContainer/Create")
+_cancelButton = NodePath("NewProjectView/CenterContainer/HBoxContainer/Cancel")
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+text = "Select a project..."
+
+[node name="MarginContainer" type="MarginContainer" parent="AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ScrollContainer" type="ScrollContainer" parent="AspectRatioContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(250, 150)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_iwv2c")
+horizontal_scroll_mode = 0
+
+[node name="ItemList" type="ItemList" parent="AspectRatioContainer/VBoxContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+auto_height = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="New" type="Button" parent="AspectRatioContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "New Project..."
+
+[node name="Load" type="Button" parent="AspectRatioContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Load Selected"
+
+[node name="Cancel" type="Button" parent="AspectRatioContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="NewProjectView" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ecpsl")
+
+[node name="CenterContainer" type="CenterContainer" parent="NewProjectView"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="NewProjectView/CenterContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="NewProjectView/CenterContainer/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+placeholder_text = "Project Name"
+
+[node name="Create" type="Button" parent="NewProjectView/CenterContainer/HBoxContainer"]
+layout_mode = 2
+text = "Create"
+
+[node name="Cancel" type="Button" parent="NewProjectView/CenterContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel
+"

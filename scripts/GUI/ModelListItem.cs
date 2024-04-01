@@ -22,4 +22,11 @@ public partial class ModelListItem : HBoxContainer
 		_renderCheck.Toggled += on => _staticBody.ProcessMode = on ? ProcessModeEnum.Always : ProcessModeEnum.Disabled;
 
 	}
+
+	public void Remove()
+	{
+		QueueFree();
+		_renderMesh.QueueFree();
+		_staticBody.QueueFree();
+	}
 }
