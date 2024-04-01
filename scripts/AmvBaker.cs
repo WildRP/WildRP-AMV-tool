@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using WildRP.AMVTool;
+using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
 
 public partial class AmvBaker : Node3D
@@ -14,11 +15,50 @@ public partial class AmvBaker : Node3D
 	[Export] private PackedScene _probeScene;
 	
 	private Node _modelRoot;
-	private Dictionary<string, AmbientMaskVolume> _ambientMaskVolumes = new();
+	private readonly Dictionary<string, AmbientMaskVolume> _ambientMaskVolumes = new();
 	
 	public static AmvBaker Instance { get; private set; }
 
-	public Dictionary<string, AmbientMaskVolume> AmbientMaskVolumes => _ambientMaskVolumes;
+	private Dictionary<string, AmbientMaskVolume> AmbientMaskVolumes => _ambientMaskVolumes;
+
+	private List<AmbientMaskVolume> _bakeQueue = new();
+
+	public bool BakeInProgress => _bakeQueue.Count > 0;
+
+	public event Action BakeFinished;
+	public event Action<float> UpdatePercentage;
+
+	private int totalSamples = 1;
+	private int bakedSamples = 0;
+
+	public override void _Process(double delta)
+	{
+		if (_bakeQueue.Count > 0)
+		{
+			for (int i = _bakeQueue.Count - 1; i >= 0; i--)
+			{
+				var amv = _bakeQueue[i];
+				if (amv.Baked)
+				{
+					GD.Print("BAKED!");
+					amv.FinalizeBake();
+					_bakeQueue.Remove(amv);
+				}
+				else
+				{
+					amv.CaptureSample();
+					bakedSamples++;
+					GD.Print($"Baked {bakedSamples} out of {totalSamples} - {(float)bakedSamples / totalSamples}");
+				}
+			}
+
+			UpdatePercentage((float)bakedSamples / totalSamples);
+			// Cleared the queue
+			if (_bakeQueue.Count == 0) BakeFinished();
+		}
+		
+	}
+
 	public override void _Ready()
 	{
 		if (Instance == null)
@@ -80,9 +120,23 @@ public partial class AmvBaker : Node3D
 		AmbientMaskVolumes.Add(amv.GuiListName, amv);
 		amv.Deleted += volume => AmbientMaskVolumes.Remove(volume.GuiListName);
 	}
+	
+	public void BakeAll()
+	{
+		foreach (var v in _ambientMaskVolumes)
+		{
+			v.Value.ClearSamples();
+			_bakeQueue.Add(v.Value);
+		}
 
+		bakedSamples = 0;
+		totalSamples = _bakeQueue.Count * GetSampleCount();
+	}
+	
 	public AmbientMaskVolume GetVolume(string name)
 	{
 		return AmbientMaskVolumes[name];
 	}
+
+	public static int GetSampleCount() => 1 << Settings.SampleCount;
 }

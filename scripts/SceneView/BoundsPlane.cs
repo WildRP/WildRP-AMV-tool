@@ -79,7 +79,7 @@ public partial class BoundsPlane : MeshInstance3D
         else
             Transparency = .9f;
 
-        _staticBody3D.InputRayPickable = _volume.Selected;
+        _staticBody3D.InputRayPickable = _volume.Selected && AmvBaker.Instance.BakeInProgress == false;
     }
 
     public override void _Input(InputEvent @event)

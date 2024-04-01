@@ -16,6 +16,23 @@ public partial class AmvProbe : MeshInstance3D
 	private ProbeSample _averageValue = new();
 	private readonly List<ProbeSample> _samples = [];
 
+	public Vector3I BoundsPosition
+	{
+		get;
+		set;
+	} = Vector3I.Zero;
+
+	public void Reset()
+	{
+		_samples.Clear();
+	}
+
+	public override void _Ready()
+	{
+		SetInstanceShaderParameter("positive_occlusion", Vector3.One * 0.5f);
+		SetInstanceShaderParameter("negative_occlusion", Vector3.One * 0.5f);
+	}
+
 	public void CaptureSample()
 	{
 		ProbeSample sample;
@@ -42,7 +59,6 @@ public partial class AmvProbe : MeshInstance3D
 		SetInstanceShaderParameter("positive_occlusion", _averageValue.GetPositiveVector());
 		SetInstanceShaderParameter("negative_occlusion", _averageValue.GetNegativeVector());
 		
-		GD.Print(_averageValue);
 	}
 
 	private Vector3 SampleHemisphere(Vector3 norm, float alpha = 0.0f)
@@ -60,7 +76,7 @@ public partial class AmvProbe : MeshInstance3D
 	
 	private float RayHit(Vector3 dir)
 	{
-		var d = SampleHemisphere(ToGlobal(dir)).Normalized();
+		var d = SampleHemisphere(dir).Normalized();
 		
 		var hit = Raycast(GlobalPosition, d * _maxDistance, this, _rayMask);
 
@@ -89,7 +105,7 @@ public partial class AmvProbe : MeshInstance3D
 			return distFactor;
 		}*/
 
-		return hit == null ? 0 : 1;
+		return hit == null ? 1 : 0;
 	}
 	
 	private static PhysicsDirectSpaceState3D _spaceState;

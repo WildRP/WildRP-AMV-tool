@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Godot.Collections;
+using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
 using WildRP.AMVTool.Sceneview;
 
@@ -16,6 +17,25 @@ public partial class AmbientMaskVolume : Node3D
 	public bool IncludeInFullBake { get; set; } = true;
 	public void Setup(string name) => GuiListName = name;
 
+	private bool _baked;
+	public bool Baked
+	{
+		get;
+		set;
+	}
+
+	private int _samples;
+
+	public int Samples
+	{
+		get => _samples;
+		set
+		{
+			_samples = value;
+			if (_samples >= AmvBaker.GetSampleCount()) Baked = true;
+		}
+	}
+
 	private Vector3 _size = Vector3.One;
 
 	private readonly List<AmvProbe> _probes = [];
@@ -26,8 +46,8 @@ public partial class AmbientMaskVolume : Node3D
 		private set => _size = value;
 	}
 	
-	private Vector3 _probeCount = Vector3.One * 2;
-	public Vector3 ProbeCount
+	private Vector3I _probeCount = Vector3I.One * 2;
+	public Vector3I ProbeCount
 	{
 		get => _probeCount;
 		set => _probeCount = value;
@@ -38,6 +58,34 @@ public partial class AmbientMaskVolume : Node3D
 	public event Action<AmbientMaskVolume> Deleted;
 	public event Action SizeChanged;
 
+	public void CaptureSample()
+	{
+		foreach (var probe in _probes)
+		{
+			probe.CaptureSample();
+		}
+
+		Samples++;
+	}
+
+	public void FinalizeBake()
+	{
+		foreach (var probe in _probes)
+		{
+			probe.UpdateAverage();
+		}
+	}
+	
+	public void ClearSamples()
+	{
+		Samples = 0;
+		Baked = false;
+		foreach (var probe in _probes)
+		{
+			probe.Reset();
+		}
+	}
+	
 	public override void _Ready()
 	{
 		GenerateProbes();
@@ -57,7 +105,8 @@ public partial class AmbientMaskVolume : Node3D
 		var probePos = Vector3.Zero;
 		var probeCounter = 0;
 		
-		// a 3-dimensional loop? this is getting silly
+		
+		// a 3-dimensional loop!
 		for (int x = 0; x < ProbeCount.X; x++)
 		{
 			probePos.X = -Size.X/2 + x * stepSizeX + stepSizeX / 2;
@@ -68,9 +117,12 @@ public partial class AmbientMaskVolume : Node3D
 				{
 					probePos.Z = -Size.Z / 2 + z * stepSizeZ + stepSizeZ / 2;
 
-					var finalPos = Basis * probePos;
+					var finalPos = probePos;
 					var probe = _probeScene.Instantiate() as AmvProbe;
 					AddChild(probe);
+
+					probe.BoundsPosition = new Vector3I(x, y, z);
+					
 					_probes.Add(probe);
 					
 					probe.Position = finalPos;
@@ -79,6 +131,15 @@ public partial class AmbientMaskVolume : Node3D
 				}
 			}
 		}
+	}
+
+	int CellToIndex(Vector3I cell)
+	{
+		if (cell.X < ProbeCount.X || cell.X > ProbeCount.X ||
+		    cell.Y < ProbeCount.Y || cell.Y > ProbeCount.Y ||
+		    cell.Z < ProbeCount.Z || cell.Z > ProbeCount.Z) return -1;
+		
+		return cell.X + cell.Y * ProbeCount.Y + cell.Z * ProbeCount.Y * ProbeCount.Z;
 	}
 	
 	public void Delete()
@@ -154,7 +215,7 @@ public partial class AmbientMaskVolume : Node3D
 	public void SetProbesX(double n)
 	{
 		var v = ProbeCount;
-		v.X = (float)n;
+		v.X = (int)n;
 		ProbeCount = v;
 		SizeChanged();
 	}
@@ -162,7 +223,7 @@ public partial class AmbientMaskVolume : Node3D
 	public void SetProbesZ(double n)
 	{
 		var v = ProbeCount;
-		v.Y = (float)n;
+		v.Y = (int)n;
 		ProbeCount = v;
 		SizeChanged();
 	}
@@ -170,7 +231,7 @@ public partial class AmbientMaskVolume : Node3D
 	public void SetProbesY(double n)
 	{
 		var v = ProbeCount;
-		v.Z = (float)n;
+		v.Z = (int)n;
 		ProbeCount = v;
 		SizeChanged();
 	}

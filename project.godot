@@ -23,6 +23,7 @@ Settings="*res://scripts/Autoloads/Settings.cs"
 [display]
 
 window/stretch/aspect="expand"
+window/vsync/vsync_mode=0
 
 [dotnet]
 

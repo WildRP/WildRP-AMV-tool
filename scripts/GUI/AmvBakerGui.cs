@@ -19,10 +19,14 @@ public partial class AmvBakerGui : Control
 	[ExportGroup("AMV")]
 		[Export] private PackedScene _amvScene;
 		[Export] private Node3D _amvContainerNode;
+
 		[ExportSubgroup("UI Elements")]
+			[Export] private Control _controlToHide;
 			[Export] private AmvList _amvList;
 			[Export] private AMVListContextMenu _amvListContextMenu;
 			[Export] private Button _newAmvButton;
+			[Export] private Button _bakeAllButton;
+			[Export] private ProgressBar _bakeProgressBar;
 		[ExportGroup("AMV Details")] 
 			[Export] private Control _amvInfoPanel;
 			[Export] private SpinBox _textureName;
@@ -61,7 +65,6 @@ public partial class AmvBakerGui : Control
 		{
 			_fileDialog.Popup();
 		};
-
 		
 		_newAmvButton.Pressed += CreateNewAmv;
 
@@ -80,11 +83,24 @@ public partial class AmvBakerGui : Control
 			_amvListContextMenu.Position = new Vector2I(Mathf.RoundToInt(pos.X), Mathf.RoundToInt(pos.Y));
 			_amvListContextMenu.Select(name);
 		};
+
+		_bakeAllButton.Pressed += () =>
+		{
+			AmvBaker.Instance.BakeAll();
+			_controlToHide.Visible = false;
+			_bakeProgressBar.GetParentControl().Visible = true;
+		};
+		AmvBaker.Instance.UpdatePercentage += f => _bakeProgressBar.Value = f;
+		AmvBaker.Instance.BakeFinished += () =>
+		{
+			_controlToHide.Visible = true;
+			_bakeProgressBar.GetParentControl().Visible = false;
+		};
 		
 		ConnectAmvGui();
 		_amvInfoPanel.Visible = false;
 	}
-
+	
 	private void LoadModel(string path)
 	{
 		var (e, result) = AmvBaker.Instance.LoadModel(path);

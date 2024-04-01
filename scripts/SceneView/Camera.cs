@@ -58,7 +58,7 @@ public partial class SceneView
                     RotatingCamera = Input.MouseMode == Input.MouseModeEnum.Captured;
                 }
 
-                if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && _canScroll)
+                if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && (_canScroll || AmvBaker.Instance.BakeInProgress))
                     _scrollInput = mouseButton.ButtonIndex == MouseButton.WheelDown ? -1 : 1;
                 
                 GetViewport().SetInputAsHandled();

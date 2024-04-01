@@ -25,6 +25,16 @@ public partial class Settings : Node
         }
     }
 
+    public static int SampleCount
+    {
+        get => _settingsFile.GetValue("Rendering", "ProbeQuality", 6).AsInt32();
+        set
+        {
+            _settingsFile.SetValue("Rendering", "ProbeQuality", value);
+            _dirty = true;
+        }
+    }
+
     private static bool _dirty; // Marks that it's time to save settings
 
     public override void _Ready()

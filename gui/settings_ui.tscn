@@ -2,15 +2,16 @@
 
 [ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_50msa")
-_uiScaleSlider = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Scale Slider")
-_uiScaleLabel = NodePath("MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/Scale Value")
+_uiScaleSlider = NodePath("MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/Scale Slider")
+_uiScaleLabel = NodePath("MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/Scale Value")
+_sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer/OptionButton")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -22,36 +23,74 @@ theme_override_constants/margin_bottom = 20
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_right = 20
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer"]
 layout_mode = 2
 text = "UI Scale
 "
 
-[node name="Scale Slider" type="HSlider" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Scale Slider" type="HSlider" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
 min_value = 0.5
 max_value = 2.0
 step = 0.1
 value = 1.0
 tick_count = 16
 
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.1
 theme_override_constants/margin_left = 20
 
-[node name="Scale Value" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
+[node name="Scale Value" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer2"]
 layout_mode = 2
 text = "1.0"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "Probe Quality"
+
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+item_count = 7
+selected = 2
+popup/item_0/text = "Very Low (64 samples)"
+popup/item_0/id = 5
+popup/item_1/text = "Low (128 samples)"
+popup/item_1/id = 6
+popup/item_2/text = "Medium (256 samples)"
+popup/item_2/id = 7
+popup/item_3/text = "High (512 samples)"
+popup/item_3/id = 8
+popup/item_4/text = "Very High (1024 samples)"
+popup/item_4/id = 9
+popup/item_5/text = "Ultra (4096 samples)"
+popup/item_5/id = 10
+popup/item_6/text = "Absurd (8192 samples)"
+popup/item_6/id = 11
 
 [node name="LinkButton" type="LinkButton" parent="MarginContainer"]
 layout_mode = 2

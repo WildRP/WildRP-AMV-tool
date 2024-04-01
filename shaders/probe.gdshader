@@ -4,7 +4,6 @@ render_mode unshaded;
 
 instance uniform vec3 positive_occlusion;
 instance uniform vec3 negative_occlusion;
-instance uniform bool initialized;
 
 float ToSRGB(float RGB)
 {
@@ -34,7 +33,6 @@ void fragment() {
 	float result = x * blend.x + y * blend.y + z * blend.z;
 	
 	if (OUTPUT_IS_SRGB) result = ToSRGB(result);
-	if (initialized == false) result = .5f;
 	
 	ALBEDO = vec3(result);
 	

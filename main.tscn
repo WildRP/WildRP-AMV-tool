@@ -116,7 +116,7 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_amvList", "_amvListContextMenu", "_newAmvButton", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -127,9 +127,12 @@ _fileDialog = NodePath("../../FileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
 _amvScene = ExtResource("4_htupu")
 _amvContainerNode = NodePath("../../../../AMV Container")
+_controlToHide = NodePath("HSplitContainer")
 _amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 _amvListContextMenu = NodePath("../../AMVListContextMenu")
 _newAmvButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
+_bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
+_bakeProgressBar = NodePath("BakeProgress/ProgressBar")
 _amvInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel")
 _textureName = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2/Rotation")
@@ -173,6 +176,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
 [node name="SaveLoad" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+visible = false
 layout_mode = 2
 
 [node name="Save" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
@@ -443,6 +447,32 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_nun7o")
+
+[node name="BakeProgress" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker"]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -21.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer/GUI/TabContainer/AMV Baker/BakeProgress"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 1
+max_value = 1.0
+value = 0.46
+
+[node name="CancelButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/BakeProgress"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Cancel Bake
+"
 
 [node name="Map" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer"]
 visible = false
