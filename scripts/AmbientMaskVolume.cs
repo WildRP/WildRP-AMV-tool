@@ -1,10 +1,13 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using SimpleImageIO;
+using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
 using WildRP.AMVTool.Sceneview;
+using Array = Godot.Collections.Array;
 using FileAccess = Godot.FileAccess;
 
 namespace WildRP.AMVTool;
@@ -76,6 +79,9 @@ public partial class AmbientMaskVolume : Node3D
 
 		if (DirAccess.DirExistsAbsolute(tex1Dir) == false)
 			DirAccess.MakeDirAbsolute(tex1Dir);
+
+		List<string> img0list = [];
+		List<string> img1list = [];
 		
 		for (int y = 0; y < ProbeCount.Y; y++)
 		{
@@ -98,13 +104,37 @@ public partial class AmbientMaskVolume : Node3D
 				}
 			}
 
-			img0.WriteToFile($"{tex0DirG}/slice_{y}.hdr");
-			img1.WriteToFile($"{tex1DirG}/slice_{y}.hdr");
+			var tex0Name = $"{tex0DirG}/slice_{y}.hdr";
+			var tex1Name = $"{tex1DirG}/slice_{y}.hdr";
+			
+			img0.WriteToFile(tex0Name);
+			img1.WriteToFile(tex1Name);
+			
+			img0list.Add(tex0Name);
+			img1list.Add(tex1Name);
 			
 			img0.Dispose();
 			img1.Dispose();
 		}
-		
+
+		using var f0 = FileAccess.Open($"{tex0Dir}/imgs.txt", FileAccess.ModeFlags.Write);
+			img0list.ForEach(s => f0.StoreLine(s));
+			
+		using var f1 = FileAccess.Open($"{tex1Dir}/imgs.txt", FileAccess.ModeFlags.Write);
+			img1list.ForEach(s => f1.StoreLine(s));
+			
+
+			var tx0 = new Process();
+			tx0.StartInfo.FileName = Settings.TexAssembleLocation;
+			tx0.StartInfo.Arguments =
+				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_0.dds\" -l -y -if linear -f R8G8B8A8_UNORM_SRGB -fl 12.1 -srgbo -flist \"{tex0DirG}\\imgs.txt\"";
+			tx0.Start();
+			
+			var tx1 = new Process();
+			tx1.StartInfo.FileName = Settings.TexAssembleLocation;
+			tx1.StartInfo.Arguments =
+				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_1.dds\" -l -y -if linear -f R8G8B8A8_UNORM_SRGB -fl 12.1 -srgbo -flist \"{tex1DirG}\\imgs.txt\"";
+			tx1.Start();
 	}
 	
 	public void CaptureSample()

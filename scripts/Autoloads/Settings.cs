@@ -17,20 +17,30 @@ public partial class Settings : Node
     private static ConfigFile _settingsFile;
     public static float UiScale
     {
-        get => _settingsFile.GetValue("UI", "scale", 1f).AsSingle();
+        get => _settingsFile.GetValue("Settings", "scale", 1f).AsSingle();
         set
         {
-            _settingsFile.SetValue("UI", "scale", value);
+            _settingsFile.SetValue("Settings", "scale", value);
             _dirty = true;
         }
     }
 
     public static int SampleCount
     {
-        get => _settingsFile.GetValue("Rendering", "ProbeQuality", 6).AsInt32();
+        get => _settingsFile.GetValue("Settings", "ProbeQuality", 6).AsInt32();
         set
         {
-            _settingsFile.SetValue("Rendering", "ProbeQuality", value);
+            _settingsFile.SetValue("Settings", "ProbeQuality", value);
+            _dirty = true;
+        }
+    }
+
+    public static string TexAssembleLocation
+    {
+        get => _settingsFile.GetValue("Settings", "TexAssemblePath", "").AsString();
+        set
+        {
+            _settingsFile.SetValue("Settings", "TexAssemblePath", value);
             _dirty = true;
         }
     }

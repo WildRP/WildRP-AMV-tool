@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_7xdh4"]
 [ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,9 +11,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_7xdh4")
 script = ExtResource("1_50msa")
-_uiScaleSlider = NodePath("MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/Scale Slider")
-_uiScaleLabel = NodePath("MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/Scale Value")
-_sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer/OptionButton")
+_texAssemblePath = NodePath("MarginContainer/VBoxContainer/TexAssemble/hbox/LineEdit")
+_texAssembleBrowse = NodePath("MarginContainer/VBoxContainer/TexAssemble/hbox/Button")
+_texAssembleDialog = NodePath("FileDialog")
+_uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
+_uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2/Scale Value")
+_sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -25,23 +28,58 @@ theme_override_constants/margin_bottom = 20
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+[node name="TexAssemble" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer"]
+[node name="hbox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TexAssemble"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
 layout_mode = 2
 theme_override_constants/margin_right = 20
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TexAssemble/hbox/MarginContainer"]
+layout_mode = 2
+text = "texassemble.exe location"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Required to export textures!"
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
+layout_mode = 2
+text = "Browse..."
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+
+[node name="LinkButton" type="LinkButton" parent="MarginContainer/VBoxContainer/TexAssemble/hbox/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Download texassemble.exe here"
+uri = "https://github.com/microsoft/DirectXTex/releases/latest"
+
+[node name="UI Scale" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/UI Scale"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/UI Scale/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer"]
 layout_mode = 2
 text = "UI Scale
 "
 
-[node name="Scale Slider" type="HSlider" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Scale Slider" type="HSlider" parent="MarginContainer/VBoxContainer/UI Scale/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
@@ -51,31 +89,31 @@ step = 0.1
 value = 1.0
 tick_count = 16
 
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/UI Scale/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 20
 
-[node name="Scale Value" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/MarginContainer2"]
+[node name="Scale Value" type="Label" parent="MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2"]
 layout_mode = 2
 text = "1.0"
 
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+[node name="Sample Count" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MarginContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Sample Count"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_right = 20
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer/MarginContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer/MarginContainer"]
 layout_mode = 2
 text = "Probe Quality"
 
-[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
 item_count = 7
 selected = 2
@@ -100,3 +138,11 @@ size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "View on GitHub"
 uri = "https://github.com/WildRP/WildRP-AMV-tool"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("texassemble.exe")
+use_native_dialog = true
