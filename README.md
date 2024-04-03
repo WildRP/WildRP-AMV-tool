@@ -20,3 +20,8 @@ To compile this project you will need:
 
 * [Godot Engine 4.2.1](https://godotengine.org/download/archive/4.2.1-stable/) .NET version
 * [.NET SDK 8.0 or later](https://dotnet.microsoft.com/en-us/download)
+
+## Acknowledgements
+
+* Uses [Markdown Label](https://github.com/daenvil/MarkdownLabel/blob/main/addons/markdownlabel/markdownlabel.gd) for the help page.
+* Thanks to dexyfex, Któs, and CP on the CodeWalker discord for their prior research into AMVs.

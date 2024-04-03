@@ -30,6 +30,10 @@ window/stretch/aspect="expand"
 
 project/assembly_name="WildRP-AMV-Tool"
 
+[editor]
+
+export/convert_text_resources_to_binary=false
+
 [layer_names]
 
 3d_physics/layer_1="AMV Geo"

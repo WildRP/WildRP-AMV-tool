@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=21 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="9_isvef"]
+[ext_resource type="PackedScene" uid="uid://dwk3wagkg5qsx" path="res://gui/help_ui.tscn" id="10_hf7ko"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="10_ir2tt"]
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
 [ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
@@ -531,7 +532,7 @@ text = "Cancel Bake"
 visible = false
 layout_mode = 2
 
-[node name="Help" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer"]
+[node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
 visible = false
 layout_mode = 2
 
