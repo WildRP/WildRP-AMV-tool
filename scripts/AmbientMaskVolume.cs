@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using SimpleImageIO;
@@ -62,6 +63,7 @@ public partial class AmbientMaskVolume : Node3D
 
 	public event Action<AmbientMaskVolume> Deleted;
 	public event Action SizeChanged;
+	public event Action ProbeCountChanged;
 
 	public void GenerateTextures()
 	{
@@ -177,66 +179,71 @@ public partial class AmbientMaskVolume : Node3D
 	
 	public override void _Ready()
 	{
-		GenerateProbes();
-		SizeChanged += GenerateProbes;
+		UpdateProbes();
+		UpdateProbePositions();
+		SizeChanged += UpdateProbePositions;
+		ProbeCountChanged += UpdateProbes;
 	}
+	
+	private int _prevProbeCount = 0;
 
-	// This should really be replaced with a dynamic object pool so we don't delete and recreate probes every time we resize
-	public void GenerateProbes()
+	private void UpdateProbes()
 	{
-		_probes.ForEach(p => p.QueueFree());
-		_probes.Clear();
-
-		var stepSizeX = Size.X / ProbeCount.X;
-		var stepSizeY = Size.Y / ProbeCount.Y;
-		var stepSizeZ = Size.Z / ProbeCount.Z;
-		
-		var probePos = Vector3.Zero;
-		var probeCounter = 0;
-		
-		
-		// a 3-dimensional loop!
-		for (int x = 0; x < ProbeCount.X; x++)
+		int numProbes = ProbeCount.X * ProbeCount.Y * ProbeCount.Z;
+		if (numProbes > _prevProbeCount) // Generate Extra Probes
 		{
-			probePos.X = -Size.X/2 + x * stepSizeX + stepSizeX / 2;
-			for (int y = 0; y < ProbeCount.Y; y++)
+			var newProbes = numProbes - _prevProbeCount;
+			
+			for (int i = 0; i < newProbes; i++)
 			{
-				probePos.Y = -Size.Y / 2 + y * stepSizeY + stepSizeY / 2;
-				for (int z = 0; z < ProbeCount.Z; z++)
-				{
-					probePos.Z = -Size.Z / 2 + z * stepSizeZ + stepSizeZ / 2;
-
-					var finalPos = probePos;
-					var probe = _probeScene.Instantiate() as AmvProbe;
-					probe.CellPosition = new Vector3I(x, y, z);
-					probe.ParentVolume = this;
-					AddChild(probe);
-					
-					_probes.Add(probe);
-					
-					probe.Position = finalPos;
-					probe.GlobalRotation = GlobalRotation;
-					probeCounter++;
-				}
+				var probe = _probeScene.Instantiate() as AmvProbe;
+				_probes.Add(probe);
+				probe.ParentVolume = this;
+				AddChild(probe);
 			}
+
 		}
+		else if (numProbes < _prevProbeCount)
+		{
+			var probesToKill = _probes.TakeLast(_prevProbeCount - numProbes).ToList();
+			probesToKill.ForEach(p =>
+			{
+				_probes.Remove(p);
+				p.QueueFree();
+			});
+		}
+
+		for (int j = 0; j < _probes.Count; j++)
+		{
+			_probes[j].CellPosition = IndexToCell(j);
+		}
+		
+		_prevProbeCount = numProbes;
+		UpdateProbePositions();
 	}
 
+	private void UpdateProbePositions()
+	{
+		_probes.ForEach(p =>
+		{
+			var step = Size / ProbeCount;
+			p.Position = -Size / 2 + p.CellPosition * step + step / 2;
+		});
+		
+	}
+	
 	private Vector3I IndexToCell(int idx)
 	{
-		return new Vector3I
-		{
-			X = Mathf.PosMod(idx, ProbeCount.X),
-			Y = Mathf.PosMod(idx / ProbeCount.X, ProbeCount.Y),
-			Z = Mathf.PosMod(idx / ProbeCount.X / ProbeCount.Y, ProbeCount.Z)
-		};
+		var result = Vector3I.Zero;
+		result.X = idx % ProbeCount.X;
+		result.Y = (idx / ProbeCount.X) % ProbeCount.Y;
+		result.Z = idx / (ProbeCount.X * ProbeCount.Y);
+
+		return result;
 	}
 
 	private int CellToIndex(Vector3I cell)
 	{
-		if (cell.X < 0 || cell.X > ProbeCount.X-1 ||
-		    cell.Y < 0 || cell.Y > ProbeCount.Y-1 ||
-		    cell.Z < 0 || cell.Z > ProbeCount.Z-1) return -1;
 		
 		return cell.X + cell.Y * ProbeCount.X + cell.Z * ProbeCount.X * ProbeCount.Y;
 	}
@@ -413,7 +420,7 @@ public partial class AmbientMaskVolume : Node3D
 		var v = ProbeCount;
 		v.X = (int)n;
 		ProbeCount = v;
-		SizeChanged();
+		ProbeCountChanged();
 	}
 	
 	public void SetProbesZ(double n)
@@ -421,7 +428,7 @@ public partial class AmbientMaskVolume : Node3D
 		var v = ProbeCount;
 		v.Y = (int)n;
 		ProbeCount = v;
-		SizeChanged();
+		ProbeCountChanged();
 	}
 	
 	public void SetProbesY(double n)
@@ -429,7 +436,7 @@ public partial class AmbientMaskVolume : Node3D
 		var v = ProbeCount;
 		v.Z = (int)n;
 		ProbeCount = v;
-		SizeChanged();
+		ProbeCountChanged();
 	}
 
 	public void SetRotation(double n)
