@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_7xdh4"]
 [ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -17,6 +17,8 @@ _texAssembleDialog = NodePath("FileDialog")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
 _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2/Scale Value")
 _sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")
+_minBrightSlider = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/HSlider")
+_minBrightLabel = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3/Label")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -115,22 +117,67 @@ text = "Probe Quality"
 
 [node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
-item_count = 7
+item_count = 6
 selected = 2
-popup/item_0/text = "Very Low (64 samples)"
-popup/item_0/id = 5
-popup/item_1/text = "Low (128 samples)"
-popup/item_1/id = 6
-popup/item_2/text = "Medium (256 samples)"
-popup/item_2/id = 7
-popup/item_3/text = "High (512 samples)"
-popup/item_3/id = 8
-popup/item_4/text = "Very High (1024 samples)"
-popup/item_4/id = 9
-popup/item_5/text = "Ultra (4096 samples)"
-popup/item_5/id = 10
-popup/item_6/text = "Absurd (8192 samples)"
-popup/item_6/id = 11
+popup/item_0/text = "256 Samples"
+popup/item_0/id = 7
+popup/item_1/text = "512 Samples"
+popup/item_1/id = 8
+popup/item_2/text = "1024 Samples"
+popup/item_2/id = 9
+popup/item_3/text = "2048 Samples"
+popup/item_3/id = 10
+popup/item_4/text = "4096 Samples"
+popup/item_4/id = 11
+popup/item_5/text = "8192 Samples"
+popup/item_5/id = 12
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+text = "More samples means higher quality, but longer bakes. Bakes can be interrupted at any time and you will keep the result, though!"
+
+[node name="Min Bright" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Min Bright"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "Minimum Brightness"
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 0.1
+step = 0.001
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3"]
+layout_mode = 2
+text = "0
+"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+text = "Prevents black spots in the final baked texture, but flattens the lighting if pulled too high."
 
 [node name="LinkButton" type="LinkButton" parent="MarginContainer"]
 layout_mode = 2

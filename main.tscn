@@ -117,7 +117,7 @@ grow_horizontal = 2
 grow_vertical = 2
 tab_focus_mode = 1
 
-[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMV Baker" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_ymapPositionX", "_ymapPositionY", "_ymapPositionZ", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -139,10 +139,14 @@ _newAmvButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer
 _bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
 _exportTexturesBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Export All")
 _bakeProgressBar = NodePath("BakeProgress/ProgressBar")
+_cancelBakeBtn = NodePath("BakeProgress/CancelButton")
 _amvInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel")
 _textureName = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2/Rotation")
 _randomizeTextureNameButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Button")
+_ymapPositionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/X")
+_ymapPositionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/Y")
+_ymapPositionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/Z")
 _positionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/X")
 _positionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Y")
 _positionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Z")
@@ -283,6 +287,45 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
+[node name="YMAP Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "YMAP Position
+"
+
+[node name="YMAP Position" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+prefix = "X:"
+script = ExtResource("10_ir2tt")
+
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+prefix = "Y:"
+script = ExtResource("10_ir2tt")
+
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+prefix = "Z:"
+script = ExtResource("10_ir2tt")
+
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
 
@@ -319,7 +362,8 @@ script = ExtResource("10_ir2tt")
 
 [node name="Pos Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
-text = "Center Offset"
+text = "Position
+"
 
 [node name="Pos Container" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMV Baker/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
@@ -329,7 +373,7 @@ size_flags_horizontal = 0
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
-step = 0.1
+step = 0.001
 allow_greater = true
 allow_lesser = true
 prefix = "X:"
@@ -340,7 +384,7 @@ script = ExtResource("10_ir2tt")
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
-step = 0.1
+step = 0.001
 allow_greater = true
 allow_lesser = true
 prefix = "Y:"
@@ -351,6 +395,7 @@ script = ExtResource("10_ir2tt")
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
+step = 0.001
 allow_greater = true
 allow_lesser = true
 prefix = "Z:"
@@ -370,7 +415,7 @@ size_flags_horizontal = 0
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
-step = 0.1
+step = 0.001
 allow_greater = true
 allow_lesser = true
 prefix = "X:"
@@ -381,7 +426,7 @@ script = ExtResource("10_ir2tt")
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
-step = 0.1
+step = 0.001
 allow_greater = true
 allow_lesser = true
 prefix = "Y:"
@@ -392,7 +437,7 @@ script = ExtResource("10_ir2tt")
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
-step = 0.1
+step = 0.001
 allow_greater = true
 allow_lesser = true
 prefix = "Z:"
@@ -480,8 +525,7 @@ value = 0.46
 [node name="CancelButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMV Baker/BakeProgress"]
 layout_mode = 2
 size_flags_horizontal = 8
-text = "Cancel Bake
-"
+text = "Cancel Bake"
 
 [node name="Map" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer"]
 visible = false

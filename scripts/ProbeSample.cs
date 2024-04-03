@@ -12,16 +12,26 @@ public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
     public ProbeSample() : this(0, 0, 0)
     {
     }
+    
+    public ProbeSample(double val) : this(val, val, val)
+    {}
 
     // For quickly feeding these into the shader
     public Vector3 GetPositiveVector()
     {
-        return new Vector3(X.Positive, Y.Positive, Z.Positive);
+        return new Vector3( (float) X.Positive, (float) Y.Positive, (float) Z.Positive);
     }
     
     public Vector3 GetNegativeVector()
     {
-        return new Vector3(X.Negative, Y.Negative, Z.Negative);
+        return new Vector3( (float) X.Negative, (float)  Y.Negative, (float)  Z.Negative);
+    }
+
+    public void Remap(double inFrom, double inTo, double outFrom, double outTo)
+    {
+        X.Remap(inFrom, inTo, outFrom, outTo);
+        Y.Remap(inFrom, inTo, outFrom, outTo);
+        Z.Remap(inFrom, inTo, outFrom, outTo);
     }
     
     public static ProbeSample operator +(ProbeSample a) => a;
@@ -45,15 +55,15 @@ public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
     }
     
     // Float operators
-    public static ProbeSample operator +(ProbeSample a, float b) =>
+    public static ProbeSample operator +(ProbeSample a, double b) =>
         new(a.X + b, a.Y + b, a.Z + b);
 
-    public static ProbeSample operator -(ProbeSample a, float b) =>
+    public static ProbeSample operator -(ProbeSample a, double b) =>
         new(a.X - b, a.Y - b, a.Z - b);
     
-    public static ProbeSample operator *(ProbeSample a, float b) => new(a.X * b, a.Y * b, a.Z * b);
+    public static ProbeSample operator *(ProbeSample a, double b) => new(a.X * b, a.Y * b, a.Z * b);
     
-    public static ProbeSample operator /(ProbeSample a, float b)
+    public static ProbeSample operator /(ProbeSample a, double b)
     {
         if (b == 0)
             throw new DivideByZeroException();
@@ -61,7 +71,7 @@ public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
         return new ProbeSample(a.X / b, a.Y / b, a.Z / b);
     }
 
-    public static implicit operator ProbeSample(float f) => new(f, f, f);
+    public static implicit operator ProbeSample(double f) => new(f, f, f);
     
     public override string ToString()
     {
@@ -69,13 +79,19 @@ public struct ProbeSample(SampleAxis x, SampleAxis y, SampleAxis z)
     }
 }
 
-public struct SampleAxis(float positive, float negative)
+public struct SampleAxis(double positive, double negative)
 {
     [JsonInclude]
-    public float Positive = positive, Negative = negative;
+    public double Positive = positive, Negative = negative;
 
     public SampleAxis() : this(0, 0)
     {
+    }
+
+    public void Remap(double inFrom, double inTo, double outFrom, double outTo)
+    {
+        Positive = Mathf.Remap(Positive, inFrom, inTo, outFrom, outTo);
+        Negative = Mathf.Remap(Negative, inFrom, inTo, outFrom, outTo);
     }
 
     public static SampleAxis operator +(SampleAxis a) => a;
@@ -107,15 +123,15 @@ public struct SampleAxis(float positive, float negative)
     }
 
     // Float operators
-    public static SampleAxis operator +(SampleAxis a, float b) =>
+    public static SampleAxis operator +(SampleAxis a, double b) =>
         new(a.Positive + b, a.Negative + b);
 
-    public static SampleAxis operator -(SampleAxis a, float b) =>
+    public static SampleAxis operator -(SampleAxis a, double b) =>
         new(a.Positive - b, a.Negative - b);
     
-    public static SampleAxis operator *(SampleAxis a, float b) => new(a.Positive * b, a.Negative * b);
+    public static SampleAxis operator *(SampleAxis a, double b) => new(a.Positive * b, a.Negative * b);
     
-    public static SampleAxis operator /(SampleAxis a, float b)
+    public static SampleAxis operator /(SampleAxis a, double b)
     {
         if (b == 0)
             throw new DivideByZeroException();
@@ -123,7 +139,7 @@ public struct SampleAxis(float positive, float negative)
         return new SampleAxis(a.Positive / b, a.Negative / b);
     }
 
-    public static implicit operator SampleAxis(float f) => new(f, f);
+    public static implicit operator SampleAxis(double f) => new(f, f);
     
     public override string ToString()
     {

@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using Godot.Collections;
+using WildRP.AMVTool.Autoloads;
 
 namespace WildRP.AMVTool;
 
@@ -9,60 +10,86 @@ public partial class AmvProbe : MeshInstance3D
 {
 	[Export] private bool _drawDebugLines = false;
 	[Export] private PackedScene _debugLine;
+
+	[Export] private bool _debugPosition = false;
+	[Export] private Label3D _receivedPosLabel;
+	[Export] private Label3D _requestedPosLabel;
 	
 	private uint _rayMask = 1;
 	private float _maxDistance = 50;
-	private ProbeSample _averageValue = new();
-	private readonly List<ProbeSample> _samples = [];
+	private ProbeSample _value = new();
+	private int _samples = 0;
+	private Vector3 _variance;
 
-	public Vector3I BoundsPosition
+	public Vector3I CellPosition
 	{
 		get;
 		set;
 	} = Vector3I.Zero;
+	
+	public AmbientMaskVolume ParentVolume { get; set; }
 
 	public void Reset()
 	{
-		_samples.Clear();
+		_value = 0;
+		_samples = 0;
 	}
-
+	
 	public override void _Ready()
 	{
 		SetInstanceShaderParameter("positive_occlusion", Vector3.One * 0.5f);
 		SetInstanceShaderParameter("negative_occlusion", Vector3.One * 0.5f);
+
+		if (_debugPosition)
+		{
+			_receivedPosLabel.Text = CellPosition.ToString();
+			_requestedPosLabel.Text = ParentVolume.PositionTest(CellPosition).ToString();
+		}
+		
+		_variance = ParentVolume.Size / ParentVolume.ProbeCount / 2;
 	}
 
 	public void CaptureSample()
 	{
 		ProbeSample sample;
 		
-		sample.X.Negative = RayHit(Vector3.Left);
-		sample.X.Positive = RayHit(Vector3.Right);
-		sample.Y.Negative = RayHit(Vector3.Down);
-		sample.Y.Positive = RayHit(Vector3.Up);
-		sample.Z.Negative = RayHit(Vector3.Forward);
-		sample.Z.Positive = RayHit(Vector3.Back);
-		
-		_samples.Add(sample);
+		sample.X.Negative = RayHit(Vector3.Left) / AmvBaker.GetSampleCount();
+		sample.X.Positive = RayHit(Vector3.Right) / AmvBaker.GetSampleCount() ;
+		sample.Y.Negative = RayHit(Vector3.Down) / AmvBaker.GetSampleCount();
+		sample.Y.Positive = RayHit(Vector3.Up) / AmvBaker.GetSampleCount();
+		sample.Z.Negative = RayHit(Vector3.Forward) / AmvBaker.GetSampleCount();
+		sample.Z.Positive = RayHit(Vector3.Back) / AmvBaker.GetSampleCount();
+
+		_value += sample;
+		_samples++;
 	}
 
-	public void UpdateAverage()
+	public void UpdateAverage(bool bakeFinished = false)
 	{
-		if (_samples.Count == 0)
+		if (_samples == 0)
 		{
-			_averageValue = 1.0f;
+			_value = 0;
+			SetInstanceShaderParameter("positive_occlusion", Vector3.One * .5f);
+			SetInstanceShaderParameter("negative_occlusion", Vector3.One * .5f);
 			return;
 		}
-		_averageValue = _samples.Aggregate((current, sample) => current + sample) / _samples.Count;
+
+		var completion = (float)_samples / AmvBaker.GetSampleCount();
+		var dispValue = _value * (1/completion);
+
+		dispValue.Remap(0,1, Settings.MinBrightness, 1);
 		
-		SetInstanceShaderParameter("positive_occlusion", _averageValue.GetPositiveVector());
-		SetInstanceShaderParameter("negative_occlusion", _averageValue.GetNegativeVector());
+		if (bakeFinished)
+			_value = dispValue;
+		
+		SetInstanceShaderParameter("positive_occlusion", dispValue.GetPositiveVector());
+		SetInstanceShaderParameter("negative_occlusion", dispValue.GetNegativeVector());
 		
 	}
-
+	
 	public ProbeSample GetValue()
 	{
-		return _averageValue;
+		return _value;
 	}
 
 	private Vector3 SampleHemisphere(Vector3 norm, float alpha = 0.0f)
@@ -81,8 +108,19 @@ public partial class AmvProbe : MeshInstance3D
 	private float RayHit(Vector3 dir)
 	{
 		var d = SampleHemisphere(dir).Normalized();
+
+		var randDir = new Vector3((float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0)).Normalized();
+
+		randDir *= _variance;
+		var varianceHit = Raycast(GlobalPosition, randDir, this, _rayMask);
+		if (varianceHit != null) // Extra check so we don't move inside walls for this
+		{
+			var dist = varianceHit.Position.DistanceTo(GlobalPosition);
+			randDir = randDir.Normalized() * dist * 0.8f;
+		}
+			
 		
-		var hit = Raycast(GlobalPosition, d * _maxDistance, this, _rayMask);
+		var hit = Raycast(GlobalPosition+randDir, d * _maxDistance, this, _rayMask);
 
 		if (_drawDebugLines)
 		{

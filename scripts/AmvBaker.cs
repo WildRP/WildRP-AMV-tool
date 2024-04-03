@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using WildRP.AMVTool;
 using WildRP.AMVTool.Autoloads;
 
@@ -28,7 +29,7 @@ public partial class AmvBaker : Node3D
 	private int totalSamples = 1;
 	private int bakedSamples = 0;
 
-	public override void _Process(double delta)
+	public override void _PhysicsProcess(double delta)
 	{
 		if (_bakeQueue.Count > 0)
 		{
@@ -38,7 +39,7 @@ public partial class AmvBaker : Node3D
 				if (amv.Baked)
 				{
 					GD.Print("BAKED!");
-					amv.UpdateAverages();
+					amv.UpdateAverages(true);
 					_bakeQueue.Remove(amv);
 				}
 				else
@@ -53,11 +54,25 @@ public partial class AmvBaker : Node3D
 
 			UpdatePercentage((float)bakedSamples / totalSamples);
 			// Cleared the queue
-			if (_bakeQueue.Count == 0) BakeFinished();
+			if (_bakeQueue.Count == 0)
+			{
+				BakeFinished();
+			}
 		}
 		
 	}
-
+	
+	public void CancelBake()
+	{
+		foreach (var amv in _bakeQueue)
+		{
+			amv.UpdateAverages(true);
+		}
+		
+		_bakeQueue.Clear();
+		BakeFinished();
+	}
+	
 	public override void _Ready()
 	{
 		if (Instance == null)
@@ -73,10 +88,15 @@ public partial class AmvBaker : Node3D
 
 	public void GenerateTextures()
 	{
+		var xmlFile = new StringBuilder();
 		foreach (var volumes in _ambientMaskVolumes)
 		{
 			volumes.Value.GenerateTextures();
+			xmlFile.Append(volumes.Value.GetXml());
 		}
+		
+		using var f = FileAccess.Open($"{SaveManager.GetProjectPath()}/put_these_in_your_amv_zone.xml", FileAccess.ModeFlags.Write);
+			f.StoreString(xmlFile.ToString());
 	}
 	
 	public (Error, List<Tuple<MeshInstance3D, StaticBody3D>>) LoadModel(string path)

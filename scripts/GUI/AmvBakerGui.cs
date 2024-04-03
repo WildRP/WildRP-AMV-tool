@@ -33,11 +33,16 @@ public partial class AmvBakerGui : Control
 			[Export] private Button _bakeAllButton;
 			[Export] private Button _exportTexturesBtn;
 			[Export] private ProgressBar _bakeProgressBar;
+			[Export] private Button _cancelBakeBtn;
 		[ExportGroup("AMV Details")] 
 			[Export] private Control _amvInfoPanel;
 			[Export] private SpinBox _textureName;
 			[Export] private SpinBox _rotation;
 			[Export] private Button _randomizeTextureNameButton;
+			[ExportSubgroup("YMAP Position")]
+				[Export] private SpinBox _ymapPositionX;
+				[Export] private SpinBox _ymapPositionY;
+				[Export] private SpinBox _ymapPositionZ;
 			[ExportSubgroup("Position")]
 				[Export] private SpinBox _positionX;
 				[Export] private SpinBox _positionY;
@@ -122,6 +127,8 @@ public partial class AmvBakerGui : Control
 		{
 			AmvBaker.Instance.GenerateTextures();
 		};
+
+		_cancelBakeBtn.Pressed += () => AmvBaker.Instance.CancelBake();
 	}
 
 	private void UnloadModel()
@@ -251,11 +258,12 @@ public partial class AmvBakerGui : Control
 		bool v = SelectedAmv != null;
 
 		_textureName.GetLineEdit().Text = v ? SelectedAmv.TextureName.ToString(CultureInfo.InvariantCulture) : _textureName.MinValue.ToString(CultureInfo.InvariantCulture);
-		_rotation.GetLineEdit().Text = v ? SelectedAmv.Rotation.Y.ToString(CultureInfo.InvariantCulture) : "0";
+		_rotation.GetLineEdit().Text = v ? (-SelectedAmv.RotationDegrees.Y).ToString(CultureInfo.InvariantCulture) : "0";
 		
 		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user
+		// Z also gets inverted
 		_positionX.SetValueNoSignal(v ? SelectedAmv.Position.X : 0);
-		_positionY.SetValueNoSignal(v ? SelectedAmv.Position.Z : 0);
+		_positionY.SetValueNoSignal(v ? -SelectedAmv.Position.Z : 0);
 		_positionZ.SetValueNoSignal(v ? SelectedAmv.Position.Y : 0);
 		
 		_sizeX.SetValueNoSignal(v ? SelectedAmv.Size.X : 0);
@@ -269,6 +277,10 @@ public partial class AmvBakerGui : Control
 
 	private void ConnectAmvGui()
 	{
+		_ymapPositionX.ValueChanged += value => SelectedAmv?.SetYmapPositionX(value);
+		_ymapPositionY.ValueChanged += value => SelectedAmv?.SetYmapPositionZ(value);
+		_ymapPositionZ.ValueChanged += value => SelectedAmv?.SetYmapPositionY(value);
+		
 		_positionX.ValueChanged += value => SelectedAmv?.SetPositionX(value);
 		_positionY.ValueChanged += value => SelectedAmv?.SetPositionZ(value);
 		_positionZ.ValueChanged += value => SelectedAmv?.SetPositionY(value);

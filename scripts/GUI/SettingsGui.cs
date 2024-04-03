@@ -13,6 +13,8 @@ public partial class SettingsGui : Control
 	[Export] private Label _uiScaleLabel;
 	[ExportGroup("Rendering")]
 	[Export] private OptionButton _sampleQualityDropdown;
+	[Export] private HSlider _minBrightSlider;
+	[Export] private Label _minBrightLabel;
 	public override void _Ready()
 	{
 		_texAssembleDialog.UseNativeDialog = true;
@@ -24,7 +26,7 @@ public partial class SettingsGui : Control
 			if (changed) Settings.UiScale = (float)_uiScaleSlider.Value;
 		};
 		
-		_sampleQualityDropdown.Select(Settings.SampleCount-5);
+		_sampleQualityDropdown.Select(Settings.SampleCount-7);
 		_sampleQualityDropdown.ItemSelected += index => Settings.SampleCount = _sampleQualityDropdown.GetItemId((int)index);
 
 		_texAssembleBrowse.Pressed += () => _texAssembleDialog.Popup();
@@ -35,5 +37,13 @@ public partial class SettingsGui : Control
 		};
 
 		_texAssemblePath.TextSubmitted += text => Settings.TexAssembleLocation = text;
+		
+		_minBrightSlider.ValueChanged += value => { _minBrightLabel.Text = value.ToString(".000#"); };
+		_minBrightSlider.Value = Settings.MinBrightness;
+		_minBrightSlider.DragEnded += changed =>
+		{
+			if (changed) Settings.MinBrightness = (float)_minBrightSlider.Value;
+			GD.Print($"Set Min Brighness to {_minBrightSlider.Value}");
+		};
 	}
 }

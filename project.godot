@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="WildRP AMV Tool"
+config/version="0.1"
 run/main_scene="res://main.tscn"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
@@ -24,7 +25,6 @@ SaveManager="*res://scripts/Autoloads/SaveManager.cs"
 [display]
 
 window/stretch/aspect="expand"
-window/vsync/vsync_mode=0
 
 [dotnet]
 
@@ -34,6 +34,11 @@ project/assembly_name="WildRP-AMV-Tool"
 
 3d_physics/layer_1="AMV Geo"
 3d_physics/layer_2="Bounds Planes"
+
+[physics]
+
+3d/run_on_separate_thread=true
+common/physics_ticks_per_second=120
 
 [rendering]
 

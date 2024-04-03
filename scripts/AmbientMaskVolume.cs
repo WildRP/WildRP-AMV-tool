@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using SimpleImageIO;
 using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
 using WildRP.AMVTool.Sceneview;
-using Array = Godot.Collections.Array;
 using FileAccess = Godot.FileAccess;
 
 namespace WildRP.AMVTool;
@@ -41,6 +41,7 @@ public partial class AmbientMaskVolume : Node3D
 	}
 
 	private Vector3 _size = Vector3.One;
+	private Vector3 _ymapPosition = Vector3.Zero;
 
 	private List<AmvProbe> _probes = [];
 
@@ -80,8 +81,8 @@ public partial class AmbientMaskVolume : Node3D
 		if (DirAccess.DirExistsAbsolute(tex1Dir) == false)
 			DirAccess.MakeDirAbsolute(tex1Dir);
 
-		List<string> img0list = [];
-		List<string> img1list = [];
+		List<string> img0List = [];
+		List<string> img1List = [];
 		
 		for (int y = 0; y < ProbeCount.Y; y++)
 		{
@@ -95,9 +96,18 @@ public partial class AmbientMaskVolume : Node3D
 				{
 					var idx = CellToIndex(new Vector3I(x, y, z));
 					var p = _probes[idx].GetValue();
-
-					var col0 = new RgbColor(p.X.Positive, p.Z.Positive, p.Y.Positive);
-					var col1 = new RgbColor(p.X.Negative, p.Z.Negative, p.Y.Negative);
+					
+                    // Attempted configurations:
+                    // --- #1: Flipped lighting on front wall?
+                    // XZY+ 
+                    // XZY-
+                    // --- #2: Seems to make no difference whatsoever? Still think this is more correct
+                    // X+, Z-, Y+
+                    // X-, Z+, Y-
+                    // ---
+					
+					var col0 = new RgbColor((float) p.X.Positive, (float) p.Z.Negative, (float) p.Y.Positive);
+					var col1 = new RgbColor((float) p.X.Negative, (float) p.Z.Positive, (float) p.Y.Negative);
 					
 					img0.SetPixel(x,z, col0);
 					img1.SetPixel(x,z, col1);
@@ -110,30 +120,30 @@ public partial class AmbientMaskVolume : Node3D
 			img0.WriteToFile(tex0Name);
 			img1.WriteToFile(tex1Name);
 			
-			img0list.Add(tex0Name);
-			img1list.Add(tex1Name);
+			img0List.Add(tex0Name);
+			img1List.Add(tex1Name);
 			
 			img0.Dispose();
 			img1.Dispose();
 		}
 
 		using var f0 = FileAccess.Open($"{tex0Dir}/imgs.txt", FileAccess.ModeFlags.Write);
-			img0list.ForEach(s => f0.StoreLine(s));
+			img0List.ForEach(s => f0.StoreLine(s));
 			
 		using var f1 = FileAccess.Open($"{tex1Dir}/imgs.txt", FileAccess.ModeFlags.Write);
-			img1list.ForEach(s => f1.StoreLine(s));
+			img1List.ForEach(s => f1.StoreLine(s));
 			
 
 			var tx0 = new Process();
 			tx0.StartInfo.FileName = Settings.TexAssembleLocation;
 			tx0.StartInfo.Arguments =
-				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_0.dds\" -l -y -if linear -f R8G8B8A8_UNORM_SRGB -fl 12.1 -srgbo -flist \"{tex0DirG}\\imgs.txt\"";
+				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_0.dds\" -l -y -if linear -f R11G11B10_FLOAT -fl 12.1 -flist \"{tex0DirG}\\imgs.txt\"";
 			tx0.Start();
 			
 			var tx1 = new Process();
 			tx1.StartInfo.FileName = Settings.TexAssembleLocation;
 			tx1.StartInfo.Arguments =
-				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_1.dds\" -l -y -if linear -f R8G8B8A8_UNORM_SRGB -fl 12.1 -srgbo -flist \"{tex1DirG}\\imgs.txt\"";
+				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_1.dds\" -l -y -if linear -f R11G11B10_FLOAT -fl 12.1 -flist \"{tex1DirG}\\imgs.txt\"";
 			tx1.Start();
 	}
 	
@@ -147,11 +157,11 @@ public partial class AmbientMaskVolume : Node3D
 		Samples++;
 	}
 
-	public void UpdateAverages()
+	public void UpdateAverages(bool bakeFinished = false)
 	{
 		foreach (var probe in _probes)
 		{
-			probe.UpdateAverage();
+			probe.UpdateAverage(bakeFinished);
 		}
 	}
 	
@@ -198,9 +208,9 @@ public partial class AmbientMaskVolume : Node3D
 
 					var finalPos = probePos;
 					var probe = _probeScene.Instantiate() as AmvProbe;
+					probe.CellPosition = new Vector3I(x, y, z);
+					probe.ParentVolume = this;
 					AddChild(probe);
-
-					probe.BoundsPosition = new(x, y, z);
 					
 					_probes.Add(probe);
 					
@@ -214,7 +224,7 @@ public partial class AmbientMaskVolume : Node3D
 
 	private Vector3I IndexToCell(int idx)
 	{
-		return new()
+		return new Vector3I
 		{
 			X = Mathf.PosMod(idx, ProbeCount.X),
 			Y = Mathf.PosMod(idx / ProbeCount.X, ProbeCount.Y),
@@ -224,11 +234,22 @@ public partial class AmbientMaskVolume : Node3D
 
 	private int CellToIndex(Vector3I cell)
 	{
-		if (cell.X < 0 || cell.X > ProbeCount.X ||
-		    cell.Y < 0 || cell.Y > ProbeCount.Y ||
-		    cell.Z < 0 || cell.Z > ProbeCount.Z) return -1;
+		if (cell.X < 0 || cell.X > ProbeCount.X-1 ||
+		    cell.Y < 0 || cell.Y > ProbeCount.Y-1 ||
+		    cell.Z < 0 || cell.Z > ProbeCount.Z-1) return -1;
 		
 		return cell.X + cell.Y * ProbeCount.X + cell.Z * ProbeCount.X * ProbeCount.Y;
+	}
+	
+	public ProbeSample GetCellValue(ProbeSample origin, Vector3I target)
+	{
+		var idx = CellToIndex(target);
+		return idx < 0 ? origin : _probes[idx].GetValue();
+	}
+
+	public Vector3I PositionTest(Vector3I pos)
+	{
+		return IndexToCell(CellToIndex(pos));
 	}
 	
 	public void Delete()
@@ -262,6 +283,7 @@ public partial class AmbientMaskVolume : Node3D
 		var rot = RotationDegrees;
 		rot.Y = data.Value.Rotation;
 		RotationDegrees = rot;
+		_ymapPosition = data.Value.YmapPosition;
 	}
 
 	public AmvData Save()
@@ -273,24 +295,66 @@ public partial class AmbientMaskVolume : Node3D
 		data.Size = Size;
 		data.ProbeCount = ProbeCount;
 		data.Rotation = RotationDegrees.Y;
+		data.YmapPosition = _ymapPosition;
 
 		return data;
 	}
 
-	
+	public string GetXml()
+	{
+		var xmlSize = Size/2f;
+		xmlSize += Size / ProbeCount / 2;
+		
+		return new XDocument(
+			new XElement("Item",
+				new XElement("enabled", new XAttribute("value", true)),
+				new XElement("position", new XAttribute("x", _ymapPosition.X + Position.X), new XAttribute("y", _ymapPosition.Z + -Position.Z), new XAttribute("z", _ymapPosition.Y + Position.Y)),
+				new XElement("rotation", new XAttribute("x", 90-RotationDegrees.Y), new XAttribute("y", 0), new XAttribute("z", 0)),
+				new XElement("scale", new XAttribute("x", xmlSize.X), new XAttribute("y", xmlSize.Z), new XAttribute("z", xmlSize.Y)),
+				new XElement("falloffScaleMin", new XAttribute("x", 1f), new XAttribute("y", 1f), new XAttribute("z", 1f)),
+				new XElement("falloffScaleMax", new XAttribute("x", 1.25f), new XAttribute("y", 1.25f), new XAttribute("z", 1.25f)),
+				new XElement("samplingOffsetStrength", new XAttribute("value", 0)), // Guessing: Pushes sample point off of walls in direction of normal
+				new XElement("falloffPower", new XAttribute("value", 8)),
+				new XElement("distance", new XAttribute("value", -1)),
+				new XElement("cellCountX", new XAttribute("value", ProbeCount.X)),
+				new XElement("cellCountY", new XAttribute("value", ProbeCount.Y)),
+				new XElement("cellCountZ", new XAttribute("value", ProbeCount.Z)),
+				new XElement("clipPlane0", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)), // Quaternions?
+				new XElement("clipPlane1", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)),
+				new XElement("clipPlane2", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)),
+				new XElement("clipPlane3", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)),
+				new XElement("clipPlaneBlend0", new XAttribute("value", 0)), // Strength of clip planes
+				new XElement("clipPlaneBlend1", new XAttribute("value", 0)),
+				new XElement("clipPlaneBlend2", new XAttribute("value", 0)),
+				new XElement("clipPlaneBlend3", new XAttribute("value", 0)),
+				new XElement("blendingMode", "BM_Lerp"),
+				new XElement("layer", new XAttribute("value", 0)),
+				new XElement("order", new XAttribute("value", 10)),
+				new XElement("natural", new XAttribute("value", true)),
+				new XElement("attachedToDoor", new XAttribute("value", false)),
+				new XElement("interior", new XAttribute("value", true)),
+				new XElement("exterior", new XAttribute("value", false)),
+				new XElement("vehicleInterior", new XAttribute("value", false)),
+				new XElement("sourceFolder", "NotRelevant"),
+				new XElement("uuid", new XAttribute("value", TextureName)),
+				new XElement("iplHash", new XAttribute("value", 0))
+			)).ToString();
+	}
 	
 	public class AmvData // Used for save and load
 	{
-		[JsonInclude]
-		public ulong TextureName;
-		[JsonInclude]
-		public float Rotation;
 		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
-		public Vector3 Position;
+		public Vector3 YmapPosition = Vector3.Zero;
+		[JsonInclude]
+		public ulong TextureName = 0;
+		[JsonInclude]
+		public float Rotation = 0;
 		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
-		public Vector3 Size;
+		public Vector3 Position = Vector3.Zero;
+		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
+		public Vector3 Size = Vector3.One;
 		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3IJsonConverter))]
-		public Vector3I ProbeCount;
+		public Vector3I ProbeCount = Vector3I.One * 2;
 	}
 	
 	// These are used to connect to the UI
@@ -373,6 +437,27 @@ public partial class AmbientMaskVolume : Node3D
 		var v = RotationDegrees;
 		v.Y = (float)n;
 		RotationDegrees = v;
+	}
+	
+	public void SetYmapPositionX(double n)
+	{
+		var v = _ymapPosition;
+		v.X = (float)n;
+		_ymapPosition = v;
+	}
+	
+	public void SetYmapPositionY(double n)
+	{
+		var v = _ymapPosition;
+		v.Y = (float)n;
+		_ymapPosition = v;
+	}
+	
+	public void SetYmapPositionZ(double n)
+	{
+		var v = _ymapPosition;
+		v.Z = (float)n;
+		_ymapPosition = v;
 	}
 	#endregion
 }

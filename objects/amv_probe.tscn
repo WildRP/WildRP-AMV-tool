@@ -13,7 +13,27 @@ material = SubResource("ShaderMaterial_ekt6t")
 radius = 0.1
 height = 0.2
 
-[node name="AMVProbe" type="MeshInstance3D"]
+[node name="AMVProbe" type="MeshInstance3D" node_paths=PackedStringArray("_receivedPosLabel", "_requestedPosLabel")]
 mesh = SubResource("SphereMesh_oeibh")
 script = ExtResource("2_15a21")
 _debugLine = ExtResource("3_6bk5k")
+_receivedPosLabel = NodePath("Provided Cell Value")
+_requestedPosLabel = NodePath("Requested Cell Value")
+
+[node name="Provided Cell Value" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.16, 0)
+visible = false
+pixel_size = 0.0015
+billboard = 1
+alpha_cut = 1
+modulate = Color(0, 0.584314, 1, 1)
+text = "1,1,1"
+
+[node name="Requested Cell Value" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.16, 0)
+visible = false
+pixel_size = 0.0015
+billboard = 1
+alpha_cut = 1
+modulate = Color(0.964706, 0.219608, 0.219608, 1)
+text = "1,1,1"

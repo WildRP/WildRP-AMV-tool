@@ -27,7 +27,7 @@ public partial class Settings : Node
 
     public static int SampleCount
     {
-        get => _settingsFile.GetValue("Settings", "ProbeQuality", 6).AsInt32();
+        get => _settingsFile.GetValue("Settings", "ProbeQuality", 10).AsInt32();
         set
         {
             _settingsFile.SetValue("Settings", "ProbeQuality", value);
@@ -41,6 +41,16 @@ public partial class Settings : Node
         set
         {
             _settingsFile.SetValue("Settings", "TexAssemblePath", value);
+            _dirty = true;
+        }
+    }
+
+    public static float MinBrightness
+    {
+        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.02f).AsSingle();
+        set
+        {
+            _settingsFile.SetValue("Settings", "MinBrigthness", value);
             _dirty = true;
         }
     }
