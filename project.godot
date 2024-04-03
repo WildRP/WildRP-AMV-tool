@@ -15,7 +15,9 @@ config/version="0.1"
 run/main_scene="res://main.tscn"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/image="res://144x144-B.png"
+boot_splash/fullsize=false
+config/icon="res://144x144-B.png"
 
 [autoload]
 
