@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot.Collections;
 using WildRP.AMVTool.Autoloads;
+using WildRP.AMVTool.BVH;
 
 namespace WildRP.AMVTool;
 
@@ -111,16 +112,15 @@ public partial class AmvProbe : MeshInstance3D
 
 		var randDir = new Vector3((float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0)).Normalized();
 
-		randDir *= _variance;
-		var varianceHit = Raycast(GlobalPosition, randDir, this, _rayMask);
-		if (varianceHit != null) // Extra check so we don't move inside walls for this
+		var maxDist = (randDir * _variance).Length();
+		var varianceHit = Raycast(GlobalPosition, randDir, out var hitDist, maxDist);
+		if (varianceHit) // Extra check so we don't move inside walls for this
 		{
-			var dist = varianceHit.Position.DistanceTo(GlobalPosition);
-			randDir = randDir.Normalized() * dist * 0.8f;
+			randDir = randDir * hitDist * 0.8f;
 		}
 			
 		
-		var hit = Raycast(GlobalPosition+randDir, d * _maxDistance, this, _rayMask);
+		var hit = Raycast(GlobalPosition+randDir, d, out float amvHitDistance, _maxDistance);
 
 		if (_drawDebugLines)
 		{
@@ -131,15 +131,12 @@ public partial class AmvProbe : MeshInstance3D
 
 			var scale = l.Scale;
 
-			if (hit != null)
-				scale.Z = GlobalPosition.DistanceTo(hit.Position);
-			else
-				scale.Z = _maxDistance;
+			scale.Z = hit ? amvHitDistance : _maxDistance;
 
 			l.Scale = scale;
 		}
 
-		// TODO: Far away walls should affect AO less
+		// TODO: Far away walls should affect AO less?
 		/*if (hit != null)
 		{
 			var dist = GlobalPosition.DistanceTo(hit.Position);
@@ -147,33 +144,27 @@ public partial class AmvProbe : MeshInstance3D
 			return distFactor;
 		}*/
 
-		return hit == null ? 1 : 0;
+		return hit ? 0 : 1;
 	}
-	
-	private static PhysicsDirectSpaceState3D _spaceState;
-	private static ulong _lastRaycastFrame = 0;
 
-	private static RaycastHit Raycast(Vector3 from, Vector3 dirLength, Node3D caster, uint mask)
+	private static bool Raycast(Vector3 from, Vector3 dir, out float t, float maxDist = float.PositiveInfinity)
 	{
-		if (_lastRaycastFrame != Engine.GetPhysicsFrames() || Engine.GetPhysicsFrames() == 0)
-			_spaceState = caster.GetWorld3D().DirectSpaceState;
+		t = -1;
+		var lowestT = float.PositiveInfinity-1;
+		var hit = false;
 
-		_lastRaycastFrame = Engine.GetPhysicsFrames();
-		var to = from + dirLength;
-		var query = PhysicsRayQueryParameters3D.Create(from, to, mask);
-		query.HitFromInside = true;
-		var d = _spaceState.IntersectRay(query);
+		foreach (var bvh in AmvBaker.Instance.GetBvhList())
+		{
+			if (bvh.Raycast(from, dir, out float lowt) && lowt < lowestT)
+			{
+				lowestT = lowt;
+				hit = true;
+			}
+		}
+
+		if (lowestT > maxDist) return false;
 		
-		return d.Count == 0 ? null : new RaycastHit(d);
-	}
-
-	// I made this because the syntax of getting this out of the dictionary every time SUCKS
-	public class RaycastHit(Dictionary d)
-	{
-		public Node Collider = d["collider"].As<Node>();
-		public Vector3 Normal = d["normal"].AsVector3();
-		public Vector3 Position = d["position"].AsVector3();
-		public int FaceIndex = d["face_index"].AsInt32();
-		public Rid Rid = d["rid"].AsRid();
+		t = lowestT;
+		return true;
 	}
 }

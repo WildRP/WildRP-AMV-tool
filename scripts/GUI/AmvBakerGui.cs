@@ -138,6 +138,8 @@ public partial class AmvBakerGui : Control
 		{
 			item.Remove();
 		}
+
+		AmvBaker.Instance.UnloadModel();
 		
 		SaveManager.SetModel("");
 	}

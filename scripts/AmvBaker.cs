@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using WildRP.AMVTool;
 using WildRP.AMVTool.Autoloads;
+using WildRP.AMVTool.BVH;
 
 public partial class AmvBaker : Node3D
 {
@@ -19,7 +20,8 @@ public partial class AmvBaker : Node3D
 
 	private Dictionary<string, AmbientMaskVolume> AmbientMaskVolumes => _ambientMaskVolumes;
 
-	private List<AmbientMaskVolume> _bakeQueue = new();
+	private List<AmbientMaskVolume> _bakeQueue = [];
+	private List<BoundingVolumeHierarchy> _bvhList = [];
 
 	public bool BakeInProgress => _bakeQueue.Count > 0;
 
@@ -99,7 +101,7 @@ public partial class AmvBaker : Node3D
 			f.StoreString(xmlFile.ToString());
 	}
 	
-	public (Error, List<Tuple<MeshInstance3D, StaticBody3D>>) LoadModel(string path)
+	public (Error, List<Tuple<MeshInstance3D, BoundingVolumeHierarchy>>) LoadModel(string path)
 	{
 		if (path.EndsWith(".glb") == false) return (Error.InvalidParameter, null);
 
@@ -122,26 +124,15 @@ public partial class AmvBaker : Node3D
 		List<Node> nodes = [];
 		Utils.GetAllChildren(_modelRoot, nodes);
 
-		List<Tuple<MeshInstance3D, StaticBody3D>> result = [];
+		List<Tuple<MeshInstance3D, BoundingVolumeHierarchy>> result = [];
 		
 		var meshes = nodes.OfType<MeshInstance3D>().ToList();
 		foreach (var m in meshes)
 		{
-			var body = new StaticBody3D();
-			body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
-			body.CollisionLayer = 1;
-			body.InputRayPickable = false;
+			var bvh = new BoundingVolumeHierarchy(m.Mesh.GetFaces(), m.Mesh.GetAabb(), m.GlobalBasis);
+			_bvhList.Add(bvh);
 			
-			var shape = new CollisionShape3D();
-			var polygonShape = new ConcavePolygonShape3D();
-			polygonShape.BackfaceCollision = true;
-			polygonShape.Data = m.Mesh.GetFaces();
-
-			shape.Shape = polygonShape;
-			body.AddChild(shape);
-			AddChild(body);
-			
-			result.Add(new Tuple<MeshInstance3D, StaticBody3D>(m, body));
+			result.Add(new Tuple<MeshInstance3D, BoundingVolumeHierarchy>(m, bvh));
 		}
 		
 		return (error, result);
@@ -181,4 +172,11 @@ public partial class AmvBaker : Node3D
 	}
 
 	public static int GetSampleCount() => 1 << Settings.SampleCount;
+
+	public void UnloadModel()
+	{
+		_bvhList.Clear();
+	}
+
+	public List<BoundingVolumeHierarchy> GetBvhList() => _bvhList;
 }

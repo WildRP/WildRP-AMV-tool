@@ -1,4 +1,5 @@
 using Godot;
+using WildRP.AMVTool.BVH;
 
 namespace WildRP.AMVTool.GUI;
 
@@ -9,16 +10,16 @@ public partial class ModelListItem : HBoxContainer
 	[Export] private CheckBox _renderCheck;
 
 	private MeshInstance3D _renderMesh;
-	private StaticBody3D _staticBody;
+	private BoundingVolumeHierarchy _boundingVolumeHierarchy;
 	
-	public void Setup(string text, MeshInstance3D mesh, StaticBody3D body)
+	public void Setup(string text, MeshInstance3D mesh, BoundingVolumeHierarchy bvh)
 	{
 		_itemName.Text = text;
 		_renderMesh = mesh;
-		_staticBody = body;
+		_boundingVolumeHierarchy = bvh;
 		
 		_visibilityCheck.Toggled += on => _renderMesh.Visible = on;
-		_renderCheck.Toggled += on => _staticBody.ProcessMode = on ? ProcessModeEnum.Always : ProcessModeEnum.Disabled;
+		_renderCheck.Toggled += on => _boundingVolumeHierarchy.Enabled = on;
 
 	}
 
@@ -26,6 +27,5 @@ public partial class ModelListItem : HBoxContainer
 	{
 		QueueFree();
 		_renderMesh.QueueFree();
-		_staticBody.QueueFree();
 	}
 }

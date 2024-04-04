@@ -7,10 +7,11 @@ namespace WildRP.AMVTool.BVH;
 // A tree structure that holds triangles for quick traversal
 public class BoundingVolumeHierarchy
 {
+    public bool Enabled { get; set; }
     private BvhNode _rootNode;
     private Basis _modelBasis;
 
-    public BoundingVolumeHierarchy(Godot.Collections.Array<Vector3> tris, Aabb bounds, Basis modelBasis)
+    public BoundingVolumeHierarchy(Vector3[] tris, Aabb bounds, Basis modelBasis)
     {
         _rootNode = new BvhNode
         {
@@ -19,7 +20,7 @@ public class BoundingVolumeHierarchy
         
         _modelBasis = modelBasis;
 
-        for (int i = 0; i < tris.Count; i += 3) // add all the tris to root node
+        for (int i = 0; i < tris.Length; i += 3) // add all the tris to root node
         {
             var t = new Triangle(tris[i], tris[i + 1], tris[i + 2]);
             _rootNode.Triangles.Add(t);
@@ -30,6 +31,12 @@ public class BoundingVolumeHierarchy
 
     public bool Raycast(Vector3 worldOrigin, Vector3 worldDir, out float t)
     {
+        if (Enabled == false)
+        {
+            t = -1;
+            return false;
+        }
+        
         var ray = new Ray(worldOrigin * _modelBasis, worldDir * _modelBasis);
         
         return _rootNode.Raycast(ray, out t);
