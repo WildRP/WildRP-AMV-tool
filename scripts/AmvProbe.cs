@@ -162,9 +162,6 @@ public partial class AmvProbe : MeshInstance3D
 			}
 		}
 
-		if (lowestT > maxDist) return false;
-		
-		t = lowestT;
-		return true;
+		return hit;
 	}
 }

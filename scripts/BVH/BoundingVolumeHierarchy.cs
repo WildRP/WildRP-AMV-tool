@@ -7,20 +7,18 @@ namespace WildRP.AMVTool.BVH;
 // A tree structure that holds triangles for quick traversal
 public class BoundingVolumeHierarchy
 {
-    public bool Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
     private BvhNode _rootNode;
     private Basis _modelBasis;
 
     public BoundingVolumeHierarchy(Vector3[] tris, Aabb bounds, Basis modelBasis)
     {
-        _rootNode = new BvhNode
-        {
-            Bounds = bounds
-        };
+        _rootNode = new BvhNode(bounds);
         
         _modelBasis = modelBasis;
-        _rootNode.Triangles = [];
 
+        GD.Print($"Making a BVH with bounds {bounds} - starting with {tris.Length} triangles:");
+        
         for (int i = 0; i < tris.Length; i += 3) // add all the tris to root node
         {
             var t = new Triangle(tris[i], tris[i + 1], tris[i + 2]);
@@ -28,31 +26,35 @@ public class BoundingVolumeHierarchy
         }
         
         _rootNode.Split();
+        GD.Print($"Finished creating BVH - it has {_rootNode.TriangleCount} triangles");
     }
 
     public bool Raycast(Vector3 worldOrigin, Vector3 worldDir, out float t)
     {
         if (Enabled == false)
         {
+            GD.Print("I do a raycast");
             t = -1;
             return false;
         }
         
-        var ray = new Ray( _modelBasis.Inverse() * worldOrigin,  _modelBasis.Inverse() * worldDir);
+        var ray = new Ray( _modelBasis.Inverse() * worldOrigin,  worldDir);
+        
+        GD.Print($"{_rootNode.Bounds.HasPoint(_modelBasis.Inverse() * worldOrigin)}");
         
         return _rootNode.Raycast(ray, out t);
     }
 }
 
-public struct Ray(Vector3 origin, Vector3 dir)
+public class Ray(Vector3 origin, Vector3 dir)
 {
     public Vector3 Origin = origin;
     public Vector3 Normal = dir;
 }
 
-public struct BvhNode(Aabb bounds)
+public class BvhNode(Aabb bounds)
 {
-    public static int MaxDepth = 3;
+    public static int MaxDepth = 2;
     
     public Aabb Bounds = bounds;
     public List<BvhNode> Children = null;
@@ -88,7 +90,7 @@ public struct BvhNode(Aabb bounds)
         return false;
     }
 
-    private int TriangleCount
+    public int TriangleCount
     {
         get
         {
@@ -130,11 +132,13 @@ public struct BvhNode(Aabb bounds)
     public void Split()
     {
         Split(0);
-        Shake();
+        //Shake();
     }
 
+    private static int NodeID = 0;
     private void Split(int depth)
     {
+        
         if (IsLeaf && Triangles.Count > 0 && depth < MaxDepth)
         {
             Children = new List<BvhNode>();
@@ -172,7 +176,6 @@ public struct BvhNode(Aabb bounds)
                         node.Triangles.Add(triangle);
                 }
             }
-            
             Triangles.Clear();
             Triangles = null;
         }
@@ -199,7 +202,7 @@ public struct BvhNode(Aabb bounds)
     
 }
 
-public struct Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
+public class Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
 {
     public Vector3 V0 = v0, V1 = v1, V2 = v2;
     public Vector3 Centroid = (v0 + v1 + v2) / 3;
@@ -213,29 +216,12 @@ public struct Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
 
         var p = ray.Origin + ray.Normal * t;
 
-        var bary = Barycentric(p);
+        var bary = Geometry3D.GetTriangleBarycentricCoords(p, V0, V1, V2);
 
         if (bary is { X: > 0, Y: > 0, Z: > 0 }) return true;
 
         t = -1;
         return false;
-    }
-
-    private Vector3 Barycentric(Vector3 position)
-    {
-        var (a, b, c) = (V0, V1, V2);
-
-        Vector3 p0 = V1 - V0, p1 = V2 - V0, p2 = position - V0;
-        float d00 = p0.Dot(p0);
-        float d01 = p0.Dot(p1);
-        float d11 = p1.Dot(p1);
-        float d20 = p2.Dot(p0);
-        float d21 = p2.Dot(p1);
-        float denom = d00 * d11 - d01 * d01;
-        var v = (d11 * d20 - d01 * d21) / denom;
-        var w = (d00 * d21 - d01 * d20) / denom;
-        var u = 1.0f - v - w;
-        return new Vector3(v, w, u);
     }
     
     // Returns t if collision happened, -1 if it didnt
