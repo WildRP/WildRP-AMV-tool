@@ -129,7 +129,7 @@ public partial class AmvBaker : Node3D
 		var meshes = nodes.OfType<MeshInstance3D>().ToList();
 		foreach (var m in meshes)
 		{
-			var bvh = new BoundingVolumeHierarchy(m.Mesh.GetFaces(), m.Mesh.GetAabb(), m.GlobalBasis);
+			var bvh = new BoundingVolumeHierarchy(m.Mesh.GetFaces(), m.GlobalBasis);
 			_bvhList.Add(bvh);
 			
 			result.Add(new Tuple<MeshInstance3D, BoundingVolumeHierarchy>(m, bvh));

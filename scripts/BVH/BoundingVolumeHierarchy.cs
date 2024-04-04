@@ -11,8 +11,15 @@ public class BoundingVolumeHierarchy
     private BvhNode _rootNode;
     private Basis _modelBasis;
 
-    public BoundingVolumeHierarchy(Vector3[] tris, Aabb bounds, Basis modelBasis)
+    public BoundingVolumeHierarchy(Vector3[] tris, Basis modelBasis)
     {
+
+        Aabb bounds = new Aabb();
+        foreach (var p in tris)
+        {
+            bounds = bounds.Expand(p);
+        }
+        
         _rootNode = new BvhNode(bounds);
         
         _modelBasis = modelBasis;
