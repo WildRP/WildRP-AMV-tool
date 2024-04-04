@@ -191,6 +191,8 @@ public partial class AmvBakerGui : Control
 		else
 			UnloadModel(); // Project doesn't have a valid model file
 		
+		//TODO: Clear existing AMVs on load because right now it causes issues
+		
 		foreach (var data in project.Volumes)
 		{
 			var amv = _amvScene.Instantiate() as AmbientMaskVolume;

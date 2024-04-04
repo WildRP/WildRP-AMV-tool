@@ -24,6 +24,9 @@ public partial class HelpGui : PanelContainer
 			_helpList.AddItem(path.TrimSuffix(".md"));
 		}
 
+		_markdownFiles.Add(FileAccess.Open("res://README.md", FileAccess.ModeFlags.Read).GetAsText());
+		_helpList.AddItem("Read me");
+
 		_markdownLabel.Set("markdown_text", _markdownFiles[0]);
 		
 		_helpList.ItemSelected += index => _markdownLabel.Set("markdown_text", _markdownFiles[(int)index]);
