@@ -19,6 +19,7 @@ public class BoundingVolumeHierarchy
         };
         
         _modelBasis = modelBasis;
+        _rootNode.Triangles = [];
 
         for (int i = 0; i < tris.Length; i += 3) // add all the tris to root node
         {
@@ -37,7 +38,7 @@ public class BoundingVolumeHierarchy
             return false;
         }
         
-        var ray = new Ray(worldOrigin * _modelBasis, worldDir * _modelBasis);
+        var ray = new Ray( _modelBasis.Inverse() * worldOrigin,  _modelBasis.Inverse() * worldDir);
         
         return _rootNode.Raycast(ray, out t);
     }

@@ -159,6 +159,11 @@ public partial class AmbientMaskVolume : Node3D
 		Samples++;
 	}
 
+	public override void _Process(double delta)
+	{
+		if (Input.IsActionJustPressed("ui_cancel")) _probes[GD.RandRange(0, _probes.Count-1)].CaptureSample();
+	}
+
 	public void UpdateAverages(bool bakeFinished = false)
 	{
 		foreach (var probe in _probes)
