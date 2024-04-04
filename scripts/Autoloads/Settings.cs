@@ -47,10 +47,10 @@ public partial class Settings : Node
 
     public static float MinBrightness
     {
-        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.02f).AsSingle();
+        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.002f).AsSingle();
         set
         {
-            _settingsFile.SetValue("Settings", "MinBrigthness", value);
+            _settingsFile.SetValue("Settings", "MinBrightness", value);
             _dirty = true;
         }
     }

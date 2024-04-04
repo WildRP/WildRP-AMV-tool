@@ -275,6 +275,10 @@ public partial class AmvBakerGui : Control
 		_probesX.SetValueNoSignal(v ? SelectedAmv.ProbeCount.X : 0);
 		_probesY.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Z : 0);
 		_probesZ.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Y : 0);
+		
+		_ymapPositionX.SetValueNoSignal(v ? SelectedAmv.YmapPosition.X : 0);
+		_ymapPositionY.SetValueNoSignal(v ? -SelectedAmv.YmapPosition.Z : 0);
+		_ymapPositionZ.SetValueNoSignal(v ? SelectedAmv.YmapPosition.Y : 0);
 	}
 
 	private void ConnectAmvGui()

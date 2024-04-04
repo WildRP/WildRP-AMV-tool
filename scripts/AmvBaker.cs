@@ -139,7 +139,7 @@ public partial class AmvBaker : Node3D
 
 			shape.Shape = polygonShape;
 			body.AddChild(shape);
-			AddChild(body);
+			m.AddChild(body);
 			
 			result.Add(new Tuple<MeshInstance3D, StaticBody3D>(m, body));
 		}

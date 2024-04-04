@@ -44,6 +44,8 @@ public partial class AmbientMaskVolume : Node3D
 	private Vector3 _size = Vector3.One;
 	private Vector3 _ymapPosition = Vector3.Zero;
 
+	public Vector3 YmapPosition => _ymapPosition;
+
 	private List<AmvProbe> _probes = [];
 
 	public Vector3 Size
@@ -108,14 +110,14 @@ public partial class AmbientMaskVolume : Node3D
                     // X-, Z+, Y-
                     // ---
 					
-					var col0 = new RgbColor((float) p.X.Positive, (float) p.Z.Negative, (float) p.Y.Positive);
-					var col1 = new RgbColor((float) p.X.Negative, (float) p.Z.Positive, (float) p.Y.Negative);
+					var col0 = new RgbColor((float) p.X.Negative, (float) p.Z.Negative, (float) p.Y.Negative);
+					var col1 = new RgbColor((float) p.X.Positive, (float) p.Z.Positive, (float) p.Y.Positive);
 					
-					img0.SetPixel(x,z, col0);
-					img1.SetPixel(x,z, col1);
+					img0.SetPixel(x,ProbeCount.Z - 1 - z, col0);
+					img1.SetPixel(x,ProbeCount.Z - 1 - z, col1);
 				}
 			}
-
+			
 			var tex0Name = $"{tex0DirG}/slice_{y}.hdr";
 			var tex1Name = $"{tex1DirG}/slice_{y}.hdr";
 			
@@ -128,7 +130,7 @@ public partial class AmbientMaskVolume : Node3D
 			img0.Dispose();
 			img1.Dispose();
 		}
-
+		
 		using var f0 = FileAccess.Open($"{tex0Dir}/imgs.txt", FileAccess.ModeFlags.Write);
 			img0List.ForEach(s => f0.StoreLine(s));
 			
@@ -310,13 +312,14 @@ public partial class AmbientMaskVolume : Node3D
 	public string GetXml()
 	{
 		var xmlSize = Size/2f;
-		xmlSize += Size / ProbeCount / 2;
+		//xmlSize += Size / ProbeCount / 2;
 		
 		return new XDocument(
 			new XElement("Item",
 				new XElement("enabled", new XAttribute("value", true)),
-				new XElement("position", new XAttribute("x", _ymapPosition.X + Position.X), new XAttribute("y", _ymapPosition.Z + -Position.Z), new XAttribute("z", _ymapPosition.Y + Position.Y)),
-				new XElement("rotation", new XAttribute("x", 90-RotationDegrees.Y), new XAttribute("y", 0), new XAttribute("z", 0)),
+				new XElement("position", new XAttribute("x", _ymapPosition.X + Position.X), new XAttribute("y", _ymapPosition.Z - Position.Z), new XAttribute("z", _ymapPosition.Y + Position.Y)),
+				new XComment("Rotation: Only uses the X attribute, uses degrees and not radians."),
+				new XElement("rotation", new XAttribute("x", -RotationDegrees.Y), new XAttribute("y", 0), new XAttribute("z", 0)),
 				new XElement("scale", new XAttribute("x", xmlSize.X), new XAttribute("y", xmlSize.Z), new XAttribute("z", xmlSize.Y)),
 				new XElement("falloffScaleMin", new XAttribute("x", 1f), new XAttribute("y", 1f), new XAttribute("z", 1f)),
 				new XElement("falloffScaleMax", new XAttribute("x", 1.25f), new XAttribute("y", 1.25f), new XAttribute("z", 1.25f)),
