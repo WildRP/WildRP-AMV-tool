@@ -150,7 +150,7 @@ public class BvhNode(Aabb bounds)
         {
             Children = new List<BvhNode>();
             var center = Bounds.GetCenter();
-            var extent = Bounds.Size/2;
+            var extent = Bounds.Size;
 
             var TFL = center + new Vector3(-extent.X, +extent.Y, -extent.Z);
             var TFR = center + new Vector3(+extent.X, +extent.Y, -extent.Z);
@@ -219,6 +219,8 @@ public class Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
     public readonly float Distance =  ((v0 + v1 + v2) / 3).Length();
     public Vector3 Normal = (v1 - v0).Cross(v2 - v1).Normalized();
 
+    public Vector3[] Vertices => new[] { V0, V1, V1 };
+
     public bool Intersects(Ray ray, out float t)
     {
         var hit = Geometry3D.RayIntersectsTriangle(ray.Origin, ray.Normal, V0, V1, V2);
@@ -272,72 +274,75 @@ public static class Collisions
         return true;
     }
     
-    // https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/aabb-triangle.html
-    public static bool Intersects(this Aabb bounds, Triangle tri)
+    public static bool Intersects(this Aabb box, Triangle triangle)
     {
-        Vector3 c = bounds.GetCenter();
-        Vector3 e = bounds.Size;
-        
-        tri.V0 -= c;
-        tri.V1 -= c;
-        tri.V2 -= c;
+        float triangleMin, triangleMax;
+        float boxMin, boxMax;
 
-        // Triangle edges
-        Vector3 f0 = tri.V1 - tri.V0;
-        Vector3 f1 = tri.V2 - tri.V1;
-        Vector3 f2 = tri.V0 - tri.V2;
-        
-        // aabb face normals
-        Vector3 u0 = new Vector3(1, 0, 0);
-        Vector3 u1 = new Vector3(0, 1, 0);
-        Vector3 u2 = new Vector3(0, 0, 1);
-        
-        // oh boy math - 9 axes we have to test
-
-        Vector3[] axes =
-        [
-            u0.Cross(f0), u0.Cross(f1), u0.Cross(f2),
-            u1.Cross(f0), u1.Cross(f1), u2.Cross(f2),
-            u2.Cross(f0), u2.Cross(f1), u2.Cross(f2)
-        ];
-        
-        // Testing axis: axis_u0_f0
-        foreach (var a in axes)
+        // Test the box normals (x-, y- and z-axes)
+        var boxNormals = new Vector3[] {
+            new Vector3(1,0,0),
+            new Vector3(0,1,0),
+            new Vector3(0,0,1)
+        };
+        for (int i = 0; i < 3; i++)
         {
-            if (CheckAxis(a, tri, e, u0, u1, u2))
-                return false;
+            Project(triangle.Vertices, boxNormals[i], out triangleMin, out triangleMax);
+            if (triangleMax < box.Position[i] || triangleMin > box.End[i])
+                return false; // No intersection possible.
         }
-        
-        if (CheckAxis(u0, tri, e, u0, u1, u2))
-            return false;
-        
-        if (CheckAxis(u1, tri, e, u0, u1, u2))
-            return false;
-        
-        if (CheckAxis(u2, tri, e, u0, u1, u2))
-            return false;
-        
-        // Triangle normal
-        if (CheckAxis(f0.Cross(f1), tri, e, u0, u1, u2))
-            return false;
 
-        return true; // intersection!
+        // Test the triangle normal
+        float triangleOffset = triangle.Normal.Dot(triangle.V0);
+        Project(box.Vertices(), triangle.Normal, out boxMin, out boxMax);
+        if (boxMax < triangleOffset || boxMin > triangleOffset)
+            return false; // No intersection possible.
+
+        // Test the nine edge cross-products
+        Vector3[] triangleEdges = new Vector3[] {
+            triangle.V0 - triangle.V1,
+            triangle.V1 - triangle.V2,
+            triangle.V2 - triangle.V0
+        };
+        for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+        {
+            // The box normals are the same as it's edge tangents
+            Vector3 axis = triangleEdges[i].Cross(boxNormals[j]);
+            Project(box.Vertices(), axis, out boxMin, out boxMax);
+            Project(triangle.Vertices, axis, out triangleMin, out triangleMax);
+            if (boxMax <= triangleMin || boxMin >= triangleMax)
+                return false; // No intersection possible
+        }
+
+        // No separating axis found.
+        return true;
     }
 
-    private static bool CheckAxis(Vector3 axis, Triangle t, Vector3 e, Vector3 u0, Vector3 u1, Vector3 u2)
+    static void Project(Vector3[] points, Vector3 axis, out float min, out float max)
     {
-        // Project all 3 vertices of the triangle onto the Seperating axis
-        float p0 = t.V0.Dot(axis);
-        float p1 = t.V1.Dot(axis);
-        float p2 = t.V2.Dot(axis);
+        min = float.PositiveInfinity;
+        max = float.NegativeInfinity;
         
-        float r = e.X * Mathf.Abs(u0.Dot(axis)) +
-                  e.Y * Mathf.Abs(u1.Dot(axis)) +
-                  e.Z * Mathf.Abs(u2.Dot(axis));
-
-        return Mathf.Max(-Max(p0, p1, p2), Min(p0, p1, p2)) > r;
+        foreach (var p in points)
+        {
+            float val = axis.Dot(p);
+            if (val < min) min = val;
+            if (val > max) max = val;
+        }
     }
 
+    static Vector3[] Vertices(this Aabb aabb)
+    {
+        var v = new Vector3[8];
+        for (int i = 0; i < 8; i++)
+        {
+            v[i] = aabb.GetEndpoint(i);
+        }
+
+        return v;
+    }
+    
     private static float Min(float a, float b, float c)
     {
         return Mathf.Min(a, Mathf.Min(b, c));
