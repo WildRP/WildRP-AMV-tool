@@ -143,7 +143,7 @@ public class BvhNode(Aabb bounds)
         {
             Children = new List<BvhNode>();
             var center = Bounds.GetCenter();
-            var extent = Bounds.Size;
+            var extent = Bounds.Size/2;
 
             var TFL = center + new Vector3(-extent.X, +extent.Y, -extent.Z);
             var TFR = center + new Vector3(+extent.X, +extent.Y, -extent.Z);
@@ -197,6 +197,9 @@ public class BvhNode(Aabb bounds)
             Position = p1,
             End = p2
         };
+
+        if (bounds.Size != p2 - p1) GD.Print($"{bounds.Size} - {p1 - p2}");
+        
         return bounds.Abs();
     }
     
@@ -211,35 +214,16 @@ public class Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
 
     public bool Intersects(Ray ray, out float t)
     {
-        t = IntersectPlane(ray);
-        if (t < 0) return false;
+        var hit = Geometry3D.RayIntersectsTriangle(ray.Origin, ray.Normal, V0, V1, V2);
 
-        var p = ray.Origin + ray.Normal * t;
-
-        var bary = Geometry3D.GetTriangleBarycentricCoords(p, V0, V1, V2);
-
-        if (bary is { X: > 0, Y: > 0, Z: > 0 }) return true;
-
-        t = -1;
-        return false;
-    }
-    
-    // Returns t if collision happened, -1 if it didnt
-    private float IntersectPlane(Ray ray)
-    {
-        float nd = ray.Normal.Dot(Normal);
-        float pn = ray.Origin.Dot(Normal);
-
-        if (Mathf.IsZeroApprox(nd)) {
-            return -1;
+        if (hit.VariantType == Variant.Type.Nil)
+        {
+            t = -1;
+            return false;
         }
 
-        var t = (Distance - pn) / nd;
-
-        if (t >= 0f) {
-            return t;
-        }
-        return -1;
+        t = hit.AsSingle();
+        return true;
     }
 }
 
