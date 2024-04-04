@@ -116,7 +116,7 @@ public partial class AmvProbe : MeshInstance3D
 		var varianceHit = Raycast(GlobalPosition, randDir, out var hitDist, maxDist);
 		if (varianceHit) // Extra check so we don't move inside walls for this
 		{
-			randDir = randDir * hitDist * 0.8f;
+			randDir = randDir * hitDist * 0.5f;
 		}
 			
 		

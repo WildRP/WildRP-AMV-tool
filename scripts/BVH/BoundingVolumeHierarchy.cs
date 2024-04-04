@@ -24,7 +24,7 @@ public class BoundingVolumeHierarchy
         
         _modelBasis = modelBasis;
 
-        GD.Print($"Making a BVH with bounds {bounds} - starting with {tris.Length} triangles:");
+        GD.Print($"Making a BVH with bounds {bounds} - starting with {tris.Length/3} triangles:");
         
         for (int i = 0; i < tris.Length; i += 3) // add all the tris to root node
         {
@@ -40,14 +40,11 @@ public class BoundingVolumeHierarchy
     {
         if (Enabled == false)
         {
-            GD.Print("I do a raycast");
             t = -1;
             return false;
         }
         
-        var ray = new Ray( _modelBasis.Inverse() * worldOrigin,  worldDir);
-        
-        GD.Print($"{_rootNode.Bounds.HasPoint(_modelBasis.Inverse() * worldOrigin)}");
+        var ray = new Ray( _modelBasis.Inverse() * worldOrigin,  _modelBasis.Inverse() * worldDir);
         
         return _rootNode.Raycast(ray, out t);
     }
@@ -61,7 +58,7 @@ public class Ray(Vector3 origin, Vector3 dir)
 
 public class BvhNode(Aabb bounds)
 {
-    public static int MaxDepth = 2;
+    public static int MaxDepth = 5;
     
     public Aabb Bounds = bounds;
     public List<BvhNode> Children = null;
@@ -139,10 +136,9 @@ public class BvhNode(Aabb bounds)
     public void Split()
     {
         Split(0);
-        //Shake();
+        Shake();
     }
-
-    private static int NodeID = 0;
+    
     private void Split(int depth)
     {
         
@@ -150,7 +146,7 @@ public class BvhNode(Aabb bounds)
         {
             Children = new List<BvhNode>();
             var center = Bounds.GetCenter();
-            var extent = Bounds.Size;
+            var extent = Bounds.Abs().Size;
 
             var TFL = center + new Vector3(-extent.X, +extent.Y, -extent.Z);
             var TFR = center + new Vector3(+extent.X, +extent.Y, -extent.Z);
@@ -204,8 +200,6 @@ public class BvhNode(Aabb bounds)
             Position = p1,
             End = p2
         };
-
-        if (bounds.Size != p2 - p1) GD.Print($"{bounds.Size} - {p1 - p2}");
         
         return bounds.Abs();
     }
@@ -223,6 +217,7 @@ public class Triangle(Vector3 v0, Vector3 v1, Vector3 v2)
 
     public bool Intersects(Ray ray, out float t)
     {
+        // bet this would be faster with a custom intersection check instead of this lol
         var hit = Geometry3D.RayIntersectsTriangle(ray.Origin, ray.Normal, V0, V1, V2);
 
         if (hit.VariantType == Variant.Type.Nil)
@@ -280,7 +275,7 @@ public static class Collisions
         float boxMin, boxMax;
 
         // Test the box normals (x-, y- and z-axes)
-        var boxNormals = new Vector3[] {
+        var boxNormals = new[] {
             new Vector3(1,0,0),
             new Vector3(0,1,0),
             new Vector3(0,0,1)
@@ -299,11 +294,12 @@ public static class Collisions
             return false; // No intersection possible.
 
         // Test the nine edge cross-products
-        Vector3[] triangleEdges = new Vector3[] {
+        Vector3[] triangleEdges =
+        [
             triangle.V0 - triangle.V1,
             triangle.V1 - triangle.V2,
             triangle.V2 - triangle.V0
-        };
+        ];
         for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
         {

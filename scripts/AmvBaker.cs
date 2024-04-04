@@ -31,7 +31,7 @@ public partial class AmvBaker : Node3D
 	private int totalSamples = 1;
 	private int bakedSamples = 0;
 
-	public override void _PhysicsProcess(double delta)
+	public override void _Process(double delta)
 	{
 		if (_bakeQueue.Count > 0)
 		{
