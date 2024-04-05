@@ -2,7 +2,6 @@ using Godot;
 
 namespace WildRP.AMVTool.GUI;
 
-// TODO: Let the user type in values. I don't know why this isn't triggering that.
 public partial class SpinBoxFocusReleaser : SpinBox
 {
 	public override void _Ready()
@@ -11,7 +10,9 @@ public partial class SpinBoxFocusReleaser : SpinBox
 		GetLineEdit().TextSubmitted += text =>
 		{
 			if (GetLineEdit().HasFocus() == false) return;
+			GetLineEdit().ReleaseFocus();
 		};
+		
 	}
 
 

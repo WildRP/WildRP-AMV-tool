@@ -110,7 +110,6 @@ public partial class AmvBakerGui : Control
 			_bakeProgressBar.GetParentControl().Visible = false;
 		};
 		
-		ConnectAmvGui();
 		_amvInfoPanel.Visible = false;
 
 		_saveProjectBtn.Pressed += () =>
@@ -129,6 +128,11 @@ public partial class AmvBakerGui : Control
 		};
 
 		_cancelBakeBtn.Pressed += () => AmvBaker.Instance.CancelBake();
+		
+		_randomizeTextureNameButton.Pressed += () =>
+		{
+			_textureName.Value = Random.Shared.NextInt64(Convert.ToInt64(_textureName.MinValue), Convert.ToInt64(_textureName.MaxValue));
+		};
 	}
 
 	private void UnloadModel()
@@ -239,17 +243,25 @@ public partial class AmvBakerGui : Control
 		return true;
 	}
 
-	public void SelectAmv(AmbientMaskVolume volume)
+	// If you do this while you have a field selected the new AMV will get the value from that field...
+	private void SelectAmv(AmbientMaskVolume volume)
 	{
 		if (SelectedAmv != null)
+		{
 			SelectedAmv.SizeChanged -= UpdateAmvGuiValues;
+			DisconnectAmvGui();
+		}
 
 		_amvInfoPanel.Visible = volume != null;
 		
 		SelectedAmv = volume;
 		if (SelectedAmv != null)
+		{
 			SelectedAmv.SizeChanged += UpdateAmvGuiValues;
-		UpdateAmvGuiValues();
+			ConnectAmvGui();
+			UpdateAmvGuiValues();
+		}
+		
 	}
 
 	
@@ -265,48 +277,80 @@ public partial class AmvBakerGui : Control
 		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user
 		// Z also gets inverted
 		_positionX.SetValueNoSignal(v ? SelectedAmv.Position.X : 0);
+        _positionX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.Position.X) : "0" ;
 		_positionY.SetValueNoSignal(v ? -SelectedAmv.Position.Z : 0);
+        _positionY.GetLineEdit().Text = v ? Convert.ToString(-SelectedAmv.Position.Z) : "0" ;
 		_positionZ.SetValueNoSignal(v ? SelectedAmv.Position.Y : 0);
+        _positionZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.Position.Y) : "0" ;
 		
 		_sizeX.SetValueNoSignal(v ? SelectedAmv.Size.X : 0);
+        _sizeX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.Size.X) : "0" ;
 		_sizeY.SetValueNoSignal(v ? SelectedAmv.Size.Z : 0);
+        _sizeY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.Size.Z) : "0" ;
 		_sizeZ.SetValueNoSignal(v ? SelectedAmv.Size.Y : 0);
+        _sizeZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.Size.Y) : "0" ;
 		
 		_probesX.SetValueNoSignal(v ? SelectedAmv.ProbeCount.X : 0);
+        _probesX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.X) : "0" ;
 		_probesY.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Z : 0);
+        _probesY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Z) : "0" ;
 		_probesZ.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Y : 0);
+        _probesZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Y) : "0" ;
 		
 		_ymapPositionX.SetValueNoSignal(v ? SelectedAmv.YmapPosition.X : 0);
+		_ymapPositionX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.X) : "0" ;
 		_ymapPositionY.SetValueNoSignal(v ? -SelectedAmv.YmapPosition.Z : 0);
+		_ymapPositionY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.Z) : "0" ;
 		_ymapPositionZ.SetValueNoSignal(v ? SelectedAmv.YmapPosition.Y : 0);
+		_ymapPositionZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.Y) : "0" ;
 	}
 
 	private void ConnectAmvGui()
 	{
-		_ymapPositionX.ValueChanged += value => SelectedAmv?.SetYmapPositionX(value);
-		_ymapPositionY.ValueChanged += value => SelectedAmv?.SetYmapPositionZ(value);
-		_ymapPositionZ.ValueChanged += value => SelectedAmv?.SetYmapPositionY(value);
+		_ymapPositionX.ValueChanged += SelectedAmv.SetYmapPositionX;
+		_ymapPositionY.ValueChanged += SelectedAmv.SetYmapPositionZ;
+		_ymapPositionZ.ValueChanged += SelectedAmv.SetYmapPositionY;
 		
-		_positionX.ValueChanged += value => SelectedAmv?.SetPositionX(value);
-		_positionY.ValueChanged += value => SelectedAmv?.SetPositionZ(value);
-		_positionZ.ValueChanged += value => SelectedAmv?.SetPositionY(value);
+		_positionX.ValueChanged += SelectedAmv.SetPositionX;
+		_positionY.ValueChanged += SelectedAmv.SetPositionZ;
+		_positionZ.ValueChanged += SelectedAmv.SetPositionY;
 		
-		_sizeX.ValueChanged += value => SelectedAmv?.SetSizeX(value);
-		_sizeY.ValueChanged += value => SelectedAmv?.SetSizeZ(value);
-		_sizeZ.ValueChanged += value => SelectedAmv?.SetSizeY(value);
+		_sizeX.ValueChanged += SelectedAmv.SetSizeX;
+		_sizeY.ValueChanged += SelectedAmv.SetSizeZ;
+		_sizeZ.ValueChanged += SelectedAmv.SetSizeY;
 		
-		_probesX.ValueChanged += value => SelectedAmv?.SetProbesX(value);
-		_probesY.ValueChanged += value => SelectedAmv?.SetProbesY(value);
-		_probesZ.ValueChanged += value => SelectedAmv?.SetProbesZ(value);
+		_probesX.ValueChanged += SelectedAmv.SetProbesX;
+		_probesY.ValueChanged += SelectedAmv.SetProbesY;
+		_probesZ.ValueChanged += SelectedAmv.SetProbesZ;
 
-		_rotation.ValueChanged += value => SelectedAmv?.SetRotation(value);
+		_rotation.ValueChanged += SelectedAmv.SetRotation;
 
-		_textureName.ValueChanged += value => SelectedAmv.TextureName = Convert.ToUInt64(Math.Round(value));
+		_textureName.ValueChanged += SetTextureName;
+	}
+	
+	private void SetTextureName(double value) => SelectedAmv.TextureName = Convert.ToUInt64(Math.Round(value));
+	
+	private void DisconnectAmvGui()
+	{
+		_ymapPositionX.ValueChanged -= SelectedAmv.SetYmapPositionX;
+		_ymapPositionY.ValueChanged -= SelectedAmv.SetYmapPositionZ;
+		_ymapPositionZ.ValueChanged -= SelectedAmv.SetYmapPositionY;
+		
+		_positionX.ValueChanged -= SelectedAmv.SetPositionX;
+		_positionY.ValueChanged -= SelectedAmv.SetPositionZ;
+		_positionZ.ValueChanged -= SelectedAmv.SetPositionY;
+		
+		_sizeX.ValueChanged -= SelectedAmv.SetSizeX;
+		_sizeY.ValueChanged -= SelectedAmv.SetSizeZ;
+		_sizeZ.ValueChanged -= SelectedAmv.SetSizeY;
+		
+		_probesX.ValueChanged -= SelectedAmv.SetProbesX;
+		_probesY.ValueChanged -= SelectedAmv.SetProbesY;
+		_probesZ.ValueChanged -= SelectedAmv.SetProbesZ;
 
-		_randomizeTextureNameButton.Pressed += () =>
-		{
-			_textureName.Value = Random.Shared.NextInt64(Convert.ToInt64(_textureName.MinValue), Convert.ToInt64(_textureName.MaxValue));
-		};
+		_rotation.ValueChanged -= SelectedAmv.SetRotation;
+
+		_textureName.ValueChanged -= SetTextureName;
 	}
 	
 }
