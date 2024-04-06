@@ -104,7 +104,8 @@ public partial class AmvProbe : MeshInstance3D
 		tangent = norm.Cross(bitangent);
 		return ph * new Basis(tangent, bitangent, norm);
 	}
-	
+
+	private const int BounceCount = 2;
 	private float RayHit(Vector3 dir)
 	{
 		var d = SampleHemisphere(dir).Normalized();
@@ -139,15 +140,30 @@ public partial class AmvProbe : MeshInstance3D
 			l.Scale = scale;
 		}
 
-		// TODO: Far away walls should affect AO less
-		/*if (hit != null)
-		{
-			var dist = GlobalPosition.DistanceTo(hit.Position);
-			var distFactor = Mathf.Pow(dist / _maxDistance, 1f);
-			return distFactor;
-		}*/
 
-		return hit == null ? 1 : 0;
+		float contribution = 1f;
+		var foundSky = hit == null; // broke out of the interior or whatever we're baking
+		
+		if (hit != null && BounceCount > 0) // this is gonna really slow shit down but it makes lighting look nice i hope
+		{
+			var lastHitPos = hit.Position;
+			var bounceDir = d.Reflect(hit.Normal);
+			for (int i = 0; i < BounceCount; i++)
+			{
+				contribution *= 0.5f;
+				var bounce = Raycast(lastHitPos + bounceDir * 0.01f, bounceDir * _maxDistance, this, _rayMask);
+				if (bounce == null)
+				{
+					foundSky = true;
+					break;
+				}
+
+				lastHitPos = bounce.Position;
+				bounceDir = bounceDir.Reflect(bounce.Normal);
+			}
+		}
+
+		return foundSky ? contribution : 0;
 	}
 	
 	private static PhysicsDirectSpaceState3D _spaceState;
