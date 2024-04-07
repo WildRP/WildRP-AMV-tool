@@ -48,13 +48,14 @@ public partial class AmvProbe : MeshInstance3D
 			_receivedPosLabel.Text = CellPosition.ToString();
 			_requestedPosLabel.Text = ParentVolume.PositionTest(CellPosition).ToString();
 		}
-		
-		_variance = ParentVolume.Size / ParentVolume.ProbeCount / 2;
 	}
 
 	public void CaptureSample()
 	{
 		ProbeSample sample;
+		
+		_variance = ParentVolume.Size / ParentVolume.ProbeCount / 2;
+		_variance *= .9f;
 		
 		sample.X.Negative = RayHit(Vector3.Left) / AmvBaker.GetSampleCount();
 		sample.X.Positive = RayHit(Vector3.Right) / AmvBaker.GetSampleCount() ;
@@ -130,7 +131,7 @@ public partial class AmvProbe : MeshInstance3D
 	
 	private float RayHit(Vector3 dir)
 	{
-		var d = SampleHemisphere(dir).Normalized();
+		var d = SampleHemisphere(ToGlobal(dir)).Normalized();
 
 		var randDir = new Vector3((float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0)).Normalized();
 
