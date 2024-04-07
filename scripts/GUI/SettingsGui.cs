@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using WildRP.AMVTool.Autoloads;
 
@@ -13,8 +14,15 @@ public partial class SettingsGui : Control
 	[Export] private Label _uiScaleLabel;
 	[ExportGroup("Rendering")]
 	[Export] private OptionButton _sampleQualityDropdown;
+	
 	[Export] private HSlider _minBrightSlider;
 	[Export] private Label _minBrightLabel;
+	
+	[Export] private HSlider _bounceCountSlider;
+	[Export] private Label _bounceCountLabel;
+	
+	[Export] private HSlider _bounceEnergySlider;
+	[Export] private Label _bounceEnergyLabel;
 	public override void _Ready()
 	{
 		_texAssembleDialog.UseNativeDialog = true;
@@ -43,7 +51,20 @@ public partial class SettingsGui : Control
 		_minBrightSlider.DragEnded += changed =>
 		{
 			if (changed) Settings.MinBrightness = (float)_minBrightSlider.Value;
-			GD.Print($"Set Min Brighness to {_minBrightSlider.Value}");
+		};
+		
+		_bounceCountSlider.ValueChanged += value => { _bounceCountLabel.Text = value.ToString(CultureInfo.InvariantCulture); };
+		_bounceCountSlider.Value = Settings.BounceCount;
+		_bounceCountSlider.DragEnded += changed =>
+		{
+			if (changed) Settings.MinBrightness = (float)_bounceCountSlider.Value;
+		};
+		
+		_bounceEnergySlider.ValueChanged += value => { _bounceEnergyLabel.Text = value.ToString(".000#"); };
+		_bounceEnergySlider.Value = Settings.BounceEnergy;
+		_bounceEnergySlider.DragEnded += changed =>
+		{
+			if (changed) Settings.MinBrightness = (float)_bounceEnergySlider.Value;
 		};
 	}
 }

@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://d2f7n2tveheyo"]
+[gd_scene load_steps=4 format=3 uid="uid://d2f7n2tveheyo"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_7xdh4"]
 [ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
 [node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel")]
 anchors_preset = 15
@@ -29,6 +31,11 @@ theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "General Settings"
+label_settings = SubResource("LabelSettings_ajkbg")
 
 [node name="TexAssemble" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -100,6 +107,20 @@ theme_override_constants/margin_left = 20
 layout_mode = 2
 text = "1.0"
 
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Rendering
+"
+label_settings = SubResource("LabelSettings_ajkbg")
+
 [node name="Sample Count" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 10
@@ -147,17 +168,15 @@ theme_override_constants/margin_top = 10
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Min Bright"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
-theme_override_constants/margin_right = 20
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer"]
-layout_mode = 2
+size_flags_horizontal = 0
 text = "Minimum Brightness"
 
 [node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
-size_flags_horizontal = 3
 max_value = 0.01
 step = 0.001
 
@@ -167,17 +186,90 @@ theme_override_constants/margin_left = 15
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3"]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "0
 "
 
 [node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 50
-theme_override_constants/margin_right = 20
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer2"]
 layout_mode = 2
+size_flags_horizontal = 0
 text = "Prevents black spots in the final baked texture, but flattens the lighting if pulled too high."
+
+[node name="BounceCount" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BounceCount"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "# of Bounces"
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+max_value = 8.0
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer3"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "0
+"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Bounces spread the lighting more, but are expensive."
+
+[node name="BounceStrength" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BounceStrength"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Bounce Energy"
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+max_value = 8.0
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer3"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "0
+"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "How strong the bounced lighting should be."
 
 [node name="LinkButton" type="LinkButton" parent="MarginContainer"]
 layout_mode = 2

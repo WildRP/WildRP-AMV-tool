@@ -173,7 +173,7 @@ public partial class AmvProbe : MeshInstance3D
 			var bounceDir = d.Bounce(hit.Normal.Normalized());
 			for (int i = 0; i < AmvBaker.BounceCount; i++)
 			{
-				contribution *= AmvBaker.BounceStrength;
+				contribution *= AmvBaker.BounceEnergy;
 				var bounce = Raycast(lastHitPos + bounceDir * 0.01f, bounceDir * _maxDistance, this, _rayMask);
 				if (bounce == null)
 				{

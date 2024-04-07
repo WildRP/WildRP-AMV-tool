@@ -25,7 +25,7 @@ public partial class AmvBaker : Node3D
 
 	public static int BakeSamples { get; private set; }
 	public static int BounceCount { get; private set; }
-	public static float BounceStrength { get; private set; }
+	public static float BounceEnergy { get; private set; }
 
 	public event Action BakeFinished;
 	public event Action<float> UpdatePercentage;
@@ -169,7 +169,7 @@ public partial class AmvBaker : Node3D
 	{
 		// Cache these at start of bake so we don't have to convert several Variants every frame
 		BounceCount = Settings.BounceCount;
-		BounceStrength = Settings.BounceStrength;
+		BounceEnergy = Settings.BounceEnergy;
 		BakeSamples = Settings.SampleCount;
 		
 		foreach (var v in _ambientMaskVolumes)

@@ -65,12 +65,12 @@ public partial class Settings : Node
         }
     }
     
-    public static float BounceStrength
+    public static float BounceEnergy
     {
-        get => _settingsFile.GetValue("Settings", "BounceStrength", .5f).AsSingle();
+        get => _settingsFile.GetValue("Settings", "BounceEnergy", .33f).AsSingle();
         set
         {
-            _settingsFile.SetValue("Settings", "BounceStrength", value);
+            _settingsFile.SetValue("Settings", "BounceEnergy", value);
             _dirty = true;
         }
     }
