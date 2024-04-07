@@ -23,6 +23,10 @@ public partial class AmvBaker : Node3D
 
 	public bool BakeInProgress => _bakeQueue.Count > 0;
 
+	public static int BakeSamples { get; private set; }
+	public static int BounceCount { get; private set; }
+	public static float BounceStrength { get; private set; }
+
 	public event Action BakeFinished;
 	public event Action<float> UpdatePercentage;
 
@@ -38,7 +42,7 @@ public partial class AmvBaker : Node3D
 				var amv = _bakeQueue[i];
 				if (amv.Baked)
 				{
-					GD.Print("BAKED!");
+					GD.Print($"Baked {amv.GuiListName}");
 					amv.UpdateAverages(true);
 					_bakeQueue.Remove(amv);
 				}
@@ -163,6 +167,11 @@ public partial class AmvBaker : Node3D
 	
 	public void BakeAll()
 	{
+		// Cache these at start of bake so we don't have to convert several Variants every frame
+		BounceCount = Settings.BounceCount;
+		BounceStrength = Settings.BounceStrength;
+		BakeSamples = Settings.SampleCount;
+		
 		foreach (var v in _ambientMaskVolumes)
 		{
 			if (v.Value.IncludeInFullBake == false) continue;
@@ -180,5 +189,5 @@ public partial class AmvBaker : Node3D
 		return AmbientMaskVolumes[name];
 	}
 
-	public static int GetSampleCount() => 1 << Settings.SampleCount;
+	public static int GetSampleCount() => 1 << BakeSamples;
 }

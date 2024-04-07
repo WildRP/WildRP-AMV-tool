@@ -54,6 +54,26 @@ public partial class Settings : Node
             _dirty = true;
         }
     }
+    
+    public static int BounceCount
+    {
+        get => _settingsFile.GetValue("Settings", "BounceCount", 2).AsInt32();
+        set
+        {
+            _settingsFile.SetValue("Settings", "BounceCount", value);
+            _dirty = true;
+        }
+    }
+    
+    public static float BounceStrength
+    {
+        get => _settingsFile.GetValue("Settings", "BounceStrength", .5f).AsSingle();
+        set
+        {
+            _settingsFile.SetValue("Settings", "BounceStrength", value);
+            _dirty = true;
+        }
+    }
 
     private static bool _dirty; // Marks that it's time to save settings
 

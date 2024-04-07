@@ -17,10 +17,13 @@ public partial class AmvProbe : MeshInstance3D
 	
 	private uint _rayMask = 1;
 	private float _maxDistance = 50;
-	private ProbeSample _value = new();
 	private int _samples = 0;
 	private Vector3 _variance;
 
+	private ProbeSample _value = new();
+	private ProbeSample _blurredSample = new();
+	
+	
 	public Vector3I CellPosition
 	{
 		get;
@@ -86,6 +89,26 @@ public partial class AmvProbe : MeshInstance3D
 		SetInstanceShaderParameter("negative_occlusion", dispValue.GetNegativeVector());
 		
 	}
+
+	public void Blur(Vector3I Axis)
+	{
+		float[] weights = [0.0625f, 0.25f, 0.375f, 0.25f, 0.0625f];
+
+		_blurredSample = 0;
+		
+		for (int i = 0; i < 5; i++)
+		{
+			int offset = i - 2;
+			_blurredSample += ParentVolume.GetCellValueRelative(CellPosition, Axis * offset) * weights[i];
+		}
+	}
+
+	public void SetValueFromBlurred()
+	{
+		_value = _blurredSample;
+		SetInstanceShaderParameter("positive_occlusion", _value.GetPositiveVector());
+		SetInstanceShaderParameter("negative_occlusion", _value.GetNegativeVector());
+	}
 	
 	public ProbeSample GetValue()
 	{
@@ -104,8 +127,7 @@ public partial class AmvProbe : MeshInstance3D
 		tangent = norm.Cross(bitangent);
 		return ph * new Basis(tangent, bitangent, norm);
 	}
-
-	private const int BounceCount = 2;
+	
 	private float RayHit(Vector3 dir)
 	{
 		var d = SampleHemisphere(dir).Normalized();
@@ -144,13 +166,13 @@ public partial class AmvProbe : MeshInstance3D
 		float contribution = 1f;
 		var foundSky = hit == null; // broke out of the interior or whatever we're baking
 		
-		if (hit != null && BounceCount > 0) // this is gonna really slow shit down but it makes lighting look nice i hope
+		if (hit != null && AmvBaker.BounceCount > 0) // this is gonna really slow shit down but it makes lighting look nice i hope
 		{
 			var lastHitPos = hit.Position;
-			var bounceDir = d.Reflect(hit.Normal);
-			for (int i = 0; i < BounceCount; i++)
+			var bounceDir = d.Bounce(hit.Normal.Normalized());
+			for (int i = 0; i < AmvBaker.BounceCount; i++)
 			{
-				contribution *= 0.5f;
+				contribution *= AmvBaker.BounceStrength;
 				var bounce = Raycast(lastHitPos + bounceDir * 0.01f, bounceDir * _maxDistance, this, _rayMask);
 				if (bounce == null)
 				{
@@ -159,7 +181,7 @@ public partial class AmvProbe : MeshInstance3D
 				}
 
 				lastHitPos = bounce.Position;
-				bounceDir = bounceDir.Reflect(bounce.Normal);
+				bounceDir = bounceDir.Bounce(bounce.Normal.Normalized());
 			}
 		}
 
