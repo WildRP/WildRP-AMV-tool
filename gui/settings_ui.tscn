@@ -5,7 +5,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -21,6 +21,10 @@ _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/M
 _sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")
 _minBrightSlider = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/HSlider")
 _minBrightLabel = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3/Label")
+_bounceCountSlider = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/HSlider")
+_bounceCountLabel = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer3/Label")
+_bounceEnergySlider = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/HSlider")
+_bounceEnergyLabel = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer3/Label")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -250,7 +254,8 @@ text = "Bounce Energy"
 [node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
-max_value = 8.0
+max_value = 1.0
+step = 0.0
 
 [node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
 layout_mode = 2
