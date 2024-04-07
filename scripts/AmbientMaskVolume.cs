@@ -110,8 +110,8 @@ public partial class AmbientMaskVolume : Node3D
                     // X-, Z+, Y-
                     // ---
 					
-					var col0 = new RgbColor((float) p.X.Negative, (float) p.Z.Negative, (float) p.Y.Negative);
-					var col1 = new RgbColor((float) p.X.Positive, (float) p.Z.Positive, (float) p.Y.Positive);
+					var col0 = new RgbColor((float) p.X.Negative, (float) p.Z.Positive, (float) p.Y.Negative);
+					var col1 = new RgbColor((float) p.X.Positive, (float) p.Z.Negative, (float) p.Y.Positive);
 					
 					img0.SetPixel(x,ProbeCount.Z - 1 - z, col0);
 					img1.SetPixel(x,ProbeCount.Z - 1 - z, col1);
@@ -167,6 +167,13 @@ public partial class AmbientMaskVolume : Node3D
 		{
 			probe.UpdateAverage(bakeFinished);
 		}
+
+		if (bakeFinished)
+		{
+			Blur(Vector3I.Up);
+			Blur(Vector3I.Right);
+			Blur(Vector3I.Back);
+		}
 	}
 	
 	public void ClearSamples()
@@ -176,6 +183,19 @@ public partial class AmbientMaskVolume : Node3D
 		foreach (var probe in _probes)
 		{
 			probe.Reset();
+		}
+	}
+
+	public void Blur(Vector3I axis)
+	{
+		foreach (var probe in _probes)
+		{
+			probe.Blur(axis);
+		}
+
+		foreach (var probe in _probes)
+		{
+			probe.SetValueFromBlurred();
 		}
 	}
 	
@@ -246,14 +266,34 @@ public partial class AmbientMaskVolume : Node3D
 
 	private int CellToIndex(Vector3I cell)
 	{
-		
-		return cell.X + cell.Y * ProbeCount.X + cell.Z * ProbeCount.X * ProbeCount.Y;
+		var idx = cell.X + cell.Y * ProbeCount.X + cell.Z * ProbeCount.X * ProbeCount.Y;
+		if (idx < 0 || idx > _probes.Count-1) return -1;
+		return idx;
 	}
-	
-	public ProbeSample GetCellValue(ProbeSample origin, Vector3I target)
+
+	public ProbeSample GetCellValue(Vector3I target)
 	{
 		var idx = CellToIndex(target);
-		return idx < 0 ? origin : _probes[idx].GetValue();
+		return idx < 0 ? 0 : _probes[CellToIndex(target)].GetValue();
+	}
+	
+	public ProbeSample GetCellValueRelative(Vector3I origin, Vector3I target)
+	{
+		var pos = origin;
+		var targetDir = target.Clamp(-Vector3I.One, Vector3I.One);
+		var steps = target.Abs()[(int)target.Abs().MaxAxisIndex()];
+		var value = new ProbeSample(0);
+		
+		for (int i = steps; i >= 0; i--)
+		{
+			var idx = CellToIndex(origin + targetDir * steps);
+			if (idx < 0) continue;
+
+			value = _probes[idx].GetValue();
+			break;
+		}
+
+		return value;
 	}
 
 	public Vector3I PositionTest(Vector3I pos)
