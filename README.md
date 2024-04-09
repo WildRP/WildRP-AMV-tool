@@ -32,7 +32,7 @@ To compile this project you will need:
 - Uses [Markdown Label](https://github.com/daenvil/MarkdownLabel/blob/main/addons/markdownlabel/markdownlabel.gd) 
   for the help page, to convert markdown files into BBCode.
 - Thanks to dexyfex, Któs, and CP on the CodeWalker discord for their prior research into AMVs.
-- Huge thanks to alexguirre on the same discord, who finally figured out the reflection probe texture naming. 
+- Huge thanks to alexguirre, Tafé, and SevenLife on the same discord, who finally figured out the reflection probe texture naming. 
   (reflection probe feature is on the way!)
 
 This project uses the [Godot Jolt](https://github.com/godot-jolt/godot-jolt) addon for improved physics performance. It includes 
