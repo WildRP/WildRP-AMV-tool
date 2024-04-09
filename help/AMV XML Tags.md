@@ -71,3 +71,42 @@ server.
   - Texture name. Has to be a string of numbers. CodeX converts this into a hexadecimal representation.
 - `<iplHash value="0" />`
   - Unknown. Only ever seen it set to 0.
+
+## Example XML
+
+```
+<Item>
+  <enabled value="true" />
+  <position x="-221.08406" y="802.35974" z="127.69557" />
+  <!--Rotation: Only uses the X attribute, uses degrees and not radians.-->
+  <rotation x="-32" y="0" z="0" />
+  <scale x="3.60185" y="3.7552013" z="4.107205" />
+  <falloffScaleMin x="1" y="1" z="1" />
+  <falloffScaleMax x="1.25" y="1.25" z="1.25" />
+  <samplingOffsetStrength value="0" />
+  <falloffPower value="8" />
+  <distance value="-1" />
+  <cellCountX value="8" />
+  <cellCountY value="5" />
+  <cellCountZ value="8" />
+  <clipPlane0 x="0" y="0" z="0" w="1" />
+  <clipPlane1 x="0" y="0" z="0" w="1" />
+  <clipPlane2 x="0" y="0" z="0" w="1" />
+  <clipPlane3 x="0" y="0" z="0" w="1" />
+  <clipPlaneBlend0 value="0" />
+  <clipPlaneBlend1 value="0" />
+  <clipPlaneBlend2 value="0" />
+  <clipPlaneBlend3 value="0" />
+  <blendingMode>BM_Lerp</blendingMode>
+  <layer value="0" />
+  <order value="10" />
+  <natural value="true" />
+  <attachedToDoor value="false" />
+  <interior value="true" />
+  <exterior value="false" />
+  <vehicleInterior value="false" />
+  <sourceFolder>NotRelevant</sourceFolder>
+  <uuid value="1840362054833906944" />
+  <iplHash value="0" />
+</Item>
+```
