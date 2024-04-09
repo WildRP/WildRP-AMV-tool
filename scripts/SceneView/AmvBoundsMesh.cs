@@ -1,4 +1,5 @@
 using Godot;
+using WildRP.AMVTool.GUI;
 
 namespace WildRP.AMVTool.Sceneview;
 
@@ -29,6 +30,8 @@ public partial class AmvBoundsMesh : MeshInstance3D
             _planesNode.AddChild(plane);
         }
         UpdateMesh();
+
+        AmvBakerGui.GuiToggled += SetVisible;
     }
 
     private void SetupMaterial()
@@ -92,5 +95,15 @@ public partial class AmvBoundsMesh : MeshInstance3D
         DrawLine(backLeft, backLeft + s.Y * Vector3.Down);
         
         _mesh.SurfaceEnd();
+    }
+    
+    void SetVisible(bool v)
+    {
+        Transparency = v ? 0f : 0.9f;
+    }
+
+    public override void _ExitTree()
+    {
+        AmvBakerGui.GuiToggled -= SetVisible;
     }
 }

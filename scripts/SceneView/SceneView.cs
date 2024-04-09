@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Godot;
+using WildRP.AMVTool.GUI;
 
 namespace WildRP.AMVTool.Sceneview;
 
@@ -20,4 +22,8 @@ public partial class SceneView : Node
     {
         CameraInput(@event);
     }
+
+    private static List<ViewPanel> _sceneViewPanels = [];
+
+    public static void RegisterViewPanel(ViewPanel p) => _sceneViewPanels.Add(p);
 }

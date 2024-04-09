@@ -1,0 +1,383 @@
+[gd_scene load_steps=7 format=3 uid="uid://c6rfggpw1cyt6"]
+
+[ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_v4fao"]
+[ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="2_lnhwb"]
+[ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="3_q2jau"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_04scg"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.8, 0.8, 0.294118)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_26ank"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.8, 0.8, 0.294118)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e0fyx"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[node name="Reflection Probes" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("1_v4fao")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Left Panel" type="ScrollContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.33
+mouse_filter = 0
+scroll_vertical = 100
+horizontal_scroll_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="HSplitContainer/Left Panel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+
+[node name="Left Panel Organizer" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="SaveLoad" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+
+[node name="Save" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Save Project"
+
+[node name="Load" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load Project... "
+
+[node name="ProjectFolderBtn" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+text = "Open Project Folder"
+
+[node name="LoadModelBtn" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+text = "Load Model..."
+
+[node name="LoadModelLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+text = "No Model Loaded"
+
+[node name="HSeparator" type="HSeparator" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+
+[node name="Model Parts" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_stretch_ratio = 2.73
+text = "Model Parts"
+
+[node name="Item List" type="ScrollContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_04scg")
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Probes" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_stretch_ratio = 2.73
+text = "Probes
+"
+
+[node name="AMV List" type="ScrollContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+custom_minimum_size = Vector2(0, 75)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_26ank")
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 0
+
+[node name="ItemList" type="ItemList" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer"]
+layout_mode = 2
+auto_height = true
+script = ExtResource("2_lnhwb")
+
+[node name="AMV Buttons" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+alignment = 1
+
+[node name="New" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
+layout_mode = 2
+text = "New"
+
+[node name="Bake All" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Bake All"
+
+[node name="Export All" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
+layout_mode = 2
+text = "Export All
+"
+
+[node name="HSeparator2" type="HSeparator" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+
+[node name="AMV Info Panel" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="YMAP Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Interior Name
+"
+
+[node name="YMAP Position" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+
+[node name="X" type="LineEdit" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "val_saloon_int"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
+layout_mode = 2
+
+[node name="TexNameLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "GUID"
+
+[node name="Texture Name" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(146.765, 0)
+layout_mode = 2
+max_value = 9.22337e+18
+value = 1e+18
+rounded = true
+editable = false
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
+layout_mode = 2
+
+[node name="RotLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Rotation"
+
+[node name="Rotation" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+min_value = -180.0
+max_value = 180.0
+step = 0.0
+update_on_text_changed = true
+custom_arrow_step = 1.0
+script = ExtResource("3_q2jau")
+
+[node name="Pos Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Center Offset
+"
+
+[node name="Pos Container" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+update_on_text_changed = true
+prefix = "X:"
+custom_arrow_step = 0.1
+script = ExtResource("3_q2jau")
+
+[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+update_on_text_changed = true
+prefix = "Y:"
+custom_arrow_step = 0.1
+script = ExtResource("3_q2jau")
+
+[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+update_on_text_changed = true
+prefix = "Z:"
+custom_arrow_step = 0.1
+script = ExtResource("3_q2jau")
+
+[node name="Size Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Size
+"
+
+[node name="Size Container" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+update_on_text_changed = true
+prefix = "X:"
+custom_arrow_step = 0.1
+script = ExtResource("3_q2jau")
+
+[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+update_on_text_changed = true
+prefix = "Y:"
+custom_arrow_step = 0.1
+script = ExtResource("3_q2jau")
+
+[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+max_value = 0.0
+step = 0.001
+allow_greater = true
+allow_lesser = true
+update_on_text_changed = true
+prefix = "Z:"
+custom_arrow_step = 0.1
+script = ExtResource("3_q2jau")
+
+[node name="Probe Count" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Influence Extents
+"
+
+[node name="Count Container" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.5
+max_value = 1.0
+step = 0.01
+value = 1.0
+allow_greater = true
+update_on_text_changed = true
+prefix = "X:"
+custom_arrow_step = 1.0
+script = ExtResource("3_q2jau")
+
+[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.5
+max_value = 1.0
+step = 0.01
+value = 1.0
+allow_greater = true
+update_on_text_changed = true
+prefix = "Y:"
+custom_arrow_step = 1.0
+script = ExtResource("3_q2jau")
+
+[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.5
+max_value = 1.0
+step = 0.01
+value = 1.0
+allow_greater = true
+update_on_text_changed = true
+prefix = "Z:"
+custom_arrow_step = 1.0
+script = ExtResource("3_q2jau")
+
+[node name="Button" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+tooltip_text = "Randomize texture name"
+text = "Randomize GUID
+"
+
+[node name="Scene View" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_e0fyx")

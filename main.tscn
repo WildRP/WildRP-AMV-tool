@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=22 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="9_isvef"]
 [ext_resource type="PackedScene" uid="uid://dwk3wagkg5qsx" path="res://gui/help_ui.tscn" id="10_hf7ko"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="10_ir2tt"]
+[ext_resource type="Script" path="res://scripts/GUI/ViewPanel.cs" id="10_xk6cx"]
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
 [ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
 
@@ -55,14 +56,13 @@ corner_detail = 5
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nun7o"]
 
-[node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor", "_sceneViewPanel")]
+[node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor")]
 script = ExtResource("3_w7hpc")
 _scrollSpeed = 100.0
 _cameraOrbitSpeed = 1.0
 _defaultCamDistance = 14.0
 _cameraNode = NodePath("SpringArm3D/Camera3D")
 _anchor = NodePath("SpringArm3D")
-_sceneViewPanel = NodePath("CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Scene View")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_8ejdi")
@@ -72,11 +72,11 @@ transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.
 
 [node name="AMV Container" type="Node3D" parent="."]
 
-[node name="Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
+[node name="AMV Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_lwufd")
 _placeholder = NodePath("Placeholder")
 
-[node name="Placeholder" type="MeshInstance3D" parent="Model Container"]
+[node name="Placeholder" type="MeshInstance3D" parent="AMV Model Container"]
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
 
@@ -515,6 +515,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_nun7o")
+script = ExtResource("10_xk6cx")
 
 [node name="BakeProgress" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs"]
 visible = false
@@ -540,14 +541,6 @@ value = 0.46
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Cancel Bake"
-
-[node name="Reflection Probes" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer"]
-visible = false
-layout_mode = 2
-
-[node name="Map" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer"]
-visible = false
-layout_mode = 2
 
 [node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
 visible = false

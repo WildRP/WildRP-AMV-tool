@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using WildRP.AMVTool.GUI;
 
 namespace WildRP.AMVTool.Sceneview;
 
@@ -69,10 +70,14 @@ public partial class BoundsPlane : MeshInstance3D
         
         UpdatePlane();
         _normal = Position.Normalized();
+
+        AmvBakerGui.GuiToggled += SetVisible;
     }
 
     public override void _Process(double delta)
     {
+        if (Visible == false) return;
+        
         if (_volume.Selected)
             Transparency = _mouseHovering ? 0f : 0.5f;
         else
@@ -144,5 +149,16 @@ public partial class BoundsPlane : MeshInstance3D
 
         _colliderBox.Size = boxSize;
         Position = pos;
+    }
+
+    void SetVisible(bool v)
+    {
+        Visible = v;
+        _staticBody3D.InputRayPickable = v;
+    }
+
+    public override void _ExitTree()
+    {
+        AmvBakerGui.GuiToggled -= SetVisible;
     }
 }

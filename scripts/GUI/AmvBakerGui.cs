@@ -57,6 +57,8 @@ public partial class AmvBakerGui : Control
 				[Export] private SpinBox _probesZ;
 	
 	private readonly List<ModelListItem> _modelListItems = [];
+
+	public static event Action<bool> GuiToggled;
 	
 	public static AmbientMaskVolume SelectedAmv
 	{
@@ -132,6 +134,11 @@ public partial class AmvBakerGui : Control
 		_randomizeTextureNameButton.Pressed += () =>
 		{
 			_textureName.Value = Random.Shared.NextInt64(Convert.ToInt64(_textureName.MinValue), Convert.ToInt64(_textureName.MaxValue));
+		};
+
+		VisibilityChanged += () =>
+		{
+			GuiToggled?.Invoke(Visible);
 		};
 	}
 

@@ -1,8 +1,9 @@
-[gd_scene load_steps=17 format=3 uid="uid://dwk3wagkg5qsx"]
+[gd_scene load_steps=18 format=3 uid="uid://dwk3wagkg5qsx"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_rafxd"]
 [ext_resource type="Script" path="res://scripts/GUI/HelpGui.cs" id="2_q2mda"]
 [ext_resource type="Script" path="res://scripts/gdscript/markdownlabel.gd" id="2_tg56p"]
+[ext_resource type="FontFile" uid="uid://ebkrlg2lnwfy" path="res://font/RobotoMono-Regular.ttf" id="3_8b7ra"]
 [ext_resource type="Script" path="res://scripts/gdscript/header_formats/h1_format.gd" id="3_fqpjw"]
 [ext_resource type="Script" path="res://scripts/gdscript/header_formats/h2_format.gd" id="4_8nxg5"]
 [ext_resource type="Script" path="res://scripts/gdscript/header_formats/h3_format.gd" id="5_i4fnm"]
@@ -101,6 +102,7 @@ layout_mode = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/HSplitContainer"]
 layout_mode = 2
+theme_override_fonts/mono_font = ExtResource("3_8b7ra")
 theme_override_styles/normal = SubResource("StyleBoxFlat_fdrb5")
 bbcode_enabled = true
 text = "[font_size=36]Hello.[/font_size]

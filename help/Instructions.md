@@ -1,9 +1,10 @@
 # Instructions
 
 Hello! Welcome to the WildRP AMV Tool. This is a barebones instructional guide for the pre-release version of this 
-tool. Please send Andi a message if you need any help.
+tool.
 
-And yes - there are bugs.
+And yes - there are bugs. Many. I recommend saving your project every time you do anything - and restart the program 
+every time you make a new volume inside the same project.
 
 ## Before first use
 

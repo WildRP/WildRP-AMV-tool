@@ -1,7 +1,9 @@
+using System.Linq;
 using Godot;
 
 namespace WildRP.AMVTool.Sceneview;
 
+// This should really be a script on the Camera but I made some weird decisions when I started this project
 public partial class SceneView
 {
     [ExportGroup("Camera")]
@@ -10,11 +12,14 @@ public partial class SceneView
     [Export] private float _defaultCamDistance = 20;
     [Export] private Camera3D _cameraNode;
     [Export] private SpringArm3D _anchor;
-    [Export] private PanelContainer _sceneViewPanel;
     
-    private bool _canScroll = false;
+    private static bool _canScrollOrPan;
     private Vector2 _currentCamOrbitInput;
+    private Vector2 _currentCamPanInput;
     private Vector3 _cameraRotation;
+
+    private bool _middleMouseDown, _spacebarDown;
+    private bool PanningCamera => _middleMouseDown || _spacebarDown;
     public static bool RotatingCamera { get; private set; }
     private float _scrollInput;
 
@@ -22,15 +27,12 @@ public partial class SceneView
     {
         _anchor.SpringLength = _defaultCamDistance;
         _cameraRotation = _anchor.Transform.Basis.GetRotationQuaternion().GetEuler();
-
-        _sceneViewPanel.MouseEntered += () => _canScroll = true;
-        _sceneViewPanel.MouseExited += () => _canScroll = false;
-
     }
-
+    
     private void ProcessCamera(float delta)
     {
-
+        _canScrollOrPan = _sceneViewPanels.Any(t => t.MouseOver);    
+        
         _cameraRotation.X += -_currentCamOrbitInput.Y * delta * _cameraOrbitSpeed;
         _cameraRotation.Y += -_currentCamOrbitInput.X * delta * _cameraOrbitSpeed;
         _cameraRotation.X = Mathf.Clamp(_cameraRotation.X, -(Mathf.Pi / 2), Mathf.Pi / 2);
@@ -38,9 +40,16 @@ public partial class SceneView
 
         _anchor.SpringLength = Mathf.Clamp(_anchor.SpringLength + _scrollInput * delta * _scrollSpeed, 1, 50);
         _scrollInput = 0;
-        
-        _anchor.SetIdentity();
+
+        _anchor.Basis = Basis.Identity;
         _anchor.Basis = new Basis(Quaternion.FromEuler(_cameraRotation));
+
+        if (PanningCamera && !RotatingCamera && _canScrollOrPan)
+        {
+            _anchor.GlobalPosition += _cameraNode.GlobalBasis * new Vector3(-_currentCamPanInput.X, _currentCamPanInput.Y, 0) * delta;
+        }
+
+        _currentCamPanInput = Vector2.Zero;
     }
 
     private void CameraInput(InputEvent @event)
@@ -57,13 +66,31 @@ public partial class SceneView
                     RotatingCamera = Input.MouseMode == Input.MouseModeEnum.Captured;
                 }
 
-                if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && (_canScroll || AmvBaker.Instance.BakeInProgress))
+                if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && (_canScrollOrPan || AmvBaker.Instance.BakeInProgress))
                     _scrollInput = mouseButton.ButtonIndex == MouseButton.WheelDown ? -1 : 1;
+
+                if (mouseButton.ButtonIndex is MouseButton.Middle)
+                    _middleMouseDown = mouseButton.Pressed;
                 
                 GetViewport().SetInputAsHandled();
                 break;
+            
+            case InputEventKey keyboardKey:
+                if (keyboardKey.Keycode == Key.Space)
+                    _spacebarDown = keyboardKey.Pressed;
+
+                if (keyboardKey.Keycode == Key.F)
+                    _anchor.GlobalPosition = Vector3.Zero;
+                
+                break;
+            
             case InputEventMouseMotion mouseMotion when RotatingCamera:
                 _currentCamOrbitInput = mouseMotion.Relative;
+                GetViewport().SetInputAsHandled();
+                break;
+            
+            case InputEventMouseMotion mouseMotion when PanningCamera:
+                _currentCamPanInput = mouseMotion.Relative;
                 GetViewport().SetInputAsHandled();
                 break;
         }

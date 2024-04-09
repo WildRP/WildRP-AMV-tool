@@ -18,14 +18,21 @@ This repo is licensed under [Creative Commons 4.0 BY-NC-SA](https://creativecomm
 
 To compile this project you will need:
 
-* [Godot Engine 4.2.1](https://godotengine.org/download/archive/4.2.1-stable/) .NET version
-* [.NET SDK 8.0 or later](https://dotnet.microsoft.com/en-us/download)
+- [Godot Engine 4.2.1](https://godotengine.org/download/archive/4.2.1-stable/) .NET version
+- [.NET SDK 8.0 or later](https://dotnet.microsoft.com/en-us/download)
+
+## Contributing
+
+- There are many bugs at the moment! Pull requests that fix anything are very welcome.
+- If you find a bug that isn't listed in the Issues page, feel free to add a new issue.
 
 ## Acknowledgements
 
-* Uses [Markdown Label](https://github.com/daenvil/MarkdownLabel/blob/main/addons/markdownlabel/markdownlabel.gd) for the help page.
-* Thanks to dexyfex, Któs, and CP on the CodeWalker discord for their prior research into AMVs.
-* Huge thanks to alexguirre on the same discord, who finally figured out the reflection probe texture naming.
+- Uses [Markdown Label](https://github.com/daenvil/MarkdownLabel/blob/main/addons/markdownlabel/markdownlabel.gd) 
+  for the help page, to convert markdown files into BBCode.
+- Thanks to dexyfex, Któs, and CP on the CodeWalker discord for their prior research into AMVs.
+- Huge thanks to alexguirre on the same discord, who finally figured out the reflection probe texture naming. 
+  (reflection probe feature is on the way!)
 
-This project uses the [Godot Jolt](https://github.com/godot-jolt/godot-jolt) addon for improved physics. It includes 
+This project uses the [Godot Jolt](https://github.com/godot-jolt/godot-jolt) addon for improved physics performance. It includes 
 version 0.12.0.

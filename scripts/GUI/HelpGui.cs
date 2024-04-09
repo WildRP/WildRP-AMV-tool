@@ -13,6 +13,7 @@ public partial class HelpGui : PanelContainer
 	private readonly List<string> _markdownFiles = [];
 	public override void _Ready()
 	{
+		int instructionsID = 0;
 		
 		var files = DirAccess.GetFilesAt("res://help");
 
@@ -21,14 +22,18 @@ public partial class HelpGui : PanelContainer
 			using var f = FileAccess.Open($"res://help/{path}", FileAccess.ModeFlags.Read);
 			_markdownFiles.Add(f.GetAsText());
 
-			_helpList.AddItem(path.TrimSuffix(".md"));
+			var helpfilename = path.TrimSuffix(".md");
+			var idx = _helpList.AddItem(helpfilename);
+			if (helpfilename == "Instructions") instructionsID = 0;
 		}
 
 		_markdownFiles.Add(FileAccess.Open("res://README.md", FileAccess.ModeFlags.Read).GetAsText());
 		_helpList.AddItem("Read me");
-
+		
 		_markdownLabel.Set("markdown_text", _markdownFiles[0]);
 		
 		_helpList.ItemSelected += index => _markdownLabel.Set("markdown_text", _markdownFiles[(int)index]);
+		
+		_helpList.Select(instructionsID);
 	}
 }
