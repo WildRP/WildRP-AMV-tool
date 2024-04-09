@@ -11,8 +11,9 @@ coordinates, but presents the coordinates to the end user as Z-up.
 
 This repo is licensed under [Creative Commons 4.0 BY-NC-SA](https://creativecommons.org/licenses/by-nc/4.0/) - the TL;DR is that you can make derivative works or use this in other works, as long as you:
 
-1. Credit WildRP and me (Andicraft / Andrea Jörgensen)
-2. Don't sell what you make based on this - this repo is for non-commercial use only.
+- Credit WildRP and me (Andicraft / Andrea Jörgensen)
+- Don't sell what you make based on this - this repo is for non-commercial use only.
+  - That doesn't mean you can't sell content that uses AMVs that were generated with this program. It just means you can't use the code from this program in commercial applications.
 
 ## Dependencies
 
