@@ -101,17 +101,9 @@ public partial class AmbientMaskVolume : Node3D
 					var idx = CellToIndex(new Vector3I(x, y, z));
 					var p = _probes[idx].GetValue();
 					
-                    // Attempted configurations:
-                    // --- #1: Flipped lighting on front wall?
-                    // XZY+ 
-                    // XZY-
-                    // --- #2: Seems to make no difference whatsoever? Still think this is more correct
-                    // X+, Z-, Y+
-                    // X-, Z+, Y-
-                    // ---
-					
-					var col0 = new RgbColor((float) p.X.Negative, (float) p.Z.Positive, (float) p.Y.Negative);
-					var col1 = new RgbColor((float) p.X.Positive, (float) p.Z.Negative, (float) p.Y.Positive);
+					// flip Z because Godot's Z axis is backwards
+					var col0 = new RgbColor((float) p.X.Positive, (float) p.X.Negative, (float) p.Z.Negative);
+					var col1 = new RgbColor((float) p.Z.Positive, (float) p.Y.Positive, (float) p.Y.Negative);
 					
 					img0.SetPixel(x,ProbeCount.Z - 1 - z, col0);
 					img1.SetPixel(x,ProbeCount.Z - 1 - z, col1);
