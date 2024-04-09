@@ -32,6 +32,7 @@ public partial class AmvBaker : Node3D
 
 	private int totalSamples = 1;
 	private int bakedSamples = 0;
+	private int _loopCount = 0;
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -50,11 +51,12 @@ public partial class AmvBaker : Node3D
 				{
 					amv.CaptureSample();
 					
-					if (bakedSamples % 8 == 0) amv.UpdateAverages();
+					if (_loopCount % 8 == 0) amv.UpdateAverages();
 					
 					bakedSamples++;
 				}
 			}
+			_loopCount++;
 
 			UpdatePercentage((float)bakedSamples / totalSamples);
 			// Cleared the queue
@@ -182,6 +184,7 @@ public partial class AmvBaker : Node3D
 
 		bakedSamples = 0;
 		totalSamples = _bakeQueue.Count * GetSampleCount();
+		_loopCount = 0;
 	}
 	
 	public AmbientMaskVolume GetVolume(string name)
