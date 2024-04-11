@@ -32,10 +32,13 @@ public partial class SceneView
     private void ProcessCamera(float delta)
     {
         _canScrollOrPan = _sceneViewPanels.Any(t => t.MouseOver) && Visible;
-        
-        _cameraRotation.X += -_currentCamOrbitInput.Y * delta * _cameraOrbitSpeed;
-        _cameraRotation.Y += -_currentCamOrbitInput.X * delta * _cameraOrbitSpeed;
-        _cameraRotation.X = Mathf.Clamp(_cameraRotation.X, -(Mathf.Pi / 2), Mathf.Pi / 2);
+
+        if (Visible)
+        {
+            _cameraRotation.X += -_currentCamOrbitInput.Y * delta * _cameraOrbitSpeed;
+            _cameraRotation.Y += -_currentCamOrbitInput.X * delta * _cameraOrbitSpeed;
+            _cameraRotation.X = Mathf.Clamp(_cameraRotation.X, -(Mathf.Pi / 2), Mathf.Pi / 2);
+        }
         _currentCamOrbitInput = Vector2.Zero;
 
         _anchor.SpringLength = Mathf.Clamp(_anchor.SpringLength + _scrollInput * delta * _scrollSpeed, 1, 50);
