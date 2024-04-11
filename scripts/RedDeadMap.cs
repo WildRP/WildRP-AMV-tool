@@ -10,14 +10,13 @@ namespace WildRP.AMVTool.AmvMap;
 public partial class RedDeadMap : Node2D
 {
 	[Export] private int _tileSize = 256;
-	private List<Sprite2D> _mapTiles;
-	private Node2D _container;
+	public static Node2D Container;
 
 	public static Label OffsetLabel, ScaleLabel;
 	public override void _Ready()
 	{
-		_container = new Node2D();
-		AddChild(_container);
+		Container = new Node2D();
+		AddChild(Container);
 		
 		LoadTiles();
 	}
@@ -68,8 +67,8 @@ public partial class RedDeadMap : Node2D
 		
 		// figured these values out by hand
 		// these work for the highest res Detailed map but I am sure it could be figured out programmatically
-		_container.Scale = Vector2.One * 0.5032283f;
-		_container.Position = new Vector2(-3240.2302f, 89.774765f);
+		Container.Scale = Vector2.One * 0.5032283f;
+		Container.Position = new Vector2(-3240.2302f, 89.774765f);
 		
 		foreach (var file in imageFiles)
 		{
@@ -91,7 +90,7 @@ public partial class RedDeadMap : Node2D
 			pos.X = posString[0].ToInt() * size.X;
 			pos.Y = posString[1].ToInt() * size.Y;
 			pos += worldBoundsMin;
-			_container.AddChild(sprite);
+			Container.AddChild(sprite);
 			sprite.Position = pos;
 		}
 	}

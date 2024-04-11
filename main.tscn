@@ -96,6 +96,7 @@ fov = 60.0
 script = ExtResource("3_jvogm")
 
 [node name="Camera2D" type="Camera2D" parent="AMV Map View"]
+visibility_layer = 15
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

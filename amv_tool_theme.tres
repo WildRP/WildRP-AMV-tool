@@ -1,6 +1,8 @@
-[gd_resource type="Theme" load_steps=52 format=3 uid="uid://b0c4jwsh62jan"]
+[gd_resource type="Theme" load_steps=54 format=3 uid="uid://b0c4jwsh62jan"]
 
 [ext_resource type="FontFile" uid="uid://ce0k46ki1ggwb" path="res://font/inter/Inter-Regular.ttf" id="1_glfyd"]
+[ext_resource type="FontFile" uid="uid://c1c81jmmwt6yu" path="res://font/inter/Inter-Bold.ttf" id="1_gnfhx"]
+[ext_resource type="FontFile" uid="uid://bjxouxvdclnro" path="res://font/inter/Inter-Light.ttf" id="2_0f4u7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s11c6"]
 content_margin_left = 12.0
@@ -560,6 +562,9 @@ PopupMenu/styles/hover = SubResource("StyleBoxFlat_yg4d4")
 PopupMenu/styles/separator = SubResource("StyleBoxLine_rijeh")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_twhwf")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_xdk0w")
+RichTextLabel/fonts/bold_font = ExtResource("1_gnfhx")
+RichTextLabel/fonts/italics_font = ExtResource("2_0f4u7")
+RichTextLabel/fonts/normal_font = ExtResource("1_glfyd")
 RichTextLabel/styles/focus = SubResource("StyleBoxFlat_tx2dl")
 RichTextLabel/styles/normal = SubResource("StyleBoxFlat_tx2dl")
 ScrollContainer/styles/panel = SubResource("StyleBoxFlat_pbqj2")
