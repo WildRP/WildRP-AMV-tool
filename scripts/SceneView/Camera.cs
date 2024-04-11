@@ -31,7 +31,7 @@ public partial class SceneView
     
     private void ProcessCamera(float delta)
     {
-        _canScrollOrPan = _sceneViewPanels.Any(t => t.MouseOver);    
+        _canScrollOrPan = _sceneViewPanels.Any(t => t.MouseOver) && Visible;
         
         _cameraRotation.X += -_currentCamOrbitInput.Y * delta * _cameraOrbitSpeed;
         _cameraRotation.Y += -_currentCamOrbitInput.X * delta * _cameraOrbitSpeed;

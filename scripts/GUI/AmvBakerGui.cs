@@ -7,6 +7,8 @@ namespace WildRP.AMVTool.GUI;
 
 public partial class AmvBakerGui : Control
 {
+	[Export] private Node3D _sceneViewRoot;
+	
 	[ExportGroup("Save & Load")]
 		[Export] private Button _saveProjectBtn;
 		[Export] private Button _loadProjectBtn;
@@ -59,13 +61,19 @@ public partial class AmvBakerGui : Control
 	private readonly List<ModelListItem> _modelListItems = [];
 
 	public static event Action<bool> GuiToggled;
+	public static bool GuiVisible { get; private set; }
 	
 	public static AmbientMaskVolume SelectedAmv
 	{
 		get;
 		private set;
 	}
-	
+
+	public override void _Process(double delta)
+	{
+		GuiVisible = Visible;
+	}
+
 	public override void _Ready()
 	{
 		SaveManager.ProjectLoaded += LoadProject;

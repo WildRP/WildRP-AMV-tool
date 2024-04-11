@@ -4,7 +4,7 @@ using WildRP.AMVTool.GUI;
 
 namespace WildRP.AMVTool.Sceneview;
 
-public partial class SceneView : Node
+public partial class SceneView : Node3D
 {
     public override void _Ready()
     {
@@ -15,6 +15,7 @@ public partial class SceneView : Node
     {
         var dt = (float)delta;
 
+        Visible = AmvBakerGui.GuiVisible;
         ProcessCamera(dt);
     }
 

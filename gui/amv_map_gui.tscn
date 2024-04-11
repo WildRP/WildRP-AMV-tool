@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://i02qsc7fr6co"]
+
+[ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_3bhh4"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wog76"]
+
+[node name="AMV Map" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("1_3bhh4")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wog76")
