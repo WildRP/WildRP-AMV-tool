@@ -31,7 +31,7 @@ To compile this project you will need:
 
 If you want a proper background for the AMV map and you are building this yourself, you will need to download a set of 
 map tiles and extract them to the `maptiles` folder. These are expected to be in the format of
-`XPosition_YPosition.webp`. The exported program uses the Dark Tiles by [TDLCTV](https://github.com/jeanropke/RDOMap/tree/master), helpfully provided by [this 
+`XPosition_YPosition.webp`. The exported program uses the tiles helpfully provided by [this 
 repo](https://github.com/jeanropke/RDOMap/tree/master).
 
 ## Acknowledgements
