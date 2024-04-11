@@ -16,3 +16,7 @@ mono_crash.*.json
 
 # Rider
 .idea/
+
+# Map Tiles (Rockstar copyrighted)
+maptiles/*.webp
+maptiles/*.import

@@ -1,8 +1,9 @@
-[gd_scene load_steps=22 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=24 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/AmvBaker.cs" id="2_lwufd"]
+[ext_resource type="Script" path="res://scripts/RedDeadMap.cs" id="3_jvogm"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://nsvut1wbybbw" path="res://objects/ambient_mask_volume.tscn" id="4_htupu"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
@@ -12,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://dwk3wagkg5qsx" path="res://gui/help_ui.tscn" id="10_hf7ko"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="10_ir2tt"]
 [ext_resource type="Script" path="res://scripts/GUI/ViewPanel.cs" id="10_xk6cx"]
+[ext_resource type="PackedScene" uid="uid://i02qsc7fr6co" path="res://gui/amv_map_gui.tscn" id="11_cc11r"]
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
 [ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
 
@@ -56,7 +58,9 @@ corner_detail = 5
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nun7o"]
 
-[node name="Root" type="Node3D" node_paths=PackedStringArray("_cameraNode", "_anchor")]
+[node name="Node" type="Node"]
+
+[node name="3D Scene View" type="Node3D" parent="." node_paths=PackedStringArray("_cameraNode", "_anchor")]
 script = ExtResource("3_w7hpc")
 _scrollSpeed = 100.0
 _cameraOrbitSpeed = 1.0
@@ -64,29 +68,35 @@ _defaultCamDistance = 14.0
 _cameraNode = NodePath("SpringArm3D/Camera3D")
 _anchor = NodePath("SpringArm3D")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="3D Scene View"]
 environment = SubResource("Environment_8ejdi")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="3D Scene View/WorldEnvironment"]
 transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.5, -0.707107, -0.5, 0, 0, 0)
 
-[node name="AMV Container" type="Node3D" parent="."]
+[node name="AMV Container" type="Node3D" parent="3D Scene View"]
 
-[node name="AMV Model Container" type="Node3D" parent="." node_paths=PackedStringArray("_placeholder")]
+[node name="AMV Model Container" type="Node3D" parent="3D Scene View" node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_lwufd")
 _placeholder = NodePath("Placeholder")
 
-[node name="Placeholder" type="MeshInstance3D" parent="AMV Model Container"]
+[node name="Placeholder" type="MeshInstance3D" parent="3D Scene View/AMV Model Container"]
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
 
-[node name="SpringArm3D" type="SpringArm3D" parent="."]
+[node name="SpringArm3D" type="SpringArm3D" parent="3D Scene View"]
 collision_mask = 0
 
-[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
+[node name="Camera3D" type="Camera3D" parent="3D Scene View/SpringArm3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 current = true
 fov = 60.0
+
+[node name="AMV Map View" type="Node2D" parent="."]
+script = ExtResource("3_jvogm")
+
+[node name="Camera2D" type="Camera2D" parent="AMV Map View"]
+visibility_layer = 15
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -132,7 +142,7 @@ _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organiz
 _fileDialog = NodePath("../../FileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
 _amvScene = ExtResource("4_htupu")
-_amvContainerNode = NodePath("../../../../AMV Container")
+_amvContainerNode = NodePath("../../../../3D Scene View/AMV Container")
 _controlToHide = NodePath("HSplitContainer")
 _amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 _amvListContextMenu = NodePath("../../AMVListContextMenu")
@@ -541,6 +551,12 @@ value = 0.46
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Cancel Bake"
+
+[node name="AMV Map" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_mapRoot", "_mapCamera") instance=ExtResource("11_cc11r")]
+visible = false
+layout_mode = 2
+_mapRoot = NodePath("../../../../AMV Map View")
+_mapCamera = NodePath("../../../../AMV Map View/Camera2D")
 
 [node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
 visible = false
