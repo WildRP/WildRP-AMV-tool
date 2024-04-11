@@ -35,9 +35,9 @@ public partial class RedDeadMap : Node2D
 				var fileName = dir.GetNext();
 				if (fileName == "") break;
 				
-				if (dir.CurrentIsDir() == false && fileName.EndsWith(".webp"))
+				if (dir.CurrentIsDir() == false && fileName.EndsWith(".webp.import"))
 				{
-					imageFiles.Add(fileName);
+					imageFiles.Add(fileName.Replace(".import",""));
 				}
 			}
 		}
