@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=26 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://nsvut1wbybbw" path="res://objects/ambient_mask_volume.tscn" id="4_htupu"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
+[ext_resource type="PackedScene" uid="uid://bnf5rc1a22qxm" path="res://gui/project_settings.tscn" id="6_84chb"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="9_isvef"]
 [ext_resource type="PackedScene" uid="uid://dwk3wagkg5qsx" path="res://gui/help_ui.tscn" id="10_hf7ko"]
@@ -15,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/GUI/ViewPanel.cs" id="10_xk6cx"]
 [ext_resource type="PackedScene" uid="uid://i02qsc7fr6co" path="res://gui/amv_map_gui.tscn" id="11_cc11r"]
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
+[ext_resource type="PackedScene" uid="uid://c6rfggpw1cyt6" path="res://gui/deferredprobes_ui.tscn" id="12_2exl6"]
 [ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
@@ -93,6 +95,7 @@ current = true
 fov = 60.0
 
 [node name="AMV Map View" type="Node2D" parent="."]
+visible = false
 script = ExtResource("3_jvogm")
 
 [node name="Camera2D" type="Camera2D" parent="AMV Map View"]
@@ -126,9 +129,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+current_tab = 1
 tab_focus_mode = 1
 
-[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_ymapPositionX", "_ymapPositionY", "_ymapPositionZ", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="Project Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("6_84chb")]
+visible = false
+layout_mode = 2
+
+[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -155,9 +163,6 @@ _amvInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer
 _textureName = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2/Rotation")
 _randomizeTextureNameButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Button")
-_ymapPositionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/X")
-_ymapPositionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/Y")
-_ymapPositionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/Z")
 _positionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/X")
 _positionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Y")
 _positionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Z")
@@ -297,48 +302,6 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
-
-[node name="YMAP Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
-layout_mode = 2
-text = "YMAP Position
-"
-
-[node name="YMAP Position" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
-layout_mode = 2
-size_flags_horizontal = 0
-
-[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
-custom_minimum_size = Vector2(69.655, 0)
-layout_mode = 2
-max_value = 0.0
-step = 0.001
-allow_greater = true
-allow_lesser = true
-update_on_text_changed = true
-prefix = "X:"
-script = ExtResource("10_ir2tt")
-
-[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
-custom_minimum_size = Vector2(69.655, 0)
-layout_mode = 2
-max_value = 0.0
-step = 0.001
-allow_greater = true
-allow_lesser = true
-update_on_text_changed = true
-prefix = "Y:"
-script = ExtResource("10_ir2tt")
-
-[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
-custom_minimum_size = Vector2(69.655, 0)
-layout_mode = 2
-max_value = 0.0
-step = 0.001
-allow_greater = true
-allow_lesser = true
-update_on_text_changed = true
-prefix = "Z:"
-script = ExtResource("10_ir2tt")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
@@ -552,17 +515,21 @@ layout_mode = 2
 size_flags_horizontal = 8
 text = "Cancel Bake"
 
+[node name="Reflection Probes" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("12_2exl6")]
+visible = false
+layout_mode = 2
+
 [node name="AMV Map" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_mapRoot", "_mapCamera") instance=ExtResource("11_cc11r")]
 visible = false
 layout_mode = 2
 _mapRoot = NodePath("../../../../AMV Map View")
 _mapCamera = NodePath("../../../../AMV Map View/Camera2D")
 
-[node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
+[node name="Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("4_oxe1r")]
 visible = false
 layout_mode = 2
 
-[node name="Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("4_oxe1r")]
+[node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
 visible = false
 layout_mode = 2
 

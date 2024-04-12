@@ -35,6 +35,11 @@ public static class Utils
 
         return h;
     }
+
+    public static int SignedJenkins(string text)
+    {
+        return unchecked((int)JenkinsHash(text));
+    }
     
     // Input is first half of UUID, second half of UUID, and Jenkins has of interior name
     public static uint LightProbeHash(uint[] ints, uint seed = 0)

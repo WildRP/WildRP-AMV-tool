@@ -42,9 +42,6 @@ public partial class AmbientMaskVolume : Node3D
 	}
 
 	private Vector3 _size = Vector3.One;
-	private Vector3 _ymapPosition = Vector3.Zero;
-
-	public Vector3 YmapPosition => _ymapPosition;
 
 	private List<AmvProbe> _probes = [];
 
@@ -324,7 +321,6 @@ public partial class AmbientMaskVolume : Node3D
 		var rot = RotationDegrees;
 		rot.Y = data.Value.Rotation;
 		RotationDegrees = rot;
-		_ymapPosition = data.Value.YmapPosition;
 	}
 
 	public AmvData Save()
@@ -336,7 +332,6 @@ public partial class AmbientMaskVolume : Node3D
 		data.Size = Size;
 		data.ProbeCount = ProbeCount;
 		data.Rotation = RotationDegrees.Y;
-		data.YmapPosition = _ymapPosition;
 
 		return data;
 	}
@@ -345,12 +340,16 @@ public partial class AmbientMaskVolume : Node3D
 	{
 		var xmlSize = Size/2f;
 		//xmlSize += Size / ProbeCount / 2;
+		var ymapPosition = SaveManager.CurrentProject.YMapPosition;
+
+		var iplHash = 0U;
+		if (SaveManager.CurrentProject.YMapName != "")
+			iplHash = Utils.JenkinsHash(SaveManager.CurrentProject.YMapName);
 		
 		return new XDocument(
 			new XElement("Item",
 				new XElement("enabled", new XAttribute("value", true)),
-				new XElement("position", new XAttribute("x", _ymapPosition.X + Position.X), new XAttribute("y", _ymapPosition.Z - Position.Z), new XAttribute("z", _ymapPosition.Y + Position.Y)),
-				new XComment("Rotation: Only uses the X attribute, uses degrees and not radians."),
+				new XElement("position", new XAttribute("x", ymapPosition.X + Position.X), new XAttribute("y", ymapPosition.Y - Position.Z), new XAttribute("z", ymapPosition.Z + Position.Y)),
 				new XElement("rotation", new XAttribute("x", -RotationDegrees.Y), new XAttribute("y", 0), new XAttribute("z", 0)),
 				new XElement("scale", new XAttribute("x", xmlSize.X), new XAttribute("y", xmlSize.Z), new XAttribute("z", xmlSize.Y)),
 				new XElement("falloffScaleMin", new XAttribute("x", 1f), new XAttribute("y", 1f), new XAttribute("z", 1f)),
@@ -379,14 +378,12 @@ public partial class AmbientMaskVolume : Node3D
 				new XElement("vehicleInterior", new XAttribute("value", false)),
 				new XElement("sourceFolder", "NotRelevant"),
 				new XElement("uuid", new XAttribute("value", TextureName)),
-				new XElement("iplHash", new XAttribute("value", 0))
+				new XElement("iplHash", new XAttribute("value", iplHash))
 			)).ToString();
 	}
 	
 	public class AmvData // Used for save and load
 	{
-		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
-		public Vector3 YmapPosition = Vector3.Zero;
 		[JsonInclude]
 		public ulong TextureName = 0;
 		[JsonInclude]
@@ -479,27 +476,6 @@ public partial class AmbientMaskVolume : Node3D
 		var v = RotationDegrees;
 		v.Y = (float)n;
 		RotationDegrees = v;
-	}
-	
-	public void SetYmapPositionX(double n)
-	{
-		var v = _ymapPosition;
-		v.X = (float)n;
-		_ymapPosition = v;
-	}
-	
-	public void SetYmapPositionY(double n)
-	{
-		var v = _ymapPosition;
-		v.Y = (float)n;
-		_ymapPosition = v;
-	}
-	
-	public void SetYmapPositionZ(double n)
-	{
-		var v = _ymapPosition;
-		v.Z = (float)n;
-		_ymapPosition = v;
 	}
 	#endregion
 }

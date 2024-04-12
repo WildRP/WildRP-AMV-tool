@@ -13,6 +13,7 @@ public partial class SaveManager : Node
 	public static event Action<Project> ProjectLoaded;
 	
 	private static Project _currentProject;
+	public static Project CurrentProject => _currentProject;
 
 	private const string ProjectsFolder = "user://projects";
 	private const string JsonFileName = "project.json";
@@ -78,17 +79,20 @@ public partial class SaveManager : Node
 	}
 
 	public static void SetModel(string path) => _currentProject.ModelPath = path;
+
+	public static void UpdateYmapName(string name) => _currentProject.YMapName = name;
+	public static void UpdateInteriorName(string name) => _currentProject.InteriorName = name;
+	public static void UpdateYmapPosition(Vector3 pos) => _currentProject.YMapPosition = pos;
 	
 	public class Project()
 	{
-		[JsonInclude]
-		public string Name;
-		
-		[JsonInclude]
-		public string ModelPath = "";
-		
-		[JsonInclude]
-		public Dictionary<string, AmbientMaskVolume.AmvData> Volumes = [];
+		[JsonInclude] public string Name = "";
+		[JsonInclude] public string ModelPath = "";
+		[JsonInclude] public string ReflectionModelPath = "";
+		[JsonInclude, JsonConverter(typeof(Vector3JsonConverter))] public Vector3 YMapPosition = Vector3.Zero;
+		[JsonInclude] public string YMapName = "";
+		[JsonInclude] public string InteriorName = "";
+		[JsonInclude] public Dictionary<string, AmbientMaskVolume.AmvData> Volumes = [];
 	}
 	
 	// Shamelessly stolen from:

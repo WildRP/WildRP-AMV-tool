@@ -311,21 +311,10 @@ public partial class AmvBakerGui : Control
         _probesY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Z) : "0" ;
 		_probesZ.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Y : 0);
         _probesZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Y) : "0" ;
-		
-		_ymapPositionX.SetValueNoSignal(v ? SelectedAmv.YmapPosition.X : 0);
-		_ymapPositionX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.X) : "0" ;
-		_ymapPositionY.SetValueNoSignal(v ? -SelectedAmv.YmapPosition.Z : 0);
-		_ymapPositionY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.Z) : "0" ;
-		_ymapPositionZ.SetValueNoSignal(v ? SelectedAmv.YmapPosition.Y : 0);
-		_ymapPositionZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.Y) : "0" ;
 	}
 
 	private void ConnectAmvGui()
 	{
-		_ymapPositionX.ValueChanged += SelectedAmv.SetYmapPositionX;
-		_ymapPositionY.ValueChanged += SelectedAmv.SetYmapPositionZ;
-		_ymapPositionZ.ValueChanged += SelectedAmv.SetYmapPositionY;
-		
 		_positionX.ValueChanged += SelectedAmv.SetPositionX;
 		_positionY.ValueChanged += SelectedAmv.SetPositionZ;
 		_positionZ.ValueChanged += SelectedAmv.SetPositionY;
@@ -347,10 +336,6 @@ public partial class AmvBakerGui : Control
 	
 	private void DisconnectAmvGui()
 	{
-		_ymapPositionX.ValueChanged -= SelectedAmv.SetYmapPositionX;
-		_ymapPositionY.ValueChanged -= SelectedAmv.SetYmapPositionZ;
-		_ymapPositionZ.ValueChanged -= SelectedAmv.SetYmapPositionY;
-		
 		_positionX.ValueChanged -= SelectedAmv.SetPositionX;
 		_positionY.ValueChanged -= SelectedAmv.SetPositionZ;
 		_positionZ.ValueChanged -= SelectedAmv.SetPositionY;
