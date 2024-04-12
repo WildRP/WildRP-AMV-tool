@@ -17,8 +17,6 @@ public partial class AmbientMaskVolume : Volume
 {
 	[Export] private AmvBoundsMesh _boundsMesh;
 	[Export] private PackedScene _probeScene;
-	
-	public new bool Selected => AmvBakerGui.SelectedAmv == this;
 	public bool IncludeInFullBake { get; set; } = true;
 	
 	private int _samples;
@@ -344,7 +342,9 @@ public partial class AmbientMaskVolume : Volume
 				new XElement("iplHash", new XAttribute("value", iplHash))
 			)).ToString();
 	}
-	
+
+	public override bool Selected() => AmvBakerGui.SelectedAmv == this;
+
 	public class AmvData : VolumeData
 	{
 		[JsonInclude]

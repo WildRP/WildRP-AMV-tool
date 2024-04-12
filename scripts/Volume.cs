@@ -25,8 +25,12 @@ public partial class Volume : Node3D
     public event Action<Volume> Deleted;
     public event Action SizeChanged;
 
+    public event Action<bool> UiToggled;
+
     protected void OnDeleted() => Deleted?.Invoke(this);
     protected void OnSizeChanged() => SizeChanged?.Invoke();
+
+    protected void OnUiToggled(bool v) => UiToggled?.Invoke(v);
     
     public void ChangeSizeWithGizmo(Vector3 diff, bool positive)
     {
@@ -106,4 +110,6 @@ public partial class Volume : Node3D
         QueueFree();
         OnDeleted();
     }
+
+    public virtual bool Selected() => false;
 }
