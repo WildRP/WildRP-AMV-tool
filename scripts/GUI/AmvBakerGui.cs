@@ -225,7 +225,7 @@ public partial class AmvBakerGui : Control
 		}
 	}
 
-	private void OnDeleteAmv(AmbientMaskVolume volume)
+	private void OnDeleteAmv(Volume volume)
 	{
 		for (int i = 0; i < _amvList.ItemCount; i++)
 		{

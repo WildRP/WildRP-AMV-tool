@@ -10,8 +10,7 @@ public partial class AmvProbe : MeshInstance3D
 {
 	[Export] private bool _drawDebugLines = false;
 	[Export] private PackedScene _debugLine;
-
-	[Export] private bool _debugPosition = false;
+	
 	[Export] private Label3D _receivedPosLabel;
 	[Export] private Label3D _requestedPosLabel;
 	
@@ -42,12 +41,6 @@ public partial class AmvProbe : MeshInstance3D
 	{
 		SetInstanceShaderParameter("positive_occlusion", Vector3.One * 0.5f);
 		SetInstanceShaderParameter("negative_occlusion", Vector3.One * 0.5f);
-
-		if (_debugPosition)
-		{
-			_receivedPosLabel.Text = CellPosition.ToString();
-			_requestedPosLabel.Text = ParentVolume.PositionTest(CellPosition).ToString();
-		}
 	}
 
 	public void CaptureSample()

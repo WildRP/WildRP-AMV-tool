@@ -13,22 +13,14 @@ using FileAccess = Godot.FileAccess;
 
 namespace WildRP.AMVTool;
 
-public partial class AmbientMaskVolume : Node3D
+public partial class AmbientMaskVolume : Volume
 {
 	[Export] private AmvBoundsMesh _boundsMesh;
 	[Export] private PackedScene _probeScene;
-	public string GuiListName { get; private set; }
-	public bool Selected => AmvBakerGui.SelectedAmv == this;
+	
+	public new bool Selected => AmvBakerGui.SelectedAmv == this;
 	public bool IncludeInFullBake { get; set; } = true;
-	public void Setup(string name) => GuiListName = name;
-
-	private bool _baked;
-	public bool Baked
-	{
-		get;
-		set;
-	}
-
+	
 	private int _samples;
 
 	public int Samples
@@ -41,15 +33,7 @@ public partial class AmbientMaskVolume : Node3D
 		}
 	}
 
-	private Vector3 _size = Vector3.One;
-
 	private List<AmvProbe> _probes = [];
-
-	public Vector3 Size
-	{
-		get => _size;
-		private set => _size = value;
-	}
 	
 	private Vector3I _probeCount = Vector3I.One * 2;
 	public Vector3I ProbeCount
@@ -59,9 +43,6 @@ public partial class AmbientMaskVolume : Node3D
 	}
 
 	public ulong TextureName { get; set; }
-
-	public event Action<AmbientMaskVolume> Deleted;
-	public event Action SizeChanged;
 	public event Action ProbeCountChanged;
 
 	public void GenerateTextures()
@@ -284,30 +265,12 @@ public partial class AmbientMaskVolume : Node3D
 
 		return value;
 	}
-
-	public Vector3I PositionTest(Vector3I pos)
-	{
-		return IndexToCell(CellToIndex(pos));
-	}
 	
-	public void Delete()
+	public override void Delete()
 	{
 		QueueFree();
 		SaveManager.DeleteAmv(GuiListName);
-		Deleted(this);
-	}
-
-	public void ChangeSizeWithGizmo(Vector3 diff, bool positive)
-	{
-		
-		_size += diff;
-		
-		if (positive)
-			diff *= -1;
-		
-		Position -= Basis * (diff / 2);
-		
-		SizeChanged();
+		OnDeleted();
 	}
 
 	public void Load(KeyValuePair<string, AmvData> data)
@@ -336,7 +299,7 @@ public partial class AmbientMaskVolume : Node3D
 		return data;
 	}
 
-	public string GetXml()
+	public override string GetXml()
 	{
 		var xmlSize = Size/2f;
 		//xmlSize += Size / ProbeCount / 2;
@@ -382,70 +345,18 @@ public partial class AmbientMaskVolume : Node3D
 			)).ToString();
 	}
 	
-	public class AmvData // Used for save and load
+	public class AmvData : VolumeData
 	{
 		[JsonInclude]
 		public ulong TextureName = 0;
 		[JsonInclude]
 		public float Rotation = 0;
-		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
-		public Vector3 Position = Vector3.Zero;
-		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
-		public Vector3 Size = Vector3.One;
 		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3IJsonConverter))]
 		public Vector3I ProbeCount = Vector3I.One * 2;
 	}
 	
 	// These are used to connect to the UI
 	#region UIConnectFunctions
-
-	public void SetSizeX(double n)
-	{
-		var v = Size;
-		v.X = (float)n;
-		Size = v;
-		SizeChanged();
-	}
-	
-	public void SetSizeY(double n)
-	{
-		var v = Size;
-		v.Y = (float)n;
-		Size = v;
-		SizeChanged();
-	}
-	
-	public void SetSizeZ(double n)
-	{
-		var v = Size;
-		v.Z = (float)n;
-		Size = v;
-		SizeChanged();
-	}
-	
-	public void SetPositionX(double n)
-	{
-		var v = Position;
-		v.X = (float)n;
-		Position = v;
-		SizeChanged();
-	}
-	
-	public void SetPositionY(double n)
-	{
-		var v = Position;
-		v.Y = (float)n;
-		Position = v;
-		SizeChanged();
-	}
-	
-	public void SetPositionZ(double n)
-	{
-		var v = Position;
-		v.Z = (float)n;
-		Position = v;
-		SizeChanged();
-	}
 	
 	public void SetProbesX(double n)
 	{
