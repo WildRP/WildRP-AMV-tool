@@ -10,13 +10,15 @@ namespace WildRPAMVTool.scripts;
 public partial class DeferredProbeBaker : Node3D
 {
 	[Export] private SubViewport _renderViewport;
+	[Export] private Camera3D _mainCamera;
 
     private Node _modelRoot;
     public static DeferredProbeBaker Instance;
 
     private Dictionary<string, DeferredProbe> _deferredProbes = [];
-
     public Dictionary<string, DeferredProbe> DeferredProbes => _deferredProbes;
+
+    private List<DeferredProbe> _bakeQueue = [];
     
     public override void _Ready()
     {
@@ -31,6 +33,47 @@ public partial class DeferredProbeBaker : Node3D
 	    }
     }
 
+    private int _probeBakeCounter;
+    public override void _Process(double delta)
+    {
+	    _renderViewport.RenderTargetUpdateMode =
+		    _bakeQueue.Count != 0 ? SubViewport.UpdateMode.Always : SubViewport.UpdateMode.Disabled;
+	    
+	    // we have to render one image from one camera per frame... thanks godot
+	    if (_bakeQueue.Count != 0)
+	    {
+		    var idx = _probeBakeCounter % _bakeQueue.Count;
+		    var p = _bakeQueue[idx];
+		    p.BakeNext();
+		    _probeBakeCounter++;
+	    }
+
+	    if (_bakeQueue.All(p => p.Baked))
+	    {
+		    _bakeQueue.Clear();
+		    _mainCamera.Current = true;
+	    }
+    }
+
+    public void BakeAll()
+    {
+	    _bakeQueue.AddRange(_deferredProbes.Values);
+	    _probeBakeCounter = 0;
+
+	    foreach (var p in _bakeQueue)
+	    {
+		    p.Clear();
+	    }
+    }
+
+    public void ExportAll()
+    {
+	    foreach (var p in _deferredProbes)
+	    {
+		    p.Value.GenerateTextures();
+	    }
+    }
+    
     public void Clear()
     {
 	    _deferredProbes.Clear();
@@ -39,6 +82,7 @@ public partial class DeferredProbeBaker : Node3D
     public void RegisterProbe(DeferredProbe probe)
     {
 	    DeferredProbes.Add(probe.GuiListName, probe);
+	    probe.SetViewport(_renderViewport);
 	    probe.Deleted += volume => DeferredProbes.Remove(probe.GuiListName);
     }
     
@@ -59,7 +103,8 @@ public partial class DeferredProbeBaker : Node3D
         modelState.Cameras.Clear();
 		
         _modelRoot = modelDoc.GenerateScene(modelState);
-        AddChild(_modelRoot);
+        _renderViewport.AddChild(_modelRoot);
+        AddChild(_modelRoot.Duplicate());
 		
         List<Node> nodes = [];
         Utils.GetAllChildren(_modelRoot, nodes);
@@ -72,20 +117,6 @@ public partial class DeferredProbeBaker : Node3D
 	        m.Layers = 0;
 	        m.SetLayerMaskValue(1, true);
 	        m.SetLayerMaskValue(20, true);
-	        
-            var body = new StaticBody3D();
-            body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
-            body.CollisionLayer = 1;
-            body.InputRayPickable = false;
-			
-            var shape = new CollisionShape3D();
-            var polygonShape = new ConcavePolygonShape3D();
-            polygonShape.BackfaceCollision = true;
-            polygonShape.Data = m.Mesh.GetFaces();
-
-            shape.Shape = polygonShape;
-            body.AddChild(shape);
-            m.AddChild(body);
 			
             result.Add(m);
         }

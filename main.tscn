@@ -87,10 +87,11 @@ environment = SubResource("Environment_8ejdi")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="3D Scene View/WorldEnvironment"]
 transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.5, -0.707107, -0.5, 0, 0, 0)
 
-[node name="Deferred Probe Container" type="Node3D" parent="3D Scene View" node_paths=PackedStringArray("_renderViewport")]
+[node name="Deferred Probe Container" type="Node3D" parent="3D Scene View" node_paths=PackedStringArray("_renderViewport", "_mainCamera")]
 visible = false
 script = ExtResource("2_y4e7g")
 _renderViewport = NodePath("SubViewport")
+_mainCamera = NodePath("../SpringArm3D/Camera3D")
 
 [node name="SubViewport" type="SubViewport" parent="3D Scene View/Deferred Probe Container"]
 own_world_3d = true

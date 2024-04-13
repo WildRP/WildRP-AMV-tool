@@ -25,7 +25,7 @@ public partial class DeferredProbesUi : Control
 			
 		[ExportGroup("Deferred Probes")]
 			[Export] private PackedScene _deferredProbeScene;
-			[Export] private Node3D _probeContainerNode;
+			[Export] private Node _probeContainerNode;
 
 			[ExportSubgroup("UI Elements")]
 				[Export] private Control _controlToHide;
@@ -100,6 +100,10 @@ public partial class DeferredProbesUi : Control
 			GuiToggled?.Invoke(Visible);
 			_probeModelContainer.Visible = Visible;
 		};
+
+		_bakeAllButton.Pressed += () => DeferredProbeBaker.Instance.BakeAll();
+
+		_exportTexturesBtn.Pressed += () => DeferredProbeBaker.Instance.ExportAll();
 
 		_randomizeUuidButton.Pressed += () =>
 		{

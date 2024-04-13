@@ -13,15 +13,27 @@ public partial class DeferredProbe : Volume
     public Vector3 CenterOffset;
 
     [Export] private Node3D _centerNode;
-    [Export] public Array<Camera3D> _renderCameras;
+    [Export] private Array<Camera3D> _renderCameras;
+
+    public List<Image> ColorTextures = [];
+    private SubViewport _viewport;
+    private Node _originalParent;
+
+    public bool Baked => ColorTextures.Count >= 6;
 
     public override void _Ready()
     {
         base._Ready();
         SaveManager.SavingProject += SaveToProject;
         SizeChanged += UpdateCenter;
+        _originalParent = GetParent();
     }
 
+    public void SetViewport(SubViewport v)
+    {
+        _viewport = v;
+    }
+    
     public override void _ExitTree()
     {
         base._ExitTree();
@@ -31,6 +43,50 @@ public partial class DeferredProbe : Volume
     void UpdateCenter()
     {
         _centerNode.Position = CenterOffset;
+    }
+
+    
+    public void BakeNext()
+    {
+        if (Baked == false) Reparent(_viewport, true);
+        
+        if (ColorTextures.Count < 6)
+            RenderColor(ColorTextures.Count);
+        
+        if (Baked) Reparent(_originalParent, true);
+    }
+    
+    public void RenderColor(int cam)
+    {
+        _renderCameras[cam].Current = true;
+        RenderingServer.FramePostDraw += GrabColorTex; // lol this is so silly. thanks godot.
+    }
+
+    public void GrabColorTex()
+    {
+        var tex = _viewport.GetTexture().GetImage();
+        ColorTextures.Add(tex);
+        RenderingServer.FramePostDraw -= GrabColorTex;
+    }
+
+    public void GenerateTextures()
+    {
+        if (Baked == false) return;
+
+        var dir = SaveManager.GetProjectPath() + "/" + Guid;
+        if (DirAccess.DirExistsAbsolute(dir) == false)
+            DirAccess.MakeDirAbsolute(dir);
+        
+        for (int i = 0; i < ColorTextures.Count; i++)
+        {
+            var err = ColorTextures[i].SavePng($"{dir}/Color_{i}.png");
+            GD.Print(err);
+        }
+    }
+    
+    public void Clear()
+    {
+        ColorTextures.Clear();
     }
 
     public void Load(KeyValuePair<string, DeferredProbeData> data)
