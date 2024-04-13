@@ -75,6 +75,16 @@ public partial class Settings : Node
         }
     }
 
+    public static bool LoadMap
+    {
+        get => _settingsFile.GetValue("Settings", "LoadMap", true).AsBool();
+        set
+        {
+            _settingsFile.SetValue("Settings", "LoadMap", value);
+            _dirty = true;
+        }
+    }
+
     private static bool _dirty; // Marks that it's time to save settings
 
     public override void _Ready()

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AsyncResourceLoaderRuntime;
+using WildRP.AMVTool.Autoloads;
 
 namespace WildRP.AMVTool.AmvMap;
 public partial class RedDeadMap : Node2D
@@ -18,7 +19,8 @@ public partial class RedDeadMap : Node2D
 		Container = new Node2D();
 		AddChild(Container);
 		
-		LoadTiles();
+		if (Settings.LoadMap)
+			LoadTiles();
 	}
 	
 	async void LoadTiles()

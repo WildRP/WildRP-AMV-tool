@@ -12,13 +12,18 @@ public partial class DeferredProbeBaker : Node3D
 	[Export] private SubViewport _renderViewport;
 	[Export] private Camera3D _mainCamera;
 
+	[Export] private ShaderMaterial _probeMeshMaterial;
+	[Export] private ShaderMaterial _decalMeshMaterial;
+
     private Node _modelRoot;
+    private Node3D _visibleModelRoot;
     public static DeferredProbeBaker Instance;
 
     private Dictionary<string, DeferredProbe> _deferredProbes = [];
     public Dictionary<string, DeferredProbe> DeferredProbes => _deferredProbes;
 
     private List<DeferredProbe> _bakeQueue = [];
+    private List<MeshInstance3D> _renderMeshes = [];
     
     public override void _Ready()
     {
@@ -86,9 +91,14 @@ public partial class DeferredProbeBaker : Node3D
 	    probe.Deleted += volume => DeferredProbes.Remove(probe.GuiListName);
     }
     
-    public List<MeshInstance3D> LoadModel(string path)
+    public List<Tuple<MeshInstance3D, MeshInstance3D>> LoadModel(string path)
     {
         _modelRoot?.QueueFree();
+        _visibleModelRoot?.QueueFree();
+        _renderMeshes.Clear();
+        
+        _visibleModelRoot = new Node3D();
+        AddChild(_visibleModelRoot);
 
         if (path == "") return null;
         
@@ -104,21 +114,40 @@ public partial class DeferredProbeBaker : Node3D
 		
         _modelRoot = modelDoc.GenerateScene(modelState);
         _renderViewport.AddChild(_modelRoot);
-        AddChild(_modelRoot.Duplicate());
 		
         List<Node> nodes = [];
         Utils.GetAllChildren(_modelRoot, nodes);
 
-        List<MeshInstance3D> result = [];
+        List<Tuple<MeshInstance3D, MeshInstance3D>> result = [];
 		
         var meshes = nodes.OfType<MeshInstance3D>().ToList();
         foreach (var m in meshes)
         {
-	        m.Layers = 0;
-	        m.SetLayerMaskValue(1, true);
-	        m.SetLayerMaskValue(20, true);
-			
-            result.Add(m);
+	        var s = m.GetSurfaceOverrideMaterialCount();
+	        for (int i = 0; i < s; i++)
+	        {
+		        m.SetLayerMaskValue(20, true);
+		        var mat = m.Mesh.SurfaceGetMaterial(i) as StandardMaterial3D;
+
+		        ShaderMaterial newMat;
+		        
+		        if (mat.Transparency != BaseMaterial3D.TransparencyEnum.Disabled)
+					newMat = _decalMeshMaterial.Duplicate() as ShaderMaterial;
+		        else
+					newMat = _probeMeshMaterial.Duplicate() as ShaderMaterial;
+		        
+		        if (mat.AlbedoTexture != null) newMat.SetShaderParameter("ab", mat.AlbedoTexture.Duplicate());
+		        
+		        m.SetSurfaceOverrideMaterial(i, newMat);
+	        }
+
+	        var visibleMesh = m.Duplicate() as MeshInstance3D;
+	        _visibleModelRoot.AddChild(visibleMesh);
+	        
+	        _renderMeshes.Add(m);
+
+	        var res = new Tuple<MeshInstance3D, MeshInstance3D>(m, visibleMesh);
+            result.Add(res);
         }
 		
         return result;

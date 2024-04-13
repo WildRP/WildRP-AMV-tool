@@ -23,19 +23,19 @@ public partial class ModelListItem : HBoxContainer
 	}
 
 	// Setup for deferred probes
-	public void Setup(string text, MeshInstance3D mesh)
+	public void Setup(string text, MeshInstance3D mesh, MeshInstance3D meshInViewport)
 	{
 		_itemName.Text = text;
 		_renderMesh = mesh;
 		
-		_visibilityCheck.Toggled += on => _renderMesh.SetLayerMaskValue(1, on);
-		_renderCheck.Toggled += on => _renderMesh.SetLayerMaskValue(20, on);
+		_visibilityCheck.Toggled += on => meshInViewport.Visible = on;
+		_renderCheck.Toggled += on => mesh.Visible = on;
 	}
 
 	public void Remove()
 	{
 		QueueFree();
 		_renderMesh.QueueFree();
-		_staticBody.QueueFree();
+		_staticBody?.QueueFree();
 	}
 }

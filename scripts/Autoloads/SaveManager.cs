@@ -158,4 +158,17 @@ public partial class SaveManager : Node
 			writer.WriteStringValue(GD.VarToStr(v));
 		}
 	}
+
+	public class GuidConverter : JsonConverter<ulong>
+	{
+		public override ulong Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+		{
+			return reader.GetUInt64();
+		}
+
+		public override void Write(Utf8JsonWriter writer, ulong value, JsonSerializerOptions options)
+		{
+			writer.WriteNumber("Guid", value);
+		}
+	}
 }

@@ -1,14 +1,17 @@
-[gd_scene load_steps=30 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=35 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/AmvBaker.cs" id="2_lwufd"]
 [ext_resource type="Script" path="res://scripts/DeferredProbeBaker.cs" id="2_y4e7g"]
+[ext_resource type="Material" uid="uid://bysb8oiou3ugt" path="res://materials/ProbeMeshMat.tres" id="3_cfa5x"]
 [ext_resource type="Script" path="res://scripts/RedDeadMap.cs" id="3_jvogm"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://nsvut1wbybbw" path="res://objects/ambient_mask_volume.tscn" id="4_htupu"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
+[ext_resource type="Material" uid="uid://pgy0wjc64mmc" path="res://materials/ProbeMeshMat_Decal.tres" id="4_stxj5"]
+[ext_resource type="Shader" path="res://shaders/renderpass_filter.gdshader" id="5_axexi"]
 [ext_resource type="PackedScene" uid="uid://bnf5rc1a22qxm" path="res://gui/project_settings.tscn" id="6_84chb"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
 [ext_resource type="Script" path="res://scripts/GUI/VolumeList.cs" id="9_isvef"]
@@ -42,10 +45,20 @@ ssao_light_affect = 1.0
 
 [sub_resource type="Environment" id="Environment_puche"]
 background_mode = 1
-background_color = Color(1, 1, 1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
 
 [sub_resource type="World3D" id="World3D_mjs27"]
 environment = SubResource("Environment_puche")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f2aa8"]
+render_priority = 0
+shader = ExtResource("5_axexi")
+
+[sub_resource type="QuadMesh" id="QuadMesh_3dkyg"]
+material = SubResource("ShaderMaterial_f2aa8")
+flip_faces = true
+size = Vector2(2, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8xwos"]
 
@@ -92,13 +105,21 @@ visible = false
 script = ExtResource("2_y4e7g")
 _renderViewport = NodePath("SubViewport")
 _mainCamera = NodePath("../SpringArm3D/Camera3D")
+_probeMeshMaterial = ExtResource("3_cfa5x")
+_decalMeshMaterial = ExtResource("4_stxj5")
 
 [node name="SubViewport" type="SubViewport" parent="3D Scene View/Deferred Probe Container"]
 own_world_3d = true
 world_3d = SubResource("World3D_mjs27")
-canvas_cull_mask = 4293918720
+canvas_cull_mask = 4294443008
 size = Vector2i(1024, 1024)
 render_target_update_mode = 0
+
+[node name="PostProcess" type="MeshInstance3D" parent="3D Scene View/Deferred Probe Container/SubViewport"]
+layers = 524288
+sorting_offset = 10000.0
+extra_cull_margin = 1500.0
+mesh = SubResource("QuadMesh_3dkyg")
 
 [node name="AMV Model Container" type="Node3D" parent="3D Scene View" node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_lwufd")

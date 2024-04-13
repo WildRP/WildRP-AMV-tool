@@ -138,6 +138,7 @@ public partial class DeferredProbesUi : Control
 		if (result == null) return; // display an error message here probably
 		
 		SaveManager.SetProbeModel(path);
+		GD.Print($"Loaded model for Reflection Probes: {path}");
 		
 		_modelNameLabel.Text = path.GetFile();
 		
@@ -145,7 +146,7 @@ public partial class DeferredProbesUi : Control
 		{
 			if (_modelListItem.Instantiate() is not ModelListItem item) continue;
 			
-			item.Setup(t.Name, t);
+			item.Setup(t.Item1.Name, t.Item1, t.Item2);
 			_modelListContainer.AddChild(item);
 			_modelListItems.Add(item);
 		}
@@ -158,8 +159,6 @@ public partial class DeferredProbesUi : Control
 			LoadModel(project.ReflectionModelPath);
 		else
 			UnloadModel(); // Project doesn't have a valid model file
-		
-		//TODO: Clear existing AMVs on load because right now it causes issues
 		
 		foreach (var data in project.Probes)
 		{
