@@ -77,9 +77,9 @@ debug_scaledown={
 
 2d_render/layer_1="Default"
 2d_render/layer_2="Interior"
-3d_render/layer_2="Visible to Reflection Probes"
 2d_render/layer_3="Exterior"
 2d_render/layer_4="Attached to Door"
+3d_render/layer_20="Reflection Probe Render"
 3d_physics/layer_1="AMV Geo"
 3d_physics/layer_2="Bounds Planes"
 

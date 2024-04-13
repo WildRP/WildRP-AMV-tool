@@ -9,7 +9,6 @@ namespace WildRPAMVTool.scripts;
 
 public partial class DeferredProbeBaker : Node3D
 {
-	[Export] private Camera3D _renderCamera;
 	[Export] private SubViewport _renderViewport;
 
     private Node _modelRoot;

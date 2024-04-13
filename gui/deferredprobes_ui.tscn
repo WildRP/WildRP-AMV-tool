@@ -48,7 +48,7 @@ content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
 
-[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_exportTexturesBtn", "_probeInfoPanel", "_uuid", "_rotation", "_randomizeUuidButton", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
+[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_exportTexturesBtn", "_probeInfoPanel", "_guid", "_rotation", "_randomizeUuidButton", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -71,7 +71,7 @@ _newProbeButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organiz
 _bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
 _exportTexturesBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Export All")
 _probeInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel")
-_uuid = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer/Texture Name")
+_guid = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer2/Rotation")
 _randomizeUuidButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Button")
 _centerOffsetX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/X")

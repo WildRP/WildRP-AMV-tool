@@ -37,7 +37,7 @@ public partial class DeferredProbesUi : Control
 				[Export] private Button _cancelBakeBtn;
 		[ExportGroup("Probe Details")] 
 			[Export] private Control _probeInfoPanel;
-			[Export] private LineEdit _uuid;
+			[Export] private LineEdit _guid;
 			[Export] private SpinBox _rotation;
 			[Export] private Button _randomizeUuidButton;
 				[ExportSubgroup("Center Offset")]
@@ -105,8 +105,10 @@ public partial class DeferredProbesUi : Control
 		{
 			if (SelectedProbe == null) return; // shouldnt happen but still
 
-			SelectedProbe.Uuid = GD.Randi();
-			_uuid.Text = SelectedProbe.Uuid.ToString("x16");
+			var r1 = GD.Randi();
+			var r2 = GD.Randi();
+			SelectedProbe.Guid = r1 | (ulong) r2 << 32;
+			_guid.Text = "0x"+SelectedProbe.Guid.ToString("x16");
 		};
 
 		_probeInfoPanel.Visible = false;
@@ -185,7 +187,7 @@ public partial class DeferredProbesUi : Control
 		string name = EnsureUniqueName($"Probe {_volumeList.ItemCount+1}");
 		
 		probe.Setup(name);
-		probe.Uuid = 0;
+		probe.Guid = 0;
 		_probeContainerNode.AddChild(probe);
 		
 		DeferredProbeBaker.Instance.RegisterProbe(probe);
@@ -244,15 +246,15 @@ public partial class DeferredProbesUi : Control
 	{
 		bool v = SelectedProbe != null;
 
-		_uuid.Text = v ? SelectedProbe.Uuid.ToString("x16") : "";
+		_guid.Text = v ? "0x"+SelectedProbe.Guid.ToString("x16") : "";
 		_rotation.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.RotationDegrees.Y) : "0";
 		
-		_centerOffsetX.SetValueNoSignal(v ? SelectedProbe.Position.X : 0);
-		_centerOffsetX.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.Position.X) : "0" ;
-		_centerOffsetY.SetValueNoSignal(v ? -SelectedProbe.Position.Z : 0);
-		_centerOffsetY.GetLineEdit().Text = v ? Convert.ToString(-SelectedProbe.Position.Z) : "0" ;
-		_centerOffsetZ.SetValueNoSignal(v ? SelectedProbe.Position.Y : 0);
-		_centerOffsetZ.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.Position.Y) : "0" ;
+		_centerOffsetX.SetValueNoSignal(v ? SelectedProbe.CenterOffset.X : 0);
+		_centerOffsetX.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.CenterOffset.X) : "0" ;
+		_centerOffsetY.SetValueNoSignal(v ? -SelectedProbe.CenterOffset.Z : 0);
+		_centerOffsetY.GetLineEdit().Text = v ? Convert.ToString(-SelectedProbe.CenterOffset.Z) : "0" ;
+		_centerOffsetZ.SetValueNoSignal(v ? SelectedProbe.CenterOffset.Y : 0);
+		_centerOffsetZ.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.CenterOffset.Y) : "0" ;
 		
 		_sizeX.SetValueNoSignal(v ? SelectedProbe.Size.X : 0);
 		_sizeX.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.Size.X) : "0" ;
@@ -271,9 +273,9 @@ public partial class DeferredProbesUi : Control
 
 	private void ConnectProbeGui()
 	{
-		_centerOffsetX.ValueChanged += SelectedProbe.SetPositionX;
-		_centerOffsetY.ValueChanged += SelectedProbe.SetPositionZ;
-		_centerOffsetZ.ValueChanged += SelectedProbe.SetPositionY;
+		_centerOffsetX.ValueChanged += SelectedProbe.SetCenterOffsetX;
+		_centerOffsetY.ValueChanged += SelectedProbe.SetCenterOffsetZ;
+		_centerOffsetZ.ValueChanged += SelectedProbe.SetCenterOffsetY;
 		
 		_sizeX.ValueChanged += SelectedProbe.SetSizeX;
 		_sizeY.ValueChanged += SelectedProbe.SetSizeZ;
@@ -288,9 +290,9 @@ public partial class DeferredProbesUi : Control
 	
 	private void DisconnectProbeGui()
 	{
-		_centerOffsetX.ValueChanged -= SelectedProbe.SetPositionX;
-		_centerOffsetY.ValueChanged -= SelectedProbe.SetPositionZ;
-		_centerOffsetZ.ValueChanged -= SelectedProbe.SetPositionY;
+		_centerOffsetX.ValueChanged -= SelectedProbe.SetCenterOffsetX;
+		_centerOffsetY.ValueChanged -= SelectedProbe.SetCenterOffsetZ;
+		_centerOffsetZ.ValueChanged -= SelectedProbe.SetCenterOffsetY;
 		
 		_sizeX.ValueChanged -= SelectedProbe.SetSizeX;
 		_sizeY.ValueChanged -= SelectedProbe.SetSizeZ;
