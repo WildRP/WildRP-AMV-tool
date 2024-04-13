@@ -44,6 +44,7 @@ public partial class SettingsGui : Control
 			Settings.TexAssembleLocation = path;
 		};
 
+		_texAssemblePath.Text = Settings.TexAssembleLocation;
 		_texAssemblePath.TextSubmitted += text => Settings.TexAssembleLocation = text;
 		
 		_minBrightSlider.ValueChanged += value => { _minBrightLabel.Text = value.ToString(".000#"); };

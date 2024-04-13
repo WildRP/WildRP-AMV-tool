@@ -121,7 +121,7 @@ layout_mode = 2
 
 [node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Rendering
+text = "AMV Rendering
 "
 label_settings = SubResource("LabelSettings_ajkbg")
 

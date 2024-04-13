@@ -173,7 +173,21 @@ public partial class AmbientMaskVolume : Volume
 		UpdateProbePositions();
 		SizeChanged += UpdateProbePositions;
 		ProbeCountChanged += UpdateProbes;
+		AmvBakerGui.GuiToggled += OnUiToggled;
+
+		SaveManager.SavingProject += SaveToProject;
 	}
+
+	public override void _ExitTree()
+	{
+		base._ExitTree();
+		SaveManager.SavingProject -= SaveToProject;
+		AmvBakerGui.GuiToggled -= OnUiToggled;
+		ProbeCountChanged -= UpdateProbes;
+		SizeChanged -= UpdateProbePositions;
+	}
+
+	private void SaveToProject() => SaveManager.UpdateAmv(GuiListName,Save());
 	
 	private int _prevProbeCount = 0;
 
@@ -349,8 +363,6 @@ public partial class AmbientMaskVolume : Volume
 	{
 		[JsonInclude]
 		public ulong TextureName = 0;
-		[JsonInclude]
-		public float Rotation = 0;
 		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3IJsonConverter))]
 		public Vector3I ProbeCount = Vector3I.One * 2;
 	}
@@ -381,12 +393,6 @@ public partial class AmbientMaskVolume : Volume
 		ProbeCount = v;
 		ProbeCountChanged();
 	}
-
-	public void SetRotation(double n)
-	{
-		var v = RotationDegrees;
-		v.Y = (float)n;
-		RotationDegrees = v;
-	}
+	
 	#endregion
 }

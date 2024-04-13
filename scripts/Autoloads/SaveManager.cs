@@ -11,6 +11,7 @@ using FileAccess = Godot.FileAccess;
 public partial class SaveManager : Node
 {
 	public static event Action<Project> ProjectLoaded;
+	public static event Action SavingProject;
 	
 	private static Project _currentProject;
 	public static Project CurrentProject => _currentProject;
@@ -28,21 +29,22 @@ public partial class SaveManager : Node
 
 	public static bool HasProject() => _currentProject != null;
 	
-	public static bool SaveProject()
+	public static void SaveProject()
 	{
-		if (_currentProject.ModelPath == "" && _currentProject.Volumes.Count == 0) return false;
+		SavingProject?.Invoke(); // send in your updated data my friends!
+		
+		if (_currentProject.ModelPath == "" && _currentProject.Volumes.Count == 0) return;
 
 		if (DirAccess.DirExistsAbsolute(GetProjectPath()) == false)
 			DirAccess.MakeDirAbsolute(GetProjectPath());
 		
 		using var f = FileAccess.Open($"{GetProjectPath()}/{JsonFileName}", FileAccess.ModeFlags.Write);
-		if (f == null) return false;
+		if (f == null) return;
 		
 		var serialized = JsonSerializer.Serialize(_currentProject);
 		f.StoreString(serialized);
 		GD.Print(serialized);
 		GD.Print(_currentProject);
-		return true;
 	}
 
 	public static void LoadProject(string name)
@@ -78,7 +80,18 @@ public partial class SaveManager : Node
 		_currentProject.Volumes.Remove(name);
 	}
 
+	public static void DeleteDeferredProbe(string name)
+	{
+		_currentProject.Probes.Remove(name);
+	}
+	
+	public static void UpdateDeferredProbe(string name, DeferredProbe.DeferredProbeData data)
+	{
+		_currentProject.Probes[name] = data;
+	}
+	
 	public static void SetModel(string path) => _currentProject.ModelPath = path;
+	public static void SetProbeModel(string path) => _currentProject.ReflectionModelPath = path;
 
 	public static void UpdateYmapName(string name) => _currentProject.YMapName = name;
 	public static void UpdateInteriorName(string name) => _currentProject.InteriorName = name;
@@ -93,6 +106,7 @@ public partial class SaveManager : Node
 		[JsonInclude] public string YMapName = "";
 		[JsonInclude] public string InteriorName = "";
 		[JsonInclude] public Dictionary<string, AmbientMaskVolume.AmvData> Volumes = [];
+		[JsonInclude] public Dictionary<string, DeferredProbe.DeferredProbeData> Probes = [];
 	}
 	
 	// Shamelessly stolen from:

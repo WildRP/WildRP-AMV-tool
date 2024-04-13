@@ -1,7 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://c6rfggpw1cyt6"]
+[gd_scene load_steps=10 format=3 uid="uid://c6rfggpw1cyt6"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_v4fao"]
-[ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="2_lnhwb"]
+[ext_resource type="Script" path="res://scripts/GUI/VolumeList.cs" id="2_lnhwb"]
+[ext_resource type="Script" path="res://scripts/GUI/DeferredProbesUi.cs" id="2_t473d"]
+[ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="3_7fc7g"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="3_q2jau"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_04scg"]
@@ -38,13 +40,15 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_y1lvf"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_e0fyx"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
 
-[node name="Reflection Probes" type="Control"]
+[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_exportTexturesBtn", "_probeInfoPanel", "_uuid", "_rotation", "_randomizeUuidButton", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -53,6 +57,32 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 theme = ExtResource("1_v4fao")
+script = ExtResource("2_t473d")
+_saveProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Save")
+_loadProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Load")
+_projectFolderBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/ProjectFolderBtn")
+_modelListItem = ExtResource("3_7fc7g")
+_loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
+_modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
+_modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
+_controlToHide = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel")
+_volumeList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
+_newProbeButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
+_bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
+_exportTexturesBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Export All")
+_probeInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel")
+_uuid = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer/Texture Name")
+_rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer2/Rotation")
+_randomizeUuidButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Button")
+_centerOffsetX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/X")
+_centerOffsetY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/Y")
+_centerOffsetZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/Z")
+_sizeX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Size/X")
+_sizeY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Size/Y")
+_sizeZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Size/Z")
+_extentsX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Extents/X")
+_extentsY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Extents/Y")
+_extentsZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Extents/Z")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
@@ -67,7 +97,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.33
 mouse_filter = 0
-scroll_vertical = 100
+scroll_vertical = 150
 horizontal_scroll_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="HSplitContainer/Left Panel"]
@@ -179,40 +209,36 @@ text = "Export All
 [node name="HSeparator2" type="HSeparator" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 
-[node name="AMV Info Panel" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+[node name="Probe Info Panel" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="YMAP Position" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
-layout_mode = 2
-
-[node name="TexNameLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer"]
+[node name="TexNameLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "GUID"
 
-[node name="Texture Name" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer"]
+[node name="Texture Name" type="LineEdit" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(146.765, 0)
 layout_mode = 2
-max_value = 9.22337e+18
-value = 1e+18
-rounded = true
+theme_override_font_sizes/font_size = 10
+placeholder_text = "0x0000000000000000"
 editable = false
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer"]
 layout_mode = 2
 
-[node name="RotLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
+[node name="RotLabel" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 text = "Rotation"
 
-[node name="Rotation" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2"]
+[node name="Rotation" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer2"]
 layout_mode = 2
 min_value = -180.0
 max_value = 180.0
@@ -221,16 +247,16 @@ update_on_text_changed = true
 custom_arrow_step = 1.0
 script = ExtResource("3_q2jau")
 
-[node name="Pos Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Offset Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 text = "Center Offset
 "
 
-[node name="Pos Container" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Center Offset" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
@@ -242,7 +268,7 @@ prefix = "X:"
 custom_arrow_step = 0.1
 script = ExtResource("3_q2jau")
 
-[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
@@ -254,7 +280,7 @@ prefix = "Y:"
 custom_arrow_step = 0.1
 script = ExtResource("3_q2jau")
 
-[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container"]
+[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
@@ -266,16 +292,16 @@ prefix = "Z:"
 custom_arrow_step = 0.1
 script = ExtResource("3_q2jau")
 
-[node name="Size Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Size Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 text = "Size
 "
 
-[node name="Size Container" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Size" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Size"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
@@ -287,7 +313,7 @@ prefix = "X:"
 custom_arrow_step = 0.1
 script = ExtResource("3_q2jau")
 
-[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Size"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
@@ -299,7 +325,7 @@ prefix = "Y:"
 custom_arrow_step = 0.1
 script = ExtResource("3_q2jau")
 
-[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Size Container"]
+[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Size"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 max_value = 0.0
@@ -311,59 +337,63 @@ prefix = "Z:"
 custom_arrow_step = 0.1
 script = ExtResource("3_q2jau")
 
-[node name="Probe Count" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Extents Label" type="Label" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 text = "Influence Extents
 "
 
-[node name="Count Container" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Extents" type="HBoxContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
+[node name="X" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Extents"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 min_value = 0.5
 max_value = 1.0
 step = 0.01
 value = 1.0
-allow_greater = true
 update_on_text_changed = true
 prefix = "X:"
 custom_arrow_step = 1.0
 script = ExtResource("3_q2jau")
 
-[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
+[node name="Y" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Extents"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 min_value = 0.5
 max_value = 1.0
 step = 0.01
 value = 1.0
-allow_greater = true
 update_on_text_changed = true
 prefix = "Y:"
 custom_arrow_step = 1.0
 script = ExtResource("3_q2jau")
 
-[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
+[node name="Z" type="SpinBox" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Extents"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
 min_value = 0.5
 max_value = 1.0
 step = 0.01
 value = 1.0
-allow_greater = true
 update_on_text_changed = true
 prefix = "Z:"
 custom_arrow_step = 1.0
 script = ExtResource("3_q2jau")
 
-[node name="Button" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+[node name="Button" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel"]
 layout_mode = 2
 tooltip_text = "Randomize texture name"
 text = "Randomize GUID
 "
+
+[node name="Bottom Filler" type="PanelContainer" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_y1lvf")
 
 [node name="Scene View" type="PanelContainer" parent="HSplitContainer"]
 layout_mode = 2

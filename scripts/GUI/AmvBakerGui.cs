@@ -7,7 +7,7 @@ namespace WildRP.AMVTool.GUI;
 
 public partial class AmvBakerGui : Control
 {
-	[Export] private Node3D _sceneViewRoot;
+	[Export] private Node3D _volumeModelContainer;
 	
 	[ExportGroup("Save & Load")]
 		[Export] private Button _saveProjectBtn;
@@ -29,7 +29,7 @@ public partial class AmvBakerGui : Control
 
 		[ExportSubgroup("UI Elements")]
 			[Export] private Control _controlToHide;
-			[Export] private AmvList _amvList;
+			[Export] private VolumeList _volumeList;
 			[Export] private AMVListContextMenu _amvListContextMenu;
 			[Export] private Button _newAmvButton;
 			[Export] private Button _bakeAllButton;
@@ -41,10 +41,6 @@ public partial class AmvBakerGui : Control
 			[Export] private SpinBox _textureName;
 			[Export] private SpinBox _rotation;
 			[Export] private Button _randomizeTextureNameButton;
-			[ExportSubgroup("YMAP Position")]
-				[Export] private SpinBox _ymapPositionX;
-				[Export] private SpinBox _ymapPositionY;
-				[Export] private SpinBox _ymapPositionZ;
 			[ExportSubgroup("Position")]
 				[Export] private SpinBox _positionX;
 				[Export] private SpinBox _positionY;
@@ -53,7 +49,7 @@ public partial class AmvBakerGui : Control
 				[Export] private SpinBox _sizeX;
 				[Export] private SpinBox _sizeY;
 				[Export] private SpinBox _sizeZ;
-			[ExportSubgroup("Size")]
+			[ExportSubgroup("Probe Count")]
 				[Export] private SpinBox _probesX;
 				[Export] private SpinBox _probesY;
 				[Export] private SpinBox _probesZ;
@@ -92,15 +88,15 @@ public partial class AmvBakerGui : Control
 		_newAmvButton.Pressed += CreateNewAmv;
 
 		// AMV Select and deselect
-		_amvList.ItemSelected += index => SelectAmv(AmvBaker.Instance.GetVolume(_amvList.GetItemText((int)index)));
-		_amvList.EmptyClicked += (position, index) =>
+		_volumeList.ItemSelected += index => SelectAmv(AmvBaker.Instance.GetVolume(_volumeList.GetItemText((int)index)));
+		_volumeList.EmptyClicked += (position, index) =>
 		{
 			SelectAmv(null);
-			_amvList.DeselectAll();
+			_volumeList.DeselectAll();
 		};
 		
 		// AMV List Context Menu
-		_amvList.OnRightClickItem += (name, pos) =>
+		_volumeList.OnRightClickItem += (name, pos) =>
 		{
 			_amvListContextMenu.Popup();
 			_amvListContextMenu.Position = new Vector2I(Mathf.RoundToInt(pos.X), Mathf.RoundToInt(pos.Y));
@@ -122,11 +118,7 @@ public partial class AmvBakerGui : Control
 		
 		_amvInfoPanel.Visible = false;
 
-		_saveProjectBtn.Pressed += () =>
-		{
-			AmvBaker.Instance.UpdateProjectAmvs();
-			SaveManager.SaveProject();
-		};
+		_saveProjectBtn.Pressed += SaveManager.SaveProject;
 
 		_loadProjectBtn.Pressed += () => _projectPanel.Visible = true;
 		
@@ -147,6 +139,7 @@ public partial class AmvBakerGui : Control
 		VisibilityChanged += () =>
 		{
 			GuiToggled?.Invoke(Visible);
+			_volumeModelContainer.Visible = Visible;
 		};
 	}
 
@@ -186,7 +179,7 @@ public partial class AmvBakerGui : Control
 	private void CreateNewAmv()
 	{
 		var amv = _amvScene.Instantiate() as AmbientMaskVolume;
-		string name = EnsureUniqueName($"AMV {_amvList.ItemCount+1}");
+		string name = EnsureUniqueName($"AMV {_volumeList.ItemCount+1}");
 		
 		amv.Setup(name);
 		amv.TextureName = (ulong) _textureName.MinValue;
@@ -197,8 +190,8 @@ public partial class AmvBakerGui : Control
 
 		amv.Deleted += OnDeleteAmv;
 		
-		var item =_amvList.AddItem(name);
-		_amvList.Select(item);
+		var item =_volumeList.AddItem(name);
+		_volumeList.Select(item);
 		SelectAmv(amv);
 	}
 
@@ -217,7 +210,7 @@ public partial class AmvBakerGui : Control
 			var amv = _amvScene.Instantiate() as AmbientMaskVolume;
 			amv.Load(data);
 			
-			var item =_amvList.AddItem(data.Key);
+			var item =_volumeList.AddItem(data.Key);
 			
 			_amvContainerNode.AddChild(amv);
 			AmvBaker.Instance.RegisterAmv(amv);
@@ -227,10 +220,10 @@ public partial class AmvBakerGui : Control
 
 	private void OnDeleteAmv(Volume volume)
 	{
-		for (int i = 0; i < _amvList.ItemCount; i++)
+		for (int i = 0; i < _volumeList.ItemCount; i++)
 		{
-			if (_amvList.GetItemText(i) != volume.GuiListName) continue;
-			_amvList.RemoveItem(i);
+			if (_volumeList.GetItemText(i) != volume.GuiListName) continue;
+			_volumeList.RemoveItem(i);
 			break;
 		}
 		if (SelectedAmv == volume) SelectAmv(null);
@@ -250,9 +243,9 @@ public partial class AmvBakerGui : Control
 	
 	bool IsNameUnique(string name)
 	{
-		for (int i = 0; i < _amvList.ItemCount; i++)
+		for (int i = 0; i < _volumeList.ItemCount; i++)
 		{
-			if (_amvList.GetItemText(i) == name) return false;
+			if (_volumeList.GetItemText(i) == name) return false;
 		}
 
 		return true;

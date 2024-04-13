@@ -51,6 +51,8 @@ public partial class Volume : Node3D
         public Vector3 Size = Vector3.One;
         [JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))]
         public Vector3 Position = Vector3.Zero;
+        [JsonInclude]
+        public float Rotation = 0;
     }
     
     #region UIConnectFunctions
@@ -100,6 +102,13 @@ public partial class Volume : Node3D
         v.Z = (float)n;
         Position = v;
         OnSizeChanged();
+    }
+    
+    public void SetRotation(double n)
+    {
+        var v = RotationDegrees;
+        v.Y = (float)n;
+        RotationDegrees = v;
     }
     #endregion // UIConnectFunctions
 

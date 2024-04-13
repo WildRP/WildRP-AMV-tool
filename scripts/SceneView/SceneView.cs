@@ -15,7 +15,6 @@ public partial class SceneView : Node3D
     {
         var dt = (float)delta;
 
-        Visible = AmvBakerGui.GuiVisible;
         ProcessCamera(dt);
     }
 

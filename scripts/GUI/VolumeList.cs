@@ -3,7 +3,7 @@ using Godot;
 
 namespace WildRP.AMVTool.GUI;
 
-public partial class AmvList : ItemList
+public partial class VolumeList : ItemList
 {
     public override void _GuiInput(InputEvent @event)
     {
@@ -13,7 +13,7 @@ public partial class AmvList : ItemList
             var idx = GetItemAtPosition(pos, true);
             if (idx == -1) return;
             
-            OnRightClickItem(GetItemText(idx), GlobalPosition + pos);
+            OnRightClickItem?.Invoke(GetItemText(idx), GlobalPosition + pos);
         }
     }
     
