@@ -137,32 +137,46 @@ public partial class DeferredProbe : Volume
         if (DirAccess.DirExistsAbsolute(dir) == false)
             DirAccess.MakeDirAbsolute(dir);
         
+        var size = _colorTextures[0].GetSize();
+        
         for (int i = 0; i < _colorTextures.Count; i++)
         {
-            var err = _colorTextures[i].SavePng($"{dir}/Color_{i}.png");
-            GD.Print(err);
+            var img = new SimpleImageIO.Image(size.X, size.Y, 4);
+            for (int x = 0; x < size.X; x++)
+            {
+                for (int y = 0; y < size.Y; y++)
+                {
+                    var col = _colorTextures[i].GetPixel(x, y);
+                    var a = _occlusionTextures[i].GetPixel(x, y).Luminance;
+                    
+                    img.SetPixelChannel(x, y, 0, col.R);
+                    img.SetPixelChannel(x, y, 1, col.G);
+                    img.SetPixelChannel(x, y, 2, col.B);
+                    img.SetPixelChannel(x, y, 3, a);
+                }
+            }
+            img.WriteToFile($"{gdir}/Color_{i}.png");
         }
         
         // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
         for (int i = 0; i < _normalTextures.Count; i++)
         {
-            
-            var size = _normalTextures[i].GetSize();
             _normalTextures[i].SrgbToLinear();
-            var img = new SimpleImageIO.Image(size.X, size.Y, 3);
+            var img = new SimpleImageIO.Image(size.X, size.Y, 4);
             for (int x = 0; x < size.X; x++)
             {
                 for (int y = 0; y < size.Y; y++)
                 {
                     var col = _normalTextures[i].GetPixel(x, y);
+                    var a = _skyMaskTextures[i].GetPixel(x, y).Luminance;
                     
                     //_normalTextures[i].SetPixel(x, y, v.ToColor());
-                    img.SetPixelChannel(x, y, 0, col.R);
-                    img.SetPixelChannel(x, y, 1, col.G);
-                    img.SetPixelChannel(x, y, 2, col.B);
+                    img.SetPixelChannel(x, y, 0, Mathf.Pow(col.R, 2.2f));
+                    img.SetPixelChannel(x, y, 1, Mathf.Pow(col.G, 2.2f));
+                    img.SetPixelChannel(x, y, 2, Mathf.Pow(col.B, 2.2f));
+                    img.SetPixelChannel(x, y, 3, a);
                 }
             }
-            img.ApplyOpInPlace(f => Mathf.Pow(f, 2.2f));
             img.WriteToFile($"{gdir}/Normal_{i}.png");
             //var err = _normalTextures[i].SavePng($"{dir}/Normal_{i}.png");
             //GD.Print(err);
@@ -170,20 +184,16 @@ public partial class DeferredProbe : Volume
         
         for (int i = 0; i < _depthTextures.Count; i++)
         {
-            var err = _depthTextures[i].SavePng($"{dir}/Depth_{i}.png");
-            GD.Print(err);
-        }
-        
-        for (int i = 0; i < _skyMaskTextures.Count; i++)
-        {
-            var err = _skyMaskTextures[i].SavePng($"{dir}/Skymask_{i}.png");
-            GD.Print(err);
-        }
-        
-        for (int i = 0; i < _occlusionTextures.Count; i++)
-        {
-            var err = _occlusionTextures[i].SavePng($"{dir}/Occlusion_{i}.png");
-            GD.Print(err);
+            var img = new SimpleImageIO.MonochromeImage(size.X, size.Y);
+            for (int x = 0; x < size.X; x++)
+            {
+                for (int y = 0; y < size.Y; y++)
+                {
+                    var a = _depthTextures[i].GetPixel(x, y).Luminance;
+                    img.SetPixel(x, y, a * 100f);
+                }
+            }
+            img.WriteToFile($"{gdir}/Depth_{i}.hdr");
         }
     }
     
