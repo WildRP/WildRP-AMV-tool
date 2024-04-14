@@ -333,8 +333,8 @@ public partial class AmbientMaskVolume : Volume
 				new XElement("falloffPower", new XAttribute("value", 8)),
 				new XElement("distance", new XAttribute("value", -1)),
 				new XElement("cellCountX", new XAttribute("value", ProbeCount.X)),
-				new XElement("cellCountY", new XAttribute("value", ProbeCount.Y)),
-				new XElement("cellCountZ", new XAttribute("value", ProbeCount.Z)),
+				new XElement("cellCountY", new XAttribute("value", ProbeCount.Z)),
+				new XElement("cellCountZ", new XAttribute("value", ProbeCount.Y)),
 				new XElement("clipPlane0", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)), // Quaternions?
 				new XElement("clipPlane1", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)),
 				new XElement("clipPlane2", new XAttribute("x", 0), new XAttribute("y", 0), new XAttribute("z", 0), new XAttribute("w", 1)),

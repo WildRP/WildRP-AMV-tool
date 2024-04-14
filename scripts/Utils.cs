@@ -118,5 +118,15 @@ public static class Utils
     {
         return v.GlobalTransform * v.GetAabb();
     }
+
+    public static Color ToColor(this Vector3 v)
+    {
+        return new Color(v.X, v.Y, v.Z);
+    }
+
+    public static Vector3 ToVector(this Color c)
+    {
+        return new Vector3(c.R, c.G, c.B);
+    }
     
 }

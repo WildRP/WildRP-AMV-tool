@@ -133,6 +133,7 @@ public partial class DeferredProbe : Volume
         if (Baked == false) return;
 
         var dir = SaveManager.GetProjectPath() + "/" + Guid;
+        var gdir = SaveManager.GetGlobalizedProjectPath() + "/" + Guid;
         if (DirAccess.DirExistsAbsolute(dir) == false)
             DirAccess.MakeDirAbsolute(dir);
         
@@ -142,10 +143,29 @@ public partial class DeferredProbe : Volume
             GD.Print(err);
         }
         
+        // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
         for (int i = 0; i < _normalTextures.Count; i++)
         {
-            var err = _normalTextures[i].SavePng($"{dir}/Normal_{i}.png");
-            GD.Print(err);
+            
+            var size = _normalTextures[i].GetSize();
+            _normalTextures[i].SrgbToLinear();
+            var img = new SimpleImageIO.Image(size.X, size.Y, 3);
+            for (int x = 0; x < size.X; x++)
+            {
+                for (int y = 0; y < size.Y; y++)
+                {
+                    var col = _normalTextures[i].GetPixel(x, y);
+                    
+                    //_normalTextures[i].SetPixel(x, y, v.ToColor());
+                    img.SetPixelChannel(x, y, 0, col.R);
+                    img.SetPixelChannel(x, y, 1, col.G);
+                    img.SetPixelChannel(x, y, 2, col.B);
+                }
+            }
+            img.ApplyOpInPlace(f => Mathf.Pow(f, 2.2f));
+            img.WriteToFile($"{gdir}/Normal_{i}.png");
+            //var err = _normalTextures[i].SavePng($"{dir}/Normal_{i}.png");
+            //GD.Print(err);
         }
         
         for (int i = 0; i < _depthTextures.Count; i++)

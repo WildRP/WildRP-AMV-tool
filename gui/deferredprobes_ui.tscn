@@ -97,7 +97,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.33
 mouse_filter = 0
-scroll_vertical = 150
+scroll_vertical = 100
 horizontal_scroll_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="HSplitContainer/Left Panel"]

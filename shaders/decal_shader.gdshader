@@ -5,9 +5,13 @@ uniform bool blend = false;
 uniform sampler2D ab : source_color;
 uniform sampler2D nm : hint_normal;
 
+global uniform int probe_rendering_pass;
+
 varying float vertAlpha;
+varying vec3 worldNormal;
 void vertex() {
 	vertAlpha = COLOR.a;
+	worldNormal = NORMAL;
 }
 
 void fragment() {
@@ -15,9 +19,17 @@ void fragment() {
 	
 	vec4 tex = texture(ab, UV);
 	ALBEDO = tex.rgb;
-	NORMAL_MAP = texture(nm, UV).rgb;
+	//NORMAL_MAP = texture(nm, UV).rgb;
 	
-	ALPHA = tex.a * vertAlpha;
+	ALPHA = vertAlpha * tex.a;
+	
+	if (probe_rendering_pass == 1) // normal map pass
+	{
+		vec4 n = INV_PROJECTION_MATRIX * vec4(NORMAL,1.0);
+		//n = INV_VIEW_MATRIX * n;
+		ALBEDO = normalize(worldNormal.xzy) * 0.5 + 0.5;
+		ALPHA = 0.0;
+	}
 }
 
 //void light() {
