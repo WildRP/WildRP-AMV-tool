@@ -24,6 +24,16 @@ public partial class DeferredProbeBaker : Node3D
 
     private List<DeferredProbe> _bakeQueue = [];
     private List<MeshInstance3D> _renderMeshes = [];
+    private StandardMaterial3D _aoBakeMat;
+
+    public enum BakePass
+    {
+	    Albedo = 0,
+	    Normal,
+	    Occlusion,
+	    SkyMask,
+	    Depth
+    }
     
     public override void _Ready()
     {
@@ -31,6 +41,8 @@ public partial class DeferredProbeBaker : Node3D
 	    {
 		    Instance = this;
 		    DeferredProbesUi.GuiToggled += b => Visible = b;
+		    _aoBakeMat = new StandardMaterial3D();
+		    _aoBakeMat.Roughness = 1;
 	    }
 	    else
 	    {
@@ -68,6 +80,31 @@ public partial class DeferredProbeBaker : Node3D
 	    foreach (var p in _bakeQueue)
 	    {
 		    p.Clear();
+	    }
+    }
+
+    public void RequestPass(BakePass p)
+    {
+	    RenderingServer.GlobalShaderParameterSet("probe_rendering_pass", (int)p);
+	    
+	    switch (p)
+	    {
+		    case BakePass.Occlusion:
+			    foreach (var m in _renderMeshes)
+			    {
+				    // TODO: hide decal/transparent meshes in AO bake pass
+				    m.MaterialOverride = _aoBakeMat;
+			    }
+			    break;
+		    case BakePass.Albedo:
+		    case BakePass.Normal:
+		    case BakePass.SkyMask:
+		    case BakePass.Depth:
+			    foreach (var m in _renderMeshes)
+			    {
+				    m.MaterialOverride = null;
+			    }
+			    break;
 	    }
     }
 
@@ -137,6 +174,7 @@ public partial class DeferredProbeBaker : Node3D
 					newMat = _probeMeshMaterial.Duplicate() as ShaderMaterial;
 		        
 		        if (mat.AlbedoTexture != null) newMat.SetShaderParameter("ab", mat.AlbedoTexture.Duplicate());
+		        if (mat.NormalTexture != null) newMat.SetShaderParameter("nm", mat.NormalTexture.Duplicate());
 		        
 		        m.SetSurfaceOverrideMaterial(i, newMat);
 	        }

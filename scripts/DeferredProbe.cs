@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Godot;
 using Godot.Collections;
 using WildRP.AMVTool.GUI;
+using WildRPAMVTool.scripts;
 
 namespace WildRP.AMVTool;
 
@@ -15,11 +16,20 @@ public partial class DeferredProbe : Volume
     [Export] private Node3D _centerNode;
     [Export] private Array<Camera3D> _renderCameras;
 
-    public List<Image> ColorTextures = [];
+    private List<Image> _colorTextures = [];
+    private List<Image> _normalTextures = [];
+    private List<Image> _depthTextures = [];
+    private List<Image> _skyMaskTextures = [];
+    private List<Image> _occlusionTextures = [];
+    
     private SubViewport _viewport;
     private Node _originalParent;
 
-    public bool Baked => ColorTextures.Count >= 6;
+    public new bool Baked => _colorTextures.Count >= 6
+                             && _normalTextures.Count >= 6
+                             && _depthTextures.Count >= 6
+                             && _skyMaskTextures.Count >= 6
+                             && _occlusionTextures.Count >= 6;
 
     public override void _Ready()
     {
@@ -50,23 +60,72 @@ public partial class DeferredProbe : Volume
     {
         if (Baked == false) Reparent(_viewport, true);
         
-        if (ColorTextures.Count < 6)
-            RenderColor(ColorTextures.Count);
+        if (_colorTextures.Count < 6)
+            RenderColor(_colorTextures.Count);
+        else if (_normalTextures.Count < 6)
+            RenderNormal(_normalTextures.Count);
+        else if (_skyMaskTextures.Count < 6)
+            RenderSkymask(_skyMaskTextures.Count);
+        else if (_depthTextures.Count < 6)
+            RenderDepth(_depthTextures.Count);
+        else if (_occlusionTextures.Count < 6)
+            RenderOcclusion(_occlusionTextures.Count);
         
         if (Baked) Reparent(_originalParent, true);
     }
-    
-    public void RenderColor(int cam)
+
+
+    private List<Image> _renderList;
+    private void RenderColor(int cam)
     {
+        GD.Print($"Render Color {cam}");
         _renderCameras[cam].Current = true;
-        RenderingServer.FramePostDraw += GrabColorTex; // lol this is so silly. thanks godot.
+        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Albedo);
+        _renderList = _colorTextures;
+        RenderingServer.FramePostDraw += GrabTex; // lol this is so silly. thanks godot.
+    }
+    
+    private void RenderNormal(int cam)
+    {
+        GD.Print($"Render Normal {cam}");
+        _renderCameras[cam].Current = true;
+        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Normal);
+        _renderList = _normalTextures;
+        RenderingServer.FramePostDraw += GrabTex;
+    }
+    
+    private void RenderSkymask(int cam)
+    {
+        GD.Print($"Render Skymask {cam}");
+        _renderCameras[cam].Current = true;
+        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.SkyMask);
+        _renderList = _skyMaskTextures;
+        RenderingServer.FramePostDraw += GrabTex;
+    }
+    
+    private void RenderDepth(int cam)
+    {
+        GD.Print($"Render Depth {cam}");
+        _renderCameras[cam].Current = true;
+        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Depth);
+        _renderList = _depthTextures;
+        RenderingServer.FramePostDraw += GrabTex;
+    }
+    
+    private void RenderOcclusion(int cam)
+    {
+        GD.Print($"Render Occlusion {cam}");
+        _renderCameras[cam].Current = true;
+        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Occlusion);
+        _renderList = _occlusionTextures;
+        RenderingServer.FramePostDraw += GrabTex;
     }
 
-    public void GrabColorTex()
+    private void GrabTex()
     {
         var tex = _viewport.GetTexture().GetImage();
-        ColorTextures.Add(tex);
-        RenderingServer.FramePostDraw -= GrabColorTex;
+        _renderList.Add(tex);
+        RenderingServer.FramePostDraw -= GrabTex;
     }
 
     public void GenerateTextures()
@@ -77,16 +136,43 @@ public partial class DeferredProbe : Volume
         if (DirAccess.DirExistsAbsolute(dir) == false)
             DirAccess.MakeDirAbsolute(dir);
         
-        for (int i = 0; i < ColorTextures.Count; i++)
+        for (int i = 0; i < _colorTextures.Count; i++)
         {
-            var err = ColorTextures[i].SavePng($"{dir}/Color_{i}.png");
+            var err = _colorTextures[i].SavePng($"{dir}/Color_{i}.png");
+            GD.Print(err);
+        }
+        
+        for (int i = 0; i < _normalTextures.Count; i++)
+        {
+            var err = _normalTextures[i].SavePng($"{dir}/Normal_{i}.png");
+            GD.Print(err);
+        }
+        
+        for (int i = 0; i < _depthTextures.Count; i++)
+        {
+            var err = _depthTextures[i].SavePng($"{dir}/Depth_{i}.png");
+            GD.Print(err);
+        }
+        
+        for (int i = 0; i < _skyMaskTextures.Count; i++)
+        {
+            var err = _skyMaskTextures[i].SavePng($"{dir}/Skymask_{i}.png");
+            GD.Print(err);
+        }
+        
+        for (int i = 0; i < _occlusionTextures.Count; i++)
+        {
+            var err = _occlusionTextures[i].SavePng($"{dir}/Occlusion_{i}.png");
             GD.Print(err);
         }
     }
     
     public void Clear()
     {
-        ColorTextures.Clear();
+        _colorTextures.Clear();
+        _normalTextures.Clear();
+        _skyMaskTextures.Clear();
+        _depthTextures.Clear();
     }
 
     public void Load(KeyValuePair<string, DeferredProbeData> data)
