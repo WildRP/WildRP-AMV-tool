@@ -26,6 +26,8 @@ public partial class DeferredProbeBaker : Node3D
     private List<MeshInstance3D> _renderMeshes = [];
     private StandardMaterial3D _aoBakeMat;
 
+    private VoxelGI _voxelGi;
+
     public enum BakePass
     {
 	    Albedo = 0,
@@ -43,6 +45,7 @@ public partial class DeferredProbeBaker : Node3D
 		    DeferredProbesUi.GuiToggled += b => Visible = b;
 		    _aoBakeMat = new StandardMaterial3D();
 		    _aoBakeMat.Roughness = 1;
+		    _aoBakeMat.AlbedoColor = Colors.White;
 	    }
 	    else
 	    {
@@ -77,6 +80,12 @@ public partial class DeferredProbeBaker : Node3D
 	    _bakeQueue.AddRange(_deferredProbes.Values);
 	    _probeBakeCounter = 0;
 
+	    foreach (var m in _renderMeshes)
+	    {
+		    // TODO: hide decal/transparent meshes in AO bake pass
+		    m.MaterialOverride = _aoBakeMat;
+	    }
+	    
 	    foreach (var p in _bakeQueue)
 	    {
 		    p.Clear();
@@ -133,6 +142,7 @@ public partial class DeferredProbeBaker : Node3D
         _modelRoot?.QueueFree();
         _visibleModelRoot?.QueueFree();
         _renderMeshes.Clear();
+        _voxelGi?.QueueFree();
         
         _visibleModelRoot = new Node3D();
         AddChild(_visibleModelRoot);
@@ -151,16 +161,16 @@ public partial class DeferredProbeBaker : Node3D
 		
         _modelRoot = modelDoc.GenerateScene(modelState);
         _renderViewport.AddChild(_modelRoot);
-		
+        
         List<Node> nodes = [];
         Utils.GetAllChildren(_modelRoot, nodes);
 
         List<Tuple<MeshInstance3D, MeshInstance3D>> result = [];
-		
         var meshes = nodes.OfType<MeshInstance3D>().ToList();
         foreach (var m in meshes)
         {
 	        var s = m.GetSurfaceOverrideMaterialCount();
+	        m.GIMode = GeometryInstance3D.GIModeEnum.Static;
 	        for (int i = 0; i < s; i++)
 	        {
 		        m.SetLayerMaskValue(20, true);
@@ -180,6 +190,7 @@ public partial class DeferredProbeBaker : Node3D
 	        }
 
 	        var visibleMesh = m.Duplicate() as MeshInstance3D;
+	        visibleMesh.GIMode = GeometryInstance3D.GIModeEnum.Disabled;
 	        _visibleModelRoot.AddChild(visibleMesh);
 	        
 	        _renderMeshes.Add(m);
@@ -187,10 +198,56 @@ public partial class DeferredProbeBaker : Node3D
 	        var res = new Tuple<MeshInstance3D, MeshInstance3D>(m, visibleMesh);
             result.Add(res);
         }
-		
+
+        // Set up voxel GI
+        _voxelGi = new VoxelGI();
+        _voxelGi.Data = new VoxelGIData();
+        _voxelGi.Data.Interior = false;
+        _voxelGi.Data.NormalBias = 1f;
+        _voxelGi.Data.Bias = 1f;
+        _voxelGi.Subdiv = VoxelGI.SubdivEnum.Subdiv256;
+        _voxelGi.Data.UseTwoBounces = true;
+        _voxelGi.Data.Propagation = .33f;
+        _voxelGi.Data.Energy = 1;
+        _voxelGi.Data.DynamicRange = 2f;
+		_renderViewport.AddChild(_voxelGi);
+		_voxelGi.SetLayerMaskValue(20, true);
+
+		var camSettings = new CameraAttributesPractical();
+		camSettings.ExposureMultiplier = 1.2f;
+		_voxelGi.CameraAttributes = camSettings;
+        
+        var avgpos = Vector3.Zero;
+        var aabb = meshes[0].GlobalAabb();
+
+        for (int i = 0; i < meshes.Count; i++)
+        {
+	        var m = meshes[i];
+	        m.GIMode = GeometryInstance3D.GIModeEnum.Static;
+	        avgpos += m.GlobalPosition;
+	        aabb.Merge(m.GlobalAabb());
+        }
+        avgpos /= meshes.Count;
+        _voxelGi.GlobalPosition = avgpos;
+        _voxelGi.Size = aabb.Grow(2f).Size;
+        
+        foreach (var m in _renderMeshes)
+        {
+	        // TODO: hide decal/transparent meshes in AO bake pass
+	        m.MaterialOverride = _aoBakeMat;
+        }
+        
+        _voxelGi.Bake();
+        
+        foreach (var m in _renderMeshes)
+        {
+	        // TODO: hide decal/transparent meshes in AO bake pass
+	        m.MaterialOverride = null;
+        }
+        
         return result;
     }
-
+    
     public DeferredProbe GetProbe(string name) => DeferredProbes[name];
     
 }

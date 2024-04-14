@@ -114,5 +114,9 @@ public static class Utils
         }
     }
 
-
+    public static Aabb GlobalAabb(this VisualInstance3D v)
+    {
+        return v.GlobalTransform * v.GetAabb();
+    }
+    
 }

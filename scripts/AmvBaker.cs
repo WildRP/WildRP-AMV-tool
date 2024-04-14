@@ -137,13 +137,14 @@ public partial class AmvBaker : Node3D
 		List<Tuple<MeshInstance3D, StaticBody3D>> result = [];
 
 		var amvMeshMaterial = new StandardMaterial3D();
-		amvMeshMaterial.AlbedoColor = new Color(.8f, .8f, .8f);
+		amvMeshMaterial.AlbedoColor = Colors.White;
 		amvMeshMaterial.Roughness = 1;
 		
 		var meshes = nodes.OfType<MeshInstance3D>().ToList();
 		foreach (var m in meshes)
 		{
 			m.MaterialOverride = amvMeshMaterial;
+			m.GIMode = GeometryInstance3D.GIModeEnum.Disabled;
 			
 			var body = new StaticBody3D();
 			body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
