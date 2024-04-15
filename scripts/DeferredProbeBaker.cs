@@ -119,10 +119,15 @@ public partial class DeferredProbeBaker : Node3D
 
     public void ExportAll()
     {
+	    var xml = "";
 	    foreach (var p in _deferredProbes)
 	    {
 		    p.Value.GenerateTextures();
+		    xml += p.Value.GetXml();
 	    }
+	    
+	    using var f = FileAccess.Open($"{SaveManager.GetProjectPath()}/probe_data.xml", FileAccess.ModeFlags.Write);
+			f.StoreString(xml);
     }
     
     public void Clear()

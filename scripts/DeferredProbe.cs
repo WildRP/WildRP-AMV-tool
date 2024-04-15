@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using Godot;
 using Godot.Collections;
 using WildRP.AMVTool.Autoloads;
@@ -216,48 +217,101 @@ public partial class DeferredProbe : Volume
 
         var tn = TextureName();
         
+        // every probe comes in different resolution sizes from 1024 to 128
+        // so there will be lots of resizing here
+
+        string ul_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_ul\\"; // 1024
+        string hi_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_hi\\"; // 512
+        string std_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}\\"; // 256
+        string lo_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_lo\\"; // 128
+
+        DirAccess.MakeDirAbsolute(ul_path);
+        DirAccess.MakeDirAbsolute(hi_path);
+        DirAccess.MakeDirAbsolute(std_path);
+        DirAccess.MakeDirAbsolute(lo_path);
+        
+        ul_path = $"./{tn}_ul/"; // 1024
+        hi_path = $"./{tn}_hi/"; // 512
+        std_path = $"./{tn}/"; // 256
+        lo_path = $"./{tn}_lo/"; // 128
+        
         // first make the base DDS files
-        var tx0 = new Process();
-        tx0.StartInfo.FileName = Settings.TexAssembleLocation;
-        tx0.StartInfo.Arguments =
-            $"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_0.dds\" -l -y -srgb -f R8G8B8A8_UNORM_SRGB -flist \"{gdir}\\color.txt\"";
-        tx0.Start();
+        var tx0 = Tex.Assemble($"./{Guid}/color.txt", $"{ul_path}{tn}_0.dds",
+            Tex.TextureFormat.R8G8B8A8_UNORM_SRGB);
         
-        // once converted, compress
-        tx0.Exited += (sender, args) =>
-        {
-            var tx0Compress = new Process();
-            tx0Compress.StartInfo.FileName = Settings.TexConvLocation;
-            tx0Compress.StartInfo.Arguments =
-                $"-f DXT5 -srgb -y \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_0.dds\"";
-            tx0Compress.Start();
-            tx0Compress.OutputDataReceived += (o, eventArgs) => GD.Print(eventArgs.Data);
+        var tx1 = Tex.Assemble($"./{Guid}/normal.txt", $"{ul_path}{tn}_1.dds",
+            Tex.TextureFormat.R8G8B8A8_UNORM);
+        
+        var txd = Tex.Assemble($"./{Guid}/depth.txt", $"{ul_path}{tn}_d.dds",
+            Tex.TextureFormat.R16_UNORM);
+
+        tx0.Exited += () =>
+        { 
+            var p = Tex.Conv($"{ul_path}{tn}_0.dds", ul_path, srgb: true);
+                p.Run();
+        };
+        tx0.Exited += () =>
+        { 
+            var p = Tex.Conv($"{ul_path}{tn}_0.dds", hi_path, size: 512, srgb: true);
+                p.Run();
+        };
+        tx0.Exited += () =>
+        { 
+            var p = Tex.Conv($"{ul_path}{tn}_0.dds", std_path, size: 256, srgb: true);
+                p.Run();
+        };
+        tx0.Exited += () =>
+        { 
+            var p = Tex.Conv($"{ul_path}{tn}_0.dds", lo_path, size: 128, srgb: true);
+                p.Run();
         };
         
-        var tx1 = new Process();
-        tx1.StartInfo.FileName = Settings.TexAssembleLocation;
-        tx1.StartInfo.Arguments =
-            $"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_1.dds\" -l -y -f R8G8B8A8_UNORM -flist \"{gdir}\\normal.txt\"";
-        tx1.Start();
+        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", ul_path).Run();
+        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512).Run();
+        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256).Run();
+        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128).Run();
         
-        tx1.Exited += (sender, args) =>
-        {
-            var tx1Compress = new Process();
-            tx1Compress.StartInfo.FileName = Settings.TexConvLocation;
-            tx1Compress.StartInfo.Arguments =
-                $"-f DXT5 -y \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_1.dds\"";
-            tx1Compress.Start();
-            tx1Compress.OutputDataReceived += (o, eventArgs) => GD.Print(eventArgs.Data);
-        };
+        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", ul_path, compress: false).Run();
+        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", hi_path, size: 512, compress: false).Run();
+        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", std_path, size: 256, compress: false).Run();
+        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", lo_path, size: 128, compress: false).Run();
         
-        var tx2 = new Process();
-        tx2.StartInfo.FileName = Settings.TexAssembleLocation;
-        tx2.StartInfo.Arguments =
-            $"cube -O \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_d.dds\" -l -y -f R16_UNORM -flist \"{gdir}\\depth.txt\"";
-        tx2.Start();
+        tx0.Run();
+        tx1.Run();
+        txd.Run();
         
     }
-    
+
+    public override string GetXml()
+    {
+        
+        /*
+         * <Item>
+           <minExtents x="-8.42226" y="-4.802952" z="4.185595" /> 
+           <maxExtents x="-2.6022608" y="4.8970537" z="7.122675" />
+           <rotation x="0" y="0" z="0" w="1" />
+           <centerOffset x="0" y="0" z="0" />
+           <influenceExtents x="1" y="0.95" z="0.9" />
+           <probePriority value="255" />
+           <guid value="0x4285A9A3EB917D74" />
+          </Item>
+         */
+        var minExtents = GlobalPosition - Size/2;
+        var maxExtents = GlobalPosition + Size/2;
+        var rotation = Quaternion.FromEuler(new Vector3(0, 0, -RotationDegrees.Y));
+        
+        return new XDocument(
+            new XElement("Item",
+                new XElement("minExtents", new XAttribute("x", minExtents.X), new XAttribute("y", minExtents.Z), new XAttribute("z", minExtents.Y)),
+                new XElement("maxExtents", new XAttribute("x", maxExtents.X), new XAttribute("y", maxExtents.Z), new XAttribute("z", maxExtents.Y)),
+                new XElement("rotation", new XAttribute("x", rotation.X), new XAttribute("y", rotation.Y), new XAttribute("z", rotation.Z), new XAttribute("w", rotation.W)),
+                new XElement("centerOffset", new XAttribute("x", CenterOffset.X), new XAttribute("y", CenterOffset.Z), new XAttribute("z", CenterOffset.Y)),
+                new XElement("influenceExtents", new XAttribute("x", InfluenceExtents.X), new XAttribute("y", InfluenceExtents.Z), new XAttribute("z", InfluenceExtents.Y)),
+                new XElement("probePriority", new XAttribute("value", 255)),
+                new XElement("guid", new XAttribute("value", "0x"+Guid.ToString("x16")))
+                ))+"\r\n";
+    }
+
     public void Clear()
     {
         _colorTextures.Clear();
