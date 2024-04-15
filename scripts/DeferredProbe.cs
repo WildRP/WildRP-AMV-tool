@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Godot;
 using Godot.Collections;
+using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
 using WildRPAMVTool.scripts;
 
@@ -139,6 +143,10 @@ public partial class DeferredProbe : Volume
         
         var size = _colorTextures[0].GetSize();
         
+        List<string> colorList = [];
+        List<string> normalList = [];
+        List<string> depthList = [];
+        
         for (int i = 0; i < _colorTextures.Count; i++)
         {
             var img = new SimpleImageIO.Image(size.X, size.Y, 4);
@@ -156,6 +164,7 @@ public partial class DeferredProbe : Volume
                 }
             }
             img.WriteToFile($"{gdir}/Color_{i}.png");
+            colorList.Add($"{gdir}/Color_{i}.png");
         }
         
         // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
@@ -178,8 +187,7 @@ public partial class DeferredProbe : Volume
                 }
             }
             img.WriteToFile($"{gdir}/Normal_{i}.png");
-            //var err = _normalTextures[i].SavePng($"{dir}/Normal_{i}.png");
-            //GD.Print(err);
+            normalList.Add($"{gdir}/Normal_{i}.png");
         }
         
         for (int i = 0; i < _depthTextures.Count; i++)
@@ -194,7 +202,60 @@ public partial class DeferredProbe : Volume
                 }
             }
             img.WriteToFile($"{gdir}/Depth_{i}.hdr");
+            depthList.Add($"{gdir}/Depth_{i}.hdr");
         }
+        
+        using var f0 = FileAccess.Open($"{gdir}/color.txt", FileAccess.ModeFlags.Write);
+            colorList.ForEach(s => f0.StoreLine(s));
+            
+        using var f1 = FileAccess.Open($"{gdir}/normal.txt", FileAccess.ModeFlags.Write);
+            normalList.ForEach(s => f1.StoreLine(s));
+        
+        using var f2 = FileAccess.Open($"{gdir}/depth.txt", FileAccess.ModeFlags.Write);
+            depthList.ForEach(s => f2.StoreLine(s));
+
+        var tn = TextureName();
+        
+        // first make the base DDS files
+        var tx0 = new Process();
+        tx0.StartInfo.FileName = Settings.TexAssembleLocation;
+        tx0.StartInfo.Arguments =
+            $"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_0.dds\" -l -y -srgb -f R8G8B8A8_UNORM_SRGB -flist \"{gdir}\\color.txt\"";
+        tx0.Start();
+        
+        // once converted, compress
+        tx0.Exited += (sender, args) =>
+        {
+            var tx0Compress = new Process();
+            tx0Compress.StartInfo.FileName = Settings.TexConvLocation;
+            tx0Compress.StartInfo.Arguments =
+                $"-f DXT5 -srgb -y \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_0.dds\"";
+            tx0Compress.Start();
+            tx0Compress.OutputDataReceived += (o, eventArgs) => GD.Print(eventArgs.Data);
+        };
+        
+        var tx1 = new Process();
+        tx1.StartInfo.FileName = Settings.TexAssembleLocation;
+        tx1.StartInfo.Arguments =
+            $"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_1.dds\" -l -y -f R8G8B8A8_UNORM -flist \"{gdir}\\normal.txt\"";
+        tx1.Start();
+        
+        tx1.Exited += (sender, args) =>
+        {
+            var tx1Compress = new Process();
+            tx1Compress.StartInfo.FileName = Settings.TexConvLocation;
+            tx1Compress.StartInfo.Arguments =
+                $"-f DXT5 -y \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_1.dds\"";
+            tx1Compress.Start();
+            tx1Compress.OutputDataReceived += (o, eventArgs) => GD.Print(eventArgs.Data);
+        };
+        
+        var tx2 = new Process();
+        tx2.StartInfo.FileName = Settings.TexAssembleLocation;
+        tx2.StartInfo.Arguments =
+            $"cube -O \"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_d.dds\" -l -y -f R16_UNORM -flist \"{gdir}\\depth.txt\"";
+        tx2.Start();
+        
     }
     
     public void Clear()
@@ -235,6 +296,23 @@ public partial class DeferredProbe : Volume
         return data;
     }
 
+    static (uint,uint) SplitGuid(string guid)
+    {
+        if (guid.StartsWith("0x")) guid = guid.Remove(0, 2);
+        
+        var firsthalf = Convert.ToUInt32("0x" + guid.Remove(8), 16);
+        var secondhalf = Convert.ToUInt32("0x" + guid.Remove(0, 8), 16);
+        return (firsthalf, secondhalf);
+    }
+    
+    public string TextureName()
+    {
+        var (p1, p2) = SplitGuid(Guid.ToString("x16"));
+        var p3 = Utils.JenkinsHash(SaveManager.CurrentProject.InteriorName);
+
+        return Utils.LightProbeHash(new[] { p1, p2, p3 }).ToString();
+    }
+    
     public override bool Selected() => DeferredProbesUi.SelectedProbe == this;
 
     public class DeferredProbeData : VolumeData

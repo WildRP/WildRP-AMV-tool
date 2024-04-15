@@ -7,7 +7,12 @@ public partial class SettingsGui : Control
 {
 	[Export] private LineEdit _texAssemblePath;
 	[Export] private Button _texAssembleBrowse;
+	
+	[Export] private LineEdit _texConvPath;
+	[Export] private Button _texConvBrowse;
+	
 	[Export] private FileDialog _texAssembleDialog;
+	[Export] private FileDialog _texConvDialog;
 	
 	[ExportGroup("UI")]
 	[Export] private HSlider _uiScaleSlider;
@@ -46,6 +51,17 @@ public partial class SettingsGui : Control
 
 		_texAssemblePath.Text = Settings.TexAssembleLocation;
 		_texAssemblePath.TextSubmitted += text => Settings.TexAssembleLocation = text;
+		
+		_texConvBrowse.Pressed += () => _texConvDialog.Popup();
+		_texConvDialog.FileSelected += path =>
+		{
+			_texConvPath.Text = path;
+			Settings.TexConvLocation = path;
+		};
+
+		_texConvPath.Text = Settings.TexConvLocation;
+		_texConvPath.TextSubmitted += text => Settings.TexConvLocation = text;
+		
 		
 		_minBrightSlider.ValueChanged += value => { _minBrightLabel.Text = value.ToString(".000#"); };
 		_minBrightSlider.Value = Settings.MinBrightness;

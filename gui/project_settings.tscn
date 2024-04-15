@@ -91,7 +91,7 @@ text = "Ymap Position:  "
 [node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
-step = 0.001
+step = 0.0
 allow_greater = true
 allow_lesser = true
 prefix = "X:"
@@ -99,7 +99,7 @@ prefix = "X:"
 [node name="SpinBox2" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
-step = 0.001
+step = 0.0
 allow_greater = true
 allow_lesser = true
 prefix = "Y:"
@@ -107,7 +107,7 @@ prefix = "Y:"
 [node name="SpinBox3" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
-step = 0.001
+step = 0.0
 allow_greater = true
 allow_lesser = true
 prefix = "Z:"

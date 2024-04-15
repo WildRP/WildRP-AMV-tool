@@ -45,9 +45,19 @@ public partial class Settings : Node
         }
     }
 
+    public static string TexConvLocation
+    {
+        get => _settingsFile.GetValue("Settings", "TexConvPath", "").AsString();
+        set
+        {
+            _settingsFile.SetValue("Settings", "TexConvPath", value);
+            _dirty = true;
+        }
+    }
+    
     public static float MinBrightness
     {
-        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.002f).AsSingle();
+        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.000f).AsSingle();
         set
         {
             _settingsFile.SetValue("Settings", "MinBrightness", value);
