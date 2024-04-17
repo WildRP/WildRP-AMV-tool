@@ -26,7 +26,7 @@ public partial class SaveManager : Node
 		if (DirAccess.DirExistsAbsolute(ProjectsFolder) == false)
 			DirAccess.MakeDirAbsolute(ProjectsFolder);
 	}
-
+	
 	public static bool HasProject() => _currentProject != null;
 	
 	public static void SaveProject()

@@ -3,3 +3,4 @@
 [node name="Probe Camera" type="Camera3D"]
 cull_mask = 524288
 fov = 90.0
+far = 250.0

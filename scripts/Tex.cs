@@ -60,12 +60,12 @@ public class Tex
             Run();
     }
 
-    public void SetupTexConv(string file, string outputFolder, bool compress = true, int size = 0, bool srgb = false, bool run = true)
+    public void SetupTexConv(string file, string outputFolder, bool compress = true, int size = 0, bool srgb = false, bool run = true, string extraFlags = "")
     {
         _process.StartInfo.FileName = Settings.TexConvLocation;
         _processName = Settings.TexConvLocation.GetFile();
 
-        var args = $"-nologo -y -O \"{outputFolder}\" ";
+        var args = $"-nologo -m 1 -y -O \"{outputFolder}\" ";
 
         if (compress)
         {
@@ -73,7 +73,8 @@ public class Tex
         }
         if (srgb) args += "-srgb ";
         if (size > 0) args += $"-w {size} -h {size} ";
-        args += $"\"{file}\"";
+        args += extraFlags;
+        args += $" \"{file}\"";
 
         _process.StartInfo.Arguments = args;
 
@@ -88,6 +89,8 @@ public class Tex
         _process.Start();
     }
 
+    public bool Wait() => _process.WaitForExit(1000);
+    
     public enum TextureFormat
     {
         None,
@@ -104,10 +107,11 @@ public class Tex
         return p;
     }
 
-    public static Tex Conv(string file, string outputFolder, bool compress = true, int size = 0, bool srgb = false)
+    public static Tex Conv(string file, string outputFolder, bool compress = true, int size = 0, bool srgb = false, string extraFlags = "")
     {
         var p = new Tex();
-        p.SetupTexConv(file, outputFolder, compress, size, srgb, false);
+        p.SetupTexConv(file, outputFolder, compress, size, srgb, false, extraFlags);
         return p;
     }
+    
 }

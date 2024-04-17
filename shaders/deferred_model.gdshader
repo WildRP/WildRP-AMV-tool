@@ -11,7 +11,6 @@ varying vec3 worldNormal;
 void vertex() {
 	vec3 n = NORMAL;
 	n.z *= -1.0;
-	n.x *= -1.0;
 	worldNormal = n;
 }
 

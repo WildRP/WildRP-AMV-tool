@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using Godot;
 using Godot.Collections;
-using WildRP.AMVTool.Autoloads;
+using StbImageWriteSharp;
 using WildRP.AMVTool.GUI;
 using WildRPAMVTool.scripts;
+using FileAccess = Godot.FileAccess;
+using Image = Godot.Image;
 
 namespace WildRP.AMVTool;
 
@@ -157,6 +159,7 @@ public partial class DeferredProbe : Volume
                 {
                     var col = _colorTextures[i].GetPixel(x, y);
                     var a = _occlusionTextures[i].GetPixel(x, y).Luminance;
+                    col = col.SrgbToLinear();
                     
                     img.SetPixelChannel(x, y, 0, col.R);
                     img.SetPixelChannel(x, y, 1, col.G);
@@ -198,12 +201,19 @@ public partial class DeferredProbe : Volume
             {
                 for (int y = 0; y < size.Y; y++)
                 {
-                    var a = _depthTextures[i].GetPixel(x, y).Luminance;
-                    img.SetPixel(x, y, a * 100f);
+                    var val = _depthTextures[i].GetPixel(x, y).R;
+                    val *= 250;
+
+                    // turn linear depth into logarithmic depth
+                    var c = 0.01f;
+                    val = Mathf.Log(val + c) / Mathf.Log(150 + c);
+                    
+                    img.AtomicAdd(x,y, val);
                 }
             }
+            
             img.WriteToFile($"{gdir}/Depth_{i}.hdr");
-            depthList.Add($"{gdir}/Depth_{i}.hdr");
+            depthList.Add($"./{Guid}/Depth_{i}.hdr");
         }
         
         using var f0 = FileAccess.Open($"{gdir}/color.txt", FileAccess.ModeFlags.Write);
@@ -216,6 +226,8 @@ public partial class DeferredProbe : Volume
             depthList.ForEach(s => f2.StoreLine(s));
 
         var tn = TextureName();
+
+        
         
         // every probe comes in different resolution sizes from 1024 to 128
         // so there will be lots of resizing here
@@ -241,7 +253,7 @@ public partial class DeferredProbe : Volume
         
         var tx1 = Tex.Assemble($"./{Guid}/normal.txt", $"{ul_path}{tn}_1.dds",
             Tex.TextureFormat.R8G8B8A8_UNORM);
-        
+
         var txd = Tex.Assemble($"./{Guid}/depth.txt", $"{ul_path}{tn}_d.dds",
             Tex.TextureFormat.R16_UNORM);
 
@@ -249,37 +261,102 @@ public partial class DeferredProbe : Volume
         { 
             var p = Tex.Conv($"{ul_path}{tn}_0.dds", ul_path, srgb: true);
                 p.Run();
-        };
-        tx0.Exited += () =>
-        { 
-            var p = Tex.Conv($"{ul_path}{tn}_0.dds", hi_path, size: 512, srgb: true);
+                
+            p.Exited += () =>
+            { 
+                var p = Tex.Conv($"{ul_path}{tn}_0.dds", hi_path, size: 512, srgb: true);
                 p.Run();
-        };
-        tx0.Exited += () =>
-        { 
-            var p = Tex.Conv($"{ul_path}{tn}_0.dds", std_path, size: 256, srgb: true);
-                p.Run();
-        };
-        tx0.Exited += () =>
-        { 
-            var p = Tex.Conv($"{ul_path}{tn}_0.dds", lo_path, size: 128, srgb: true);
-                p.Run();
+                
+                p.Exited += () =>
+                { 
+                    var p = Tex.Conv($"{ul_path}{tn}_0.dds", std_path, size: 256, srgb: true);
+                    p.Run();
+                    
+                    p.Exited += () =>
+                    { 
+                        var p = Tex.Conv($"{ul_path}{tn}_0.dds", lo_path, size: 128, srgb: true);
+                        p.Run();
+                        p.Exited += FinishExport;
+                    };
+                };
+            };
         };
         
-        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", ul_path).Run();
-        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512).Run();
-        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256).Run();
-        tx1.Exited += () => Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128).Run();
         
-        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", ul_path, compress: false).Run();
-        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", hi_path, size: 512, compress: false).Run();
-        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", std_path, size: 256, compress: false).Run();
-        txd.Exited += () => Tex.Conv($"{ul_path}{tn}_d.dds", lo_path, size: 128, compress: false).Run();
+        tx1.Exited += () =>
+        {
+            var p = Tex.Conv($"{ul_path}{tn}_1.dds", ul_path);
+            p.Run();
+            
+            p.Exited += () =>
+            {
+                var p = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512);
+                p.Run();
+                
+                p.Exited += () =>
+                {
+                    var p = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256);
+                    p.Run();
+                    
+                    p.Exited += () =>
+                    {
+                        var p = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128);
+                        p.Run();
+                        p.Exited += FinishExport;
+                    };
+                };
+            };
+        };
+        
+        txd.Exited += () =>
+        {
+            var p = Tex.Conv($"{ul_path}{tn}_d.dds", ul_path, compress: false);
+            p.Run();
+            
+            p.Exited += () =>
+            {
+                var p = Tex.Conv($"{ul_path}{tn}_d.dds", hi_path, size: 512, compress: false);
+                p.Run();
+                
+                p.Exited += () =>
+                {
+                    var p = Tex.Conv($"{ul_path}{tn}_d.dds", std_path, size: 256, compress: false);
+                    p.Run();
+                    
+                    p.Exited += () =>
+                    {
+                        var p = Tex.Conv($"{ul_path}{tn}_d.dds", lo_path, size: 128, compress: false);
+                        p.Run();
+                        p.Exited += FinishExport;
+                    };
+                };
+            };
+        };
         
         tx0.Run();
         tx1.Run();
         txd.Run();
         
+    }
+
+    private int m_exportCount = 0;
+    void FinishExport()
+    {
+        return;
+        m_exportCount++;
+        if (m_exportCount < 3) return;
+        m_exportCount = 0;
+        
+        // Clean up files, leaving only the exported DDS files
+        var path = $"{SaveManager.GetProjectPath()}/{Guid}";
+        var files = DirAccess.GetFilesAt(path);
+
+        foreach (var file in files)
+        {
+            DirAccess.RemoveAbsolute($"{path}/{file}");
+        }
+
+        DirAccess.RemoveAbsolute(path);
     }
 
     public override string GetXml()

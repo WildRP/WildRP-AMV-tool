@@ -135,7 +135,6 @@ _decalMeshMaterial = ExtResource("4_stxj5")
 [node name="SubViewport" type="SubViewport" parent="3D Scene View/Deferred Probe Container"]
 own_world_3d = true
 world_3d = SubResource("World3D_mjs27")
-transparent_bg = true
 msaa_3d = 2
 sdf_scale = 0
 canvas_cull_mask = 4294443008
