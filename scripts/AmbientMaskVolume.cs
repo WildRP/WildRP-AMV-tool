@@ -281,7 +281,6 @@ public partial class AmbientMaskVolume : Volume
 	public override void Delete()
 	{
 		QueueFree();
-		SaveManager.DeleteAmv(GuiListName);
 		OnDeleted();
 	}
 

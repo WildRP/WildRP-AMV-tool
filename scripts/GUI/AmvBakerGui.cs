@@ -189,6 +189,7 @@ public partial class AmvBakerGui : Control
 		SaveManager.UpdateAmv(amv.GuiListName, amv.Save());
 
 		amv.Deleted += OnDeleteAmv;
+		amv.VolumeRenamed += RenameVolume;
 		
 		var item =_volumeList.AddItem(name);
 		_volumeList.Select(item);
@@ -215,6 +216,7 @@ public partial class AmvBakerGui : Control
 			_amvContainerNode.AddChild(amv);
 			AmvBaker.Instance.RegisterAmv(amv);
 			amv.Deleted += OnDeleteAmv;
+			amv.VolumeRenamed += RenameVolume;
 		}
 	}
 
@@ -229,6 +231,13 @@ public partial class AmvBakerGui : Control
 		if (SelectedAmv == volume) SelectAmv(null);
 	}
 
+	private void RenameVolume(string from, string to)
+	{
+		var uniqueName = EnsureUniqueName(to);
+		_volumeList.SetItemText(_volumeList.GetIndexByName(from), uniqueName);
+		AmvBaker.Instance.RenameVolume(from, uniqueName);
+	}
+	
 	private string EnsureUniqueName(string name)
 	{
 		var n = name;

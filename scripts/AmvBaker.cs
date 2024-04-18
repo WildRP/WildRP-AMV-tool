@@ -198,4 +198,12 @@ public partial class AmvBaker : Node3D
 	}
 
 	public static int GetSampleCount() => 1 << BakeSamples;
+
+	public void RenameVolume(string oldname, string newname)
+	{
+		var probe = GetVolume(oldname);
+		AmbientMaskVolumes[oldname].GuiListName = newname;
+		AmbientMaskVolumes.Remove(oldname);
+		AmbientMaskVolumes.Add(newname, probe);
+	}
 }

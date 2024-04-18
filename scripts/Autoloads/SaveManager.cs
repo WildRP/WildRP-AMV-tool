@@ -31,9 +31,12 @@ public partial class SaveManager : Node
 	
 	public static void SaveProject()
 	{
+		_currentProject.Volumes.Clear();
+		_currentProject.Probes.Clear();
+		
 		SavingProject?.Invoke(); // send in your updated data my friends!
 		
-		if (_currentProject.ModelPath == "" && _currentProject.Volumes.Count == 0) return;
+		if (_currentProject.Volumes.Count == 0 && _currentProject.Probes.Count == 0) return;
 
 		if (DirAccess.DirExistsAbsolute(GetProjectPath()) == false)
 			DirAccess.MakeDirAbsolute(GetProjectPath());
@@ -74,34 +77,9 @@ public partial class SaveManager : Node
 	{
 		_currentProject.Volumes[name] = data;
 	}
-
-	public static void RenameAmv(string from, string to)
-	{
-		var amv = _currentProject.Volumes[from];
-		_currentProject.Volumes.Remove(from);
-		_currentProject.Volumes.Add(to, amv);
-	}
-
-	public static void DeleteAmv(string name)
-	{
-		_currentProject.Volumes.Remove(name);
-	}
-
-	public static void DeleteDeferredProbe(string name)
-	{
-		_currentProject.Probes.Remove(name);
-	}
-	
 	public static void UpdateDeferredProbe(string name, DeferredProbe.DeferredProbeData data)
 	{
 		_currentProject.Probes[name] = data;
-	}
-	
-	public static void RenameProbe(string from, string to)
-	{
-		var probe = _currentProject.Probes[from];
-		_currentProject.Probes.Remove(from);
-		_currentProject.Probes.Add(to, probe);
 	}
 	
 	public static void SetModel(string path) => _currentProject.ModelPath = path;
@@ -170,19 +148,6 @@ public partial class SaveManager : Node
 		{
 			var v = Variant.CreateFrom(value);
 			writer.WriteStringValue(GD.VarToStr(v));
-		}
-	}
-
-	public class GuidConverter : JsonConverter<ulong>
-	{
-		public override ulong Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-		{
-			return reader.GetUInt64();
-		}
-
-		public override void Write(Utf8JsonWriter writer, ulong value, JsonSerializerOptions options)
-		{
-			writer.WriteNumber("Guid", value);
 		}
 	}
 }

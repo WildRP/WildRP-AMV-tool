@@ -574,7 +574,7 @@ mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_nun7o")
 script = ExtResource("10_xk6cx")
 
-[node name="Reflection Probes" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_probeModelContainer", "_projectPanel", "_fileDialog", "_probeContainerNode", "_bakeProgressBar", "_cancelBakeBtn") instance=ExtResource("12_2exl6")]
+[node name="Deferred Probes" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_probeModelContainer", "_projectPanel", "_fileDialog", "_probeContainerNode", "_bakeProgressBar", "_cancelBakeBtn") instance=ExtResource("12_2exl6")]
 visible = false
 layout_mode = 2
 _probeModelContainer = NodePath("../../../../3D Scene View/Deferred Probe Container")
@@ -600,20 +600,18 @@ visible = false
 layout_mode = 2
 
 [node name="AMVListContextMenu" type="PopupMenu" parent="CanvasLayer/GUI"]
-item_count = 5
-item_0/text = "Bake"
-item_0/id = 0
-item_1/text = "Include in full bake"
-item_1/checkable = 1
-item_1/checked = true
-item_1/id = 4
-item_2/text = ""
-item_2/id = 2
-item_2/separator = true
-item_3/text = "Rename"
-item_3/id = 3
-item_4/text = "Delete"
-item_4/id = 1
+item_count = 4
+item_0/text = "Include in full bake"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 4
+item_1/text = ""
+item_1/id = 2
+item_1/separator = true
+item_2/text = "Rename"
+item_2/id = 3
+item_3/text = "Delete"
+item_3/id = 1
 script = ExtResource("11_gkj68")
 
 [node name="Project Menu" parent="CanvasLayer/GUI" instance=ExtResource("12_vi4p3")]

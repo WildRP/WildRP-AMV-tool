@@ -7,7 +7,7 @@ namespace WildRP.AMVTool;
 // Base class for AMVs and Deferred Probes
 public partial class Volume : Node3D
 {
-    public string GuiListName { get; protected set; }
+    public string GuiListName { get; set; }
     public void Setup(string name) => GuiListName = name;
     public bool Baked
     {

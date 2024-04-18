@@ -264,8 +264,8 @@ public partial class DeferredProbeBaker : Node3D
     public void RenameProbe(string oldname, string newname)
     {
 	    var probe = GetProbe(oldname);
+	    DeferredProbes[oldname].GuiListName = newname;
 	    DeferredProbes.Remove(oldname);
 	    DeferredProbes.Add(newname, probe);
-	    SaveManager.RenameProbe(oldname, newname);
     }
 }
