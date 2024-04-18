@@ -95,6 +95,32 @@ public partial class Settings : Node
         }
     }
 
+    public static int BlurSize
+    {
+        get
+        {
+            var size = _settingsFile.GetValue("Settings", "BlurSize", 5).AsInt32();
+            size = Mathf.Clamp(size, 3, 5);
+            if (size == 4) size = 5;
+            return size;
+        }
+        set
+        {
+            _settingsFile.SetValue("Settings", "BlurSize", value);
+            _dirty = true;
+        }
+    }
+
+    public static float BlurStrength
+    {
+        get => Mathf.Clamp(_settingsFile.GetValue("Settings", "BlurStrength", 0.8f).AsSingle(), 0f, 1f);
+        set
+        {
+            _settingsFile.SetValue("Settings", "BlurStrength", value);
+            _dirty = true;
+        }
+    }
+
     private static bool _dirty; // Marks that it's time to save settings
 
     public override void _Ready()

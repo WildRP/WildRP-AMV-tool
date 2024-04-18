@@ -141,6 +141,11 @@ public partial class AmbientMaskVolume : Volume
 			Blur(Vector3I.Up);
 			Blur(Vector3I.Right);
 			Blur(Vector3I.Back);
+
+			foreach (var probe in _probes)
+			{
+				probe.SetFinalBlurValue();
+			}
 		}
 	}
 	

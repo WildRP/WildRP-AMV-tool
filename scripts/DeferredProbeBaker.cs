@@ -63,7 +63,7 @@ public partial class DeferredProbeBaker : Node3D
 		    _bakeQueue.Count != 0 ? SubViewport.UpdateMode.Always : SubViewport.UpdateMode.Disabled;
 	    
 	    // we have to render one image from one camera per frame... thanks godot
-	    if (_bakeQueue.Count != 0)
+	    if (_bakeQueue.Count > 0)
 	    {
 		    var idx = _probeBakeCounter % _bakeQueue.Count;
 		    var p = _bakeQueue[idx];
@@ -71,14 +71,15 @@ public partial class DeferredProbeBaker : Node3D
 		    _probeBakeCounter++;
 		    var progress = _bakeQueue.Average(probe => probe.BakeProgress);
 		    UpdateBakeProgress.Invoke(progress);
+		    
+		    if (_bakeQueue.All(p => p.Baked && p.Exported))
+		    {
+			    _bakeQueue.Clear();
+			    _mainCamera.Current = true;
+			    UpdateBakeProgress?.Invoke(1f);
+		    }
 	    }
-
-	    if (_bakeQueue.All(p => p.Baked && p.Exported))
-	    {
-		    _bakeQueue.Clear();
-		    _mainCamera.Current = true;
-		    UpdateBakeProgress?.Invoke(1f);
-	    }
+	    
     }
 
     public void BakeAll()

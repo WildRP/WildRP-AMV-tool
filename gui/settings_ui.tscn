@@ -5,7 +5,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texConvPath", "_texConvBrowse", "_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texConvPath", "_texConvBrowse", "_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_blurStrengthSlider", "_blurStrengthLabel", "_blurSizeDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -28,6 +28,9 @@ _bounceCountSlider = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxCon
 _bounceCountLabel = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer3/Label")
 _bounceEnergySlider = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/HSlider")
 _bounceEnergyLabel = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer3/Label")
+_blurStrengthSlider = NodePath("MarginContainer/VBoxContainer/BlurStrength/HBoxContainer/HSlider")
+_blurStrengthLabel = NodePath("MarginContainer/VBoxContainer/BlurStrength/HBoxContainer/MarginContainer3/Label")
+_blurSizeDropdown = NodePath("MarginContainer/VBoxContainer/BlurSize/HBoxContainer/OptionButton")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -301,7 +304,7 @@ text = "Bounce Energy"
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 max_value = 1.0
-step = 0.0
+step = 0.025
 
 [node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
 layout_mode = 2
@@ -321,6 +324,55 @@ theme_override_constants/margin_left = 50
 layout_mode = 2
 size_flags_horizontal = 0
 text = "How strong the bounced lighting should be."
+
+[node name="BlurStrength" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BlurStrength"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BlurStrength/HBoxContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Blur Strength"
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/BlurStrength/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.025
+
+[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BlurStrength/HBoxContainer/MarginContainer3"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "0
+"
+
+[node name="BlurSize" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BlurSize"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BlurSize/HBoxContainer"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+text = "Blur Size"
+
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/BlurSize/HBoxContainer"]
+layout_mode = 2
+item_count = 2
+selected = 1
+popup/item_0/text = "3x3x3"
+popup/item_0/id = 3
+popup/item_1/text = "5x5x5"
+popup/item_1/id = 5
 
 [node name="LinkButton" type="LinkButton" parent="MarginContainer"]
 layout_mode = 2

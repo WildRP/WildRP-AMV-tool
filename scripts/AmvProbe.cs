@@ -20,6 +20,7 @@ public partial class AmvProbe : MeshInstance3D
 	private Vector3 _variance;
 
 	private ProbeSample _value = new();
+	private ProbeSample _bakedValue = new();
 	private ProbeSample _blurredSample = new();
 	
 	
@@ -75,10 +76,13 @@ public partial class AmvProbe : MeshInstance3D
 		var dispValue = _value * (1/completion);
 
 		dispValue.Remap(0,1, Settings.MinBrightness, 1);
-		
+
 		if (bakeFinished)
+		{
 			_value = dispValue;
-		
+			_bakedValue = _value;
+		}
+
 		SetInstanceShaderParameter("positive_occlusion", dispValue.GetPositiveVector());
 		SetInstanceShaderParameter("negative_occlusion", dispValue.GetNegativeVector());
 		
@@ -86,13 +90,19 @@ public partial class AmvProbe : MeshInstance3D
 
 	public void Blur(Vector3I Axis)
 	{
+		int offsetSize = 2;
 		float[] weights = [0.0625f, 0.25f, 0.375f, 0.25f, 0.0625f];
+		
+		if (Settings.BlurSize == 3)
+		{
+			weights = [0.25f, 0.5f, 0.25f];
+		}
 
 		_blurredSample = 0;
 		
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < weights.Length; i++)
 		{
-			int offset = i - 2;
+			int offset = i - offsetSize;
 			_blurredSample += ParentVolume.GetCellValueRelative(CellPosition, Axis * offset) * weights[i];
 		}
 	}
@@ -100,6 +110,12 @@ public partial class AmvProbe : MeshInstance3D
 	public void SetValueFromBlurred()
 	{
 		_value = _blurredSample;
+	}
+
+	public void SetFinalBlurValue()
+	{
+		// simple lerp
+		_value = (_bakedValue + (_value - _bakedValue) * Settings.BlurStrength);
 		SetInstanceShaderParameter("positive_occlusion", _value.GetPositiveVector());
 		SetInstanceShaderParameter("negative_occlusion", _value.GetNegativeVector());
 	}
