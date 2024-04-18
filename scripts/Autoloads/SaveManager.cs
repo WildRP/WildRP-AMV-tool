@@ -75,6 +75,13 @@ public partial class SaveManager : Node
 		_currentProject.Volumes[name] = data;
 	}
 
+	public static void RenameAmv(string from, string to)
+	{
+		var amv = _currentProject.Volumes[from];
+		_currentProject.Volumes.Remove(from);
+		_currentProject.Volumes.Add(to, amv);
+	}
+
 	public static void DeleteAmv(string name)
 	{
 		_currentProject.Volumes.Remove(name);
@@ -88,6 +95,13 @@ public partial class SaveManager : Node
 	public static void UpdateDeferredProbe(string name, DeferredProbe.DeferredProbeData data)
 	{
 		_currentProject.Probes[name] = data;
+	}
+	
+	public static void RenameProbe(string from, string to)
+	{
+		var probe = _currentProject.Probes[from];
+		_currentProject.Probes.Remove(from);
+		_currentProject.Probes.Add(to, probe);
 	}
 	
 	public static void SetModel(string path) => _currentProject.ModelPath = path;

@@ -8,7 +8,7 @@ using Godot;
 using Godot.Collections;
 using StbImageWriteSharp;
 using WildRP.AMVTool.GUI;
-using WildRPAMVTool.scripts;
+using WildRP.AMVTool;
 using FileAccess = Godot.FileAccess;
 using Image = Godot.Image;
 
@@ -31,6 +31,8 @@ public partial class DeferredProbe : Volume
     
     private SubViewport _viewport;
     private Node _originalParent;
+    private int _bakeCounter;
+    private int _bakeSteps = 33;
 
     public new bool Baked => _colorTextures.Count >= 6
                              && _normalTextures.Count >= 6
@@ -38,6 +40,10 @@ public partial class DeferredProbe : Volume
                              && _skyMaskTextures.Count >= 6
                              && _occlusionTextures.Count >= 6;
 
+    public bool Exported { get; private set; }
+
+    public float BakeProgress => (float)_bakeCounter / _bakeSteps;
+    
     public override void _Ready()
     {
         base._Ready();
@@ -61,7 +67,6 @@ public partial class DeferredProbe : Volume
     {
         _centerNode.Position = CenterOffset;
     }
-
     
     public void BakeNext()
     {
@@ -77,8 +82,14 @@ public partial class DeferredProbe : Volume
             RenderDepth(_depthTextures.Count);
         else if (_occlusionTextures.Count < 6)
             RenderOcclusion(_occlusionTextures.Count);
-        
-        if (Baked) Reparent(_originalParent, true);
+
+        _bakeCounter++;
+
+        if (Baked)
+        {
+            Reparent(_originalParent, true);
+            GenerateTextures();
+        }
     }
 
 
@@ -228,7 +239,6 @@ public partial class DeferredProbe : Volume
         var tn = TextureName();
 
         
-        
         // every probe comes in different resolution sizes from 1024 to 128
         // so there will be lots of resizing here
 
@@ -339,13 +349,15 @@ public partial class DeferredProbe : Volume
         
     }
 
-    private int m_exportCount = 0;
+    private int _exportCount = 0;
     void FinishExport()
     {
-        return;
-        m_exportCount++;
-        if (m_exportCount < 3) return;
-        m_exportCount = 0;
+        _exportCount++;
+        _bakeCounter++;
+        if (_exportCount < 3) return;
+        
+        Exported = true;
+        _exportCount = 0;
         
         // Clean up files, leaving only the exported DDS files
         var path = $"{SaveManager.GetProjectPath()}/{Guid}";
@@ -395,6 +407,7 @@ public partial class DeferredProbe : Volume
         _normalTextures.Clear();
         _skyMaskTextures.Clear();
         _depthTextures.Clear();
+        Exported = false;
     }
 
     public void Load(KeyValuePair<string, DeferredProbeData> data)

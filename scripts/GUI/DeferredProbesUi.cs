@@ -1,8 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using WildRP.AMVTool.GUI;
-using WildRPAMVTool.scripts;
 
 namespace WildRP.AMVTool.GUI;
 
@@ -32,7 +30,6 @@ public partial class DeferredProbesUi : Control
 				[Export] private VolumeList _volumeList;
 				[Export] private Button _newProbeButton;
 				[Export] private Button _bakeAllButton;
-				[Export] private Button _exportTexturesBtn;
 				[Export] private ProgressBar _bakeProgressBar;
 				[Export] private Button _cancelBakeBtn;
 		[ExportGroup("Probe Details")] 
@@ -40,6 +37,7 @@ public partial class DeferredProbesUi : Control
 			[Export] private LineEdit _guid;
 			[Export] private SpinBox _rotation;
 			[Export] private Button _randomizeUuidButton;
+			[Export] private ProbeContextMenu _probeContextMenu;
 				[ExportSubgroup("Center Offset")]
 					[Export] private SpinBox _centerOffsetX;
 					[Export] private SpinBox _centerOffsetY;
@@ -88,6 +86,12 @@ public partial class DeferredProbesUi : Control
 			SelectProbe(null);
 			_volumeList.DeselectAll();
 		};
+		_volumeList.OnRightClickItem += (name, pos) => 
+		{
+			_probeContextMenu.Popup();
+			_probeContextMenu.Position = new Vector2I(Mathf.RoundToInt(pos.X), Mathf.RoundToInt(pos.Y));
+			_probeContextMenu.Select(name);
+		};
 		
 		_projectFolderBtn.Pressed += () => OS.ShellOpen(SaveManager.GetGlobalizedProjectPath());
 
@@ -101,10 +105,15 @@ public partial class DeferredProbesUi : Control
 			_probeModelContainer.Visible = Visible;
 		};
 
-		_bakeAllButton.Pressed += () => DeferredProbeBaker.Instance.BakeAll();
+		_bakeAllButton.Pressed += () =>
+		{
+			DeferredProbeBaker.Instance.BakeAll();
+			_controlToHide.Visible = false;
+			_bakeProgressBar.GetParentControl().Visible = true;
+		};
 
-		_exportTexturesBtn.Pressed += () => DeferredProbeBaker.Instance.ExportAll();
-
+		DeferredProbeBaker.UpdateBakeProgress += UpdateBakeProgress;
+		
 		_randomizeUuidButton.Pressed += () =>
 		{
 			if (SelectedProbe == null) return; // shouldnt happen but still
@@ -116,6 +125,17 @@ public partial class DeferredProbesUi : Control
 		};
 
 		_probeInfoPanel.Visible = false;
+	}
+
+	void UpdateBakeProgress(float progress)
+	{
+		_bakeProgressBar.Value = progress;
+		
+		if (progress < 1)
+			return;
+		
+		_controlToHide.Visible = true;
+		_bakeProgressBar.GetParentControl().Visible = false;
 	}
 	
 	private void UnloadModel()
@@ -170,6 +190,7 @@ public partial class DeferredProbesUi : Control
 			_probeContainerNode.AddChild(probe);
 			DeferredProbeBaker.Instance.RegisterProbe(probe);
 			probe.Deleted += OnDeleteProbe;
+			probe.VolumeRenamed += RenameProbe;
 		}
 	}
 	
@@ -197,12 +218,20 @@ public partial class DeferredProbesUi : Control
 		SaveManager.UpdateDeferredProbe(probe.GuiListName, probe.Save());
 
 		probe.Deleted += OnDeleteProbe;
-		
+		probe.VolumeRenamed += RenameProbe;
+
 		var item =_volumeList.AddItem(name);
 		_volumeList.Select(item);
 		SelectProbe(probe);
 	}
 
+	private void RenameProbe(string from, string to)
+	{
+		var uniqueName = EnsureUniqueName(to);
+		_volumeList.SetItemText(_volumeList.GetIndexByName(from), uniqueName);
+		DeferredProbeBaker.Instance.RenameProbe(from, uniqueName);
+	}
+	
 	private void SelectProbe(DeferredProbe p)
 	{
 		if (SelectedProbe != null)

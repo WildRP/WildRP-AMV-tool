@@ -16,6 +16,17 @@ public partial class VolumeList : ItemList
             OnRightClickItem?.Invoke(GetItemText(idx), GlobalPosition + pos);
         }
     }
+
+    public int GetIndexByName(string name)
+    {
+        for (int i = 0; i < ItemCount; i++)
+        {
+            if (GetItemText(i) != name) continue;
+            return i;
+        }
+
+        return -1;
+    }
     
     public event Action<string, Vector2> OnRightClickItem;
 }

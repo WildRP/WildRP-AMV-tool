@@ -5,7 +5,7 @@ using Godot;
 using WildRP.AMVTool;
 using WildRP.AMVTool.GUI;
 
-namespace WildRPAMVTool.scripts;
+namespace WildRP.AMVTool;
 
 public partial class DeferredProbeBaker : Node3D
 {
@@ -27,6 +27,8 @@ public partial class DeferredProbeBaker : Node3D
     private StandardMaterial3D _aoBakeMat;
 
     private VoxelGI _voxelGi;
+
+    public static Action<float> UpdateBakeProgress;
 
     public enum BakePass
     {
@@ -54,6 +56,7 @@ public partial class DeferredProbeBaker : Node3D
     }
 
     private int _probeBakeCounter;
+    private int _totalBakeSteps;
     public override void _Process(double delta)
     {
 	    _renderViewport.RenderTargetUpdateMode =
@@ -66,12 +69,15 @@ public partial class DeferredProbeBaker : Node3D
 		    var p = _bakeQueue[idx];
 		    p.BakeNext();
 		    _probeBakeCounter++;
+		    var progress = _bakeQueue.Average(probe => probe.BakeProgress);
+		    UpdateBakeProgress.Invoke(progress);
 	    }
 
-	    if (_bakeQueue.All(p => p.Baked))
+	    if (_bakeQueue.All(p => p.Baked && p.Exported))
 	    {
 		    _bakeQueue.Clear();
 		    _mainCamera.Current = true;
+		    UpdateBakeProgress?.Invoke(1f);
 	    }
     }
 
@@ -254,5 +260,12 @@ public partial class DeferredProbeBaker : Node3D
     }
     
     public DeferredProbe GetProbe(string name) => DeferredProbes[name];
-    
+
+    public void RenameProbe(string oldname, string newname)
+    {
+	    var probe = GetProbe(oldname);
+	    DeferredProbes.Remove(oldname);
+	    DeferredProbes.Add(newname, probe);
+	    SaveManager.RenameProbe(oldname, newname);
+    }
 }

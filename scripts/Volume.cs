@@ -24,8 +24,13 @@ public partial class Volume : Node3D
     
     public event Action<Volume> Deleted;
     public event Action SizeChanged;
-
     public event Action<bool> UiToggled;
+    public event Action<string, string> VolumeRenamed;
+
+    public void RenameVolume(string newName)
+    {
+        VolumeRenamed?.Invoke(GuiListName, newName);
+    }
 
     protected void OnDeleted() => Deleted?.Invoke(this);
     protected void OnSizeChanged() => SizeChanged?.Invoke();

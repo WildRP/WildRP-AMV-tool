@@ -1,10 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://c6rfggpw1cyt6"]
+[gd_scene load_steps=12 format=3 uid="uid://c6rfggpw1cyt6"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_v4fao"]
 [ext_resource type="Script" path="res://scripts/GUI/VolumeList.cs" id="2_lnhwb"]
 [ext_resource type="Script" path="res://scripts/GUI/DeferredProbesUi.cs" id="2_t473d"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="3_7fc7g"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="3_q2jau"]
+[ext_resource type="Script" path="res://scripts/GUI/ViewPanel.cs" id="6_8dq5q"]
+[ext_resource type="Script" path="res://scripts/GUI/ProbeContextMenu.cs" id="7_mfa2b"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_04scg"]
 content_margin_left = 0.0
@@ -48,7 +50,7 @@ content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
 
-[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_exportTexturesBtn", "_probeInfoPanel", "_guid", "_rotation", "_randomizeUuidButton", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
+[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_probeInfoPanel", "_guid", "_rotation", "_randomizeUuidButton", "_probeContextMenu", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -65,15 +67,15 @@ _modelListItem = ExtResource("3_7fc7g")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
-_controlToHide = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel")
+_controlToHide = NodePath("HSplitContainer")
 _volumeList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 _newProbeButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
 _bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
-_exportTexturesBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Export All")
 _probeInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel")
 _guid = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/HBoxContainer/VBoxContainer2/Rotation")
 _randomizeUuidButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Button")
+_probeContextMenu = NodePath("ProbeContextMenu")
 _centerOffsetX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/X")
 _centerOffsetY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/Y")
 _centerOffsetZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Probe Info Panel/Center Offset/Z")
@@ -199,12 +201,7 @@ text = "New"
 [node name="Bake All" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
 layout_mode = 2
 size_flags_horizontal = 8
-text = "Bake All"
-
-[node name="Export All" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons"]
-layout_mode = 2
-text = "Export All
-"
+text = "Bake and Export"
 
 [node name="HSeparator2" type="HSeparator" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
@@ -400,3 +397,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_e0fyx")
+script = ExtResource("6_8dq5q")
+
+[node name="ProbeContextMenu" type="PopupMenu" parent="."]
+item_count = 2
+item_0/text = "Rename"
+item_0/id = 0
+item_1/text = "Delete"
+item_1/id = 1
+script = ExtResource("7_mfa2b")
