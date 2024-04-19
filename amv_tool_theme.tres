@@ -219,13 +219,18 @@ content_margin_right = 8.0
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pgp2j"]
 content_margin_top = 2.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cfx35"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y24bj"]
 content_margin_left = 14.0
 content_margin_top = 8.0
 content_margin_right = 14.0
 content_margin_bottom = 8.0
-bg_color = Color(0.101961, 0.101961, 0.101961, 1)
-border_color = Color(0.101569, 0.101569, 0.101569, 1)
+bg_color = Color(0, 0, 0, 0.466667)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.117647)
+border_blend = true
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -539,7 +544,7 @@ ItemList/styles/selected_focus = SubResource("StyleBoxFlat_32au3")
 Label/colors/font_color = Color(1, 1, 1, 0.627451)
 Label/styles/normal = SubResource("StyleBoxEmpty_pgp2j")
 LineEdit/colors/font_placeholder_color = Color(1, 1, 1, 0.27451)
-LineEdit/styles/focus = SubResource("StyleBoxFlat_cfx35")
+LineEdit/styles/focus = SubResource("StyleBoxFlat_y24bj")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_0nfa3")
 LineEdit/styles/read_only = SubResource("StyleBoxFlat_fdq0g")
 MenuButton/styles/disabled = SubResource("StyleBoxFlat_l5ore")
