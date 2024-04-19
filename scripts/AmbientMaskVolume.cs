@@ -138,13 +138,14 @@ public partial class AmbientMaskVolume : Volume
 
 		if (bakeFinished)
 		{
-			Blur(Vector3I.Up);
-			Blur(Vector3I.Right);
-			Blur(Vector3I.Back);
+			Baked = true;
+			BlurProbes(Vector3I.Up);
+			BlurProbes(Vector3I.Right);
+			BlurProbes(Vector3I.Back);
 
 			foreach (var probe in _probes)
 			{
-				probe.SetFinalBlurValue();
+				probe.UpdateBlur();
 			}
 		}
 	}
@@ -159,7 +160,7 @@ public partial class AmbientMaskVolume : Volume
 		}
 	}
 
-	public void Blur(Vector3I axis)
+	public void BlurProbes(Vector3I axis)
 	{
 		foreach (var probe in _probes)
 		{
@@ -169,6 +170,25 @@ public partial class AmbientMaskVolume : Volume
 		foreach (var probe in _probes)
 		{
 			probe.SetValueFromBlurred();
+		}
+	}
+
+	public void UpdateBlur()
+	{
+		if (Baked == false) return;
+		
+		foreach (var probe in _probes)
+		{
+			probe.ClearBlur();
+		}
+		
+		BlurProbes(Vector3I.Up);
+		BlurProbes(Vector3I.Right);
+		BlurProbes(Vector3I.Back);
+
+		foreach (var probe in _probes)
+		{
+			probe.UpdateBlur();
 		}
 	}
 	
@@ -229,6 +249,7 @@ public partial class AmbientMaskVolume : Volume
 		
 		_prevProbeCount = numProbes;
 		UpdateProbePositions();
+		ClearSamples();
 	}
 
 	private void UpdateProbePositions()
@@ -238,7 +259,7 @@ public partial class AmbientMaskVolume : Volume
 			var step = Size / ProbeCount;
 			p.Position = -Size / 2 + p.CellPosition * step + step / 2;
 		});
-		
+		ClearSamples();
 	}
 	
 	private Vector3I IndexToCell(int idx)

@@ -36,6 +36,7 @@ public partial class AmvProbe : MeshInstance3D
 	{
 		_value = 0;
 		_samples = 0;
+		_bakedValue = 0;
 	}
 	
 	public override void _Ready()
@@ -107,15 +108,20 @@ public partial class AmvProbe : MeshInstance3D
 		}
 	}
 
+	public void ClearBlur()
+	{
+		_value = _bakedValue;
+	}
+
 	public void SetValueFromBlurred()
 	{
 		_value = _blurredSample;
 	}
 
-	public void SetFinalBlurValue()
+	public void UpdateBlur()
 	{
 		// simple lerp
-		_value = (_bakedValue + (_value - _bakedValue) * Settings.BlurStrength);
+		_value = (_bakedValue + (_blurredSample - _bakedValue) * Settings.BlurStrength);
 		SetInstanceShaderParameter("positive_occlusion", _value.GetPositiveVector());
 		SetInstanceShaderParameter("negative_occlusion", _value.GetNegativeVector());
 	}

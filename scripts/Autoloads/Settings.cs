@@ -146,7 +146,8 @@ public partial class Settings : Node
 
     private static void SaveSettings()
     {
-        if (_dirty == false) return;
+        // Only save once a second to avoid a bunch of unecessary file writes
+        if (_dirty == false || Engine.GetProcessFrames() % 60 != 0) return;
 
         _dirty = false;
         _settingsFile.Save(SettingsPath);

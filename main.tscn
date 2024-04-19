@@ -219,7 +219,7 @@ tab_focus_mode = 1
 visible = false
 layout_mode = 2
 
-[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_blurSizeDropdown", "_blurStrengthSlider", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -235,6 +235,8 @@ _fileDialog = NodePath("../../AMVFileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
 _amvScene = ExtResource("4_htupu")
 _amvContainerNode = NodePath("../../../../3D Scene View/AMV Model Container/AMV Container")
+_blurSizeDropdown = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer/OptionButton")
+_blurStrengthSlider = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer/HSlider")
 _controlToHide = NodePath("HSplitContainer")
 _volumeList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 _amvListContextMenu = NodePath("../../AMVListContextMenu")
@@ -380,6 +382,39 @@ text = "Export All
 "
 
 [node name="HSeparator2" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+
+[node name="BlurStrength" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+text = "Blur:"
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.025
+
+[node name="OptionButton" type="OptionButton" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+item_count = 2
+selected = 1
+popup/item_0/text = "3x3x3"
+popup/item_0/id = 3
+popup/item_1/text = "5x5x5"
+popup/item_1/id = 5
+
+[node name="HSeparator3" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 
 [node name="AMV Info Panel" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]

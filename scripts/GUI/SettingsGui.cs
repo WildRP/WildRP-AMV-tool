@@ -29,11 +29,6 @@ public partial class SettingsGui : Control
 	[Export] private HSlider _bounceEnergySlider;
 	[Export] private Label _bounceEnergyLabel;
 	
-	[Export] private HSlider _blurStrengthSlider;
-	[Export] private Label _blurStrengthLabel;
-
-	[Export] private OptionButton _blurSizeDropdown;
-	
  	public override void _Ready()
 	{
 		_texAssembleDialog.UseNativeDialog = true;
@@ -89,15 +84,5 @@ public partial class SettingsGui : Control
 		{
 			if (changed) Settings.MinBrightness = (float)_bounceEnergySlider.Value;
 		};
-		
-		_blurStrengthSlider.ValueChanged += value => { _blurStrengthLabel.Text = value.ToString(".000#"); };
-		_blurStrengthSlider.Value = Settings.BlurStrength;
-		_blurStrengthSlider.DragEnded += changed =>
-		{
-			if (changed) Settings.BlurStrength = (float)_blurStrengthSlider.Value;
-		};
-
-		_blurSizeDropdown.ItemSelected += index => Settings.BlurSize = _blurSizeDropdown.GetItemId((int)index);
-		_blurSizeDropdown.Select(_blurSizeDropdown.GetItemIndex(Settings.BlurSize));
 	}
 }

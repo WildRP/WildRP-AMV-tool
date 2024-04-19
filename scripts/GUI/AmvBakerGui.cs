@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using WildRP.AMVTool.Autoloads;
 
 namespace WildRP.AMVTool.GUI;
 
@@ -27,6 +28,10 @@ public partial class AmvBakerGui : Control
 		[Export] private PackedScene _amvScene;
 		[Export] private Node3D _amvContainerNode;
 
+		[ExportSubgroup("Blur")]
+		[Export] private OptionButton _blurSizeDropdown;
+		[Export] private HSlider _blurStrengthSlider;
+		
 		[ExportSubgroup("UI Elements")]
 			[Export] private Control _controlToHide;
 			[Export] private VolumeList _volumeList;
@@ -53,6 +58,7 @@ public partial class AmvBakerGui : Control
 				[Export] private SpinBox _probesX;
 				[Export] private SpinBox _probesY;
 				[Export] private SpinBox _probesZ;
+			
 	
 	private readonly List<ModelListItem> _modelListItems = [];
 
@@ -141,6 +147,28 @@ public partial class AmvBakerGui : Control
 			GuiToggled?.Invoke(Visible);
 			_volumeModelContainer.Visible = Visible;
 		};
+		
+		_blurStrengthSlider.Value = Settings.BlurStrength;
+		_blurSizeDropdown.Select(_blurSizeDropdown.GetItemIndex(Settings.BlurSize));
+
+		_blurStrengthSlider.ValueChanged += value =>
+		{
+			if (Engine.GetProcessFrames() % 2 != 0) return;
+			Settings.BlurStrength = (float)value;
+			UpdateBlur();
+		};
+		_blurStrengthSlider.DragEnded += changed =>
+		{
+			Settings.BlurStrength = (float)_blurStrengthSlider.Value;
+			UpdateBlur();
+		};
+		_blurSizeDropdown.ItemSelected += index =>
+		{
+			Settings.BlurSize = _blurSizeDropdown.GetItemId((int)index);
+			UpdateBlur();
+		};
+
+		
 	}
 
 	private void UnloadModel()
@@ -281,7 +309,10 @@ public partial class AmvBakerGui : Control
 		
 	}
 
-	
+	private void UpdateBlur()
+	{
+		AmvBaker.Instance.UpdateBlur();
+	}
 	
 	private void UpdateAmvGuiValues()
 	{

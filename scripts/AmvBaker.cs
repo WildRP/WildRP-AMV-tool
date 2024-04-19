@@ -206,4 +206,12 @@ public partial class AmvBaker : Node3D
 		AmbientMaskVolumes.Remove(oldname);
 		AmbientMaskVolumes.Add(newname, probe);
 	}
+
+	public void UpdateBlur()
+	{
+		foreach (var volume in _ambientMaskVolumes)
+		{
+			volume.Value.UpdateBlur();
+		}
+	}
 }
