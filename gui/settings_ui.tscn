@@ -5,7 +5,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texConvPath", "_texConvBrowse", "_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texConvPath", "_texConvBrowse", "_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_textureFormatDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -22,12 +22,11 @@ _texConvDialog = NodePath("FileDialog_TC")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
 _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2/Scale Value")
 _sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")
-_minBrightSlider = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/HSlider")
-_minBrightLabel = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3/Label")
 _bounceCountSlider = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/HSlider")
 _bounceCountLabel = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer3/Label")
 _bounceEnergySlider = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/HSlider")
 _bounceEnergyLabel = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer3/Label")
+_textureFormatDropdown = NodePath("MarginContainer/VBoxContainer/Texture Format/HBoxContainer/Dropdown")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -188,7 +187,7 @@ text = "Probe Quality"
 
 [node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
-item_count = 6
+item_count = 8
 selected = 2
 popup/item_0/text = "256 Samples"
 popup/item_0/id = 7
@@ -196,58 +195,20 @@ popup/item_1/text = "512 Samples"
 popup/item_1/id = 8
 popup/item_2/text = "1024 Samples"
 popup/item_2/id = 9
-popup/item_3/text = "2048 Samples"
+popup/item_3/text = "2048 Samples (excessive)"
 popup/item_3/id = 10
-popup/item_4/text = "4096 Samples"
+popup/item_4/text = "4096 Samples (overkill)"
 popup/item_4/id = 11
-popup/item_5/text = "8192 Samples"
+popup/item_5/text = "8192 Samples (why?)"
 popup/item_5/id = 12
+popup/item_6/text = "16384 Samples (don't do it)"
+popup/item_6/id = 13
+popup/item_7/text = "32768 Samples (you will not see the light of heaven)"
+popup/item_7/id = 14
 
 [node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 50
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer/MarginContainer2"]
-layout_mode = 2
-text = "More samples means higher quality, but longer bakes. Bakes can be interrupted at any time and you will keep the result, though!"
-
-[node name="Min Bright" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_top = 10
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Min Bright"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Minimum Brightness"
-
-[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-max_value = 0.01
-step = 0.001
-
-[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 15
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3"]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "0
-"
-
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 50
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Prevents black spots in the final baked texture, but flattens the lighting if pulled too high."
 
 [node name="BounceCount" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -257,7 +218,7 @@ theme_override_constants/margin_top = 10
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer"]
-custom_minimum_size = Vector2(110, 0)
+custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
 text = "# of Bounces"
 
@@ -293,7 +254,7 @@ theme_override_constants/margin_top = 10
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
-custom_minimum_size = Vector2(110, 0)
+custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
 text = "Bounce Energy"
 
@@ -320,7 +281,29 @@ theme_override_constants/margin_left = 50
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer2"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "How strong the bounced lighting should be."
+text = "How much light is preserved per bounce."
+
+[node name="Texture Format" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Texture Format"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Texture Format/HBoxContainer"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "Texture Format"
+
+[node name="Dropdown" type="OptionButton" parent="MarginContainer/VBoxContainer/Texture Format/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "R11G11B10_FLOAT"
+popup/item_0/id = 0
+popup/item_1/text = "R8G8B8A8_UNORM_SRGB"
+popup/item_1/id = 1
 
 [node name="LinkButton" type="LinkButton" parent="MarginContainer"]
 layout_mode = 2

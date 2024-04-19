@@ -76,8 +76,6 @@ public partial class AmvProbe : MeshInstance3D
 		var completion = (float)_samples / AmvBaker.GetSampleCount();
 		var dispValue = _value * (1/completion);
 
-		dispValue.Remap(0,1, Settings.MinBrightness, 1);
-
 		if (bakeFinished)
 		{
 			_value = dispValue;

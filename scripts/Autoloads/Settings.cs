@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
@@ -55,16 +56,6 @@ public partial class Settings : Node
         }
     }
     
-    public static float MinBrightness
-    {
-        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.000f).AsSingle();
-        set
-        {
-            _settingsFile.SetValue("Settings", "MinBrightness", value);
-            _dirty = true;
-        }
-    }
-    
     public static int BounceCount
     {
         get => _settingsFile.GetValue("Settings", "BounceCount", 2).AsInt32();
@@ -117,6 +108,22 @@ public partial class Settings : Node
         set
         {
             _settingsFile.SetValue("Settings", "BlurStrength", value);
+            _dirty = true;
+        }
+    }
+
+    public static Tex.TextureFormat AmvTextureFormat
+    {
+        get
+        {
+            var value = _settingsFile.GetValue("Settings", "AmvTextureFormat", "R11G11B10_FLOAT").AsString();
+            if (Enum.TryParse(value, true, out Tex.TextureFormat result) == false)
+                result = Tex.TextureFormat.R11G11B10_FLOAT;
+            return result;
+        }
+        set
+        {
+            _settingsFile.SetValue("Settings", "AmvTextureFormat", Enum.GetName(value));
             _dirty = true;
         }
     }

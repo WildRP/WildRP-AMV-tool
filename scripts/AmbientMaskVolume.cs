@@ -376,7 +376,7 @@ public partial class AmbientMaskVolume : Volume
 				new XElement("interior", new XAttribute("value", true)),
 				new XElement("exterior", new XAttribute("value", false)),
 				new XElement("vehicleInterior", new XAttribute("value", false)),
-				new XElement("sourceFolder", "NotRelevant"),
+				new XElement("sourceFolder", GuiListName),
 				new XElement("uuid", new XAttribute("value", TextureName)),
 				new XElement("iplHash", new XAttribute("value", iplHash))
 			)).ToString();
