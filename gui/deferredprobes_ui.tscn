@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://c6rfggpw1cyt6"]
+[gd_scene load_steps=13 format=3 uid="uid://c6rfggpw1cyt6"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_v4fao"]
 [ext_resource type="Script" path="res://scripts/GUI/VolumeList.cs" id="2_lnhwb"]
 [ext_resource type="Script" path="res://scripts/GUI/DeferredProbesUi.cs" id="2_t473d"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="3_7fc7g"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="3_q2jau"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectFolderButton.cs" id="4_a3ndr"]
 [ext_resource type="Script" path="res://scripts/GUI/ViewPanel.cs" id="6_8dq5q"]
 [ext_resource type="Script" path="res://scripts/GUI/ProbeContextMenu.cs" id="7_mfa2b"]
 
@@ -99,7 +100,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.33
 mouse_filter = 0
-scroll_vertical = 100
 horizontal_scroll_mode = 0
 
 [node name="Margin" type="MarginContainer" parent="HSplitContainer/Left Panel"]
@@ -130,6 +130,7 @@ text = "Load Project... "
 [node name="ProjectFolderBtn" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 text = "Open Project Folder"
+script = ExtResource("4_a3ndr")
 
 [node name="LoadModelBtn" type="Button" parent="HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2

@@ -11,7 +11,6 @@ public partial class DeferredProbesUi : Control
 		[Export] private Button _saveProjectBtn;
 		[Export] private Button _loadProjectBtn;
 		[Export] private Control _projectPanel;
-		[Export] private Button _projectFolderBtn;
 		
 	[ExportGroup("Model loading")]
 		[Export] private PackedScene _modelListItem;
@@ -92,8 +91,6 @@ public partial class DeferredProbesUi : Control
 			_probeContextMenu.Position = new Vector2I(Mathf.RoundToInt(pos.X), Mathf.RoundToInt(pos.Y));
 			_probeContextMenu.Select(name);
 		};
-		
-		_projectFolderBtn.Pressed += () => OS.ShellOpen(SaveManager.GetGlobalizedProjectPath());
 
 		_saveProjectBtn.Pressed += SaveManager.SaveProject;
 

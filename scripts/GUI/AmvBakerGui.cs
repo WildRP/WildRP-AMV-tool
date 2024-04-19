@@ -14,7 +14,6 @@ public partial class AmvBakerGui : Control
 		[Export] private Button _saveProjectBtn;
 		[Export] private Button _loadProjectBtn;
 		[Export] private Control _projectPanel;
-		[Export] private Button _projectFolderBtn;
 			
 	[ExportGroup("Model loading")]
 		[Export] private PackedScene _modelListItem;
@@ -127,8 +126,6 @@ public partial class AmvBakerGui : Control
 		_saveProjectBtn.Pressed += SaveManager.SaveProject;
 
 		_loadProjectBtn.Pressed += () => _projectPanel.Visible = true;
-		
-		_projectFolderBtn.Pressed += () => OS.ShellOpen(SaveManager.GetGlobalizedProjectPath());
 
 		_exportTexturesBtn.Pressed += () =>
 		{

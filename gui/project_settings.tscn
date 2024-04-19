@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://bnf5rc1a22qxm"]
+[gd_scene load_steps=5 format=3 uid="uid://bnf5rc1a22qxm"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_xoshx"]
 [ext_resource type="Script" path="res://scripts/GUI/ProjectSettingsGui.cs" id="2_vqxqy"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectFolderButton.cs" id="3_fgod1"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_obxdo"]
 font_size = 12
@@ -19,7 +20,7 @@ _interiorNameField = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/Line
 _ymapPosX = NodePath("MarginContainer/VBoxContainer/HBoxContainer3/SpinBox")
 _ymapPosY = NodePath("MarginContainer/VBoxContainer/HBoxContainer3/SpinBox2")
 _ymapPosZ = NodePath("MarginContainer/VBoxContainer/HBoxContainer3/SpinBox3")
-_saveProjectButton = NodePath("MarginContainer/Button")
+_saveProjectButton = NodePath("MarginContainer/HBoxContainer/Button")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -121,7 +122,19 @@ label_settings = SubResource("LabelSettings_obxdo")
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="Button" type="Button" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Button2" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Open Project Folder"
+script = ExtResource("3_fgod1")
+
+[node name="Button" type="Button" parent="MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8

@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=40 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
 [ext_resource type="PackedScene" uid="uid://c6rfggpw1cyt6" path="res://gui/deferredprobes_ui.tscn" id="12_2exl6"]
 [ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectFolderButton.cs" id="15_mu0ro"]
 [ext_resource type="PackedScene" uid="uid://c765i6qp7v1eu" path="res://objects/deferred_probe.tscn" id="15_ou0xa"]
 [ext_resource type="Script" path="res://scripts/GUI/RenamePopup.cs" id="25_6688d"]
 
@@ -303,6 +304,7 @@ text = "Load Project... "
 [node name="ProjectFolderBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 text = "Open Project Folder"
+script = ExtResource("15_mu0ro")
 
 [node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
