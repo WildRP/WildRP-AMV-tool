@@ -73,6 +73,8 @@ public partial class AmvBakerGui : Control
 	public override void _Process(double delta)
 	{
 		GuiVisible = Visible;
+		
+		if (Visible && Input.IsActionJustReleased("ui_cancel")) SelectAmv(null);
 	}
 
 	public override void _Ready()
@@ -303,7 +305,10 @@ public partial class AmvBakerGui : Control
 			ConnectAmvGui();
 			UpdateAmvGuiValues();
 		}
-		
+		else
+		{
+			_volumeList.DeselectAll();
+		}
 	}
 
 	private void UpdateBlur()
@@ -366,21 +371,49 @@ public partial class AmvBakerGui : Control
 	
 	private void DisconnectAmvGui()
 	{
+		
 		_positionX.ValueChanged -= SelectedAmv.SetPositionX;
 		_positionY.ValueChanged -= SelectedAmv.SetPositionZ;
 		_positionZ.ValueChanged -= SelectedAmv.SetPositionY;
+		
+		_positionX.ReleaseFocus();
+        _positionX.GetLineEdit().ReleaseFocus();
+		_positionY.ReleaseFocus();
+        _positionY.GetLineEdit().ReleaseFocus();
+		_positionZ.ReleaseFocus();
+        _positionZ.GetLineEdit().ReleaseFocus();
 		
 		_sizeX.ValueChanged -= SelectedAmv.SetSizeX;
 		_sizeY.ValueChanged -= SelectedAmv.SetSizeZ;
 		_sizeZ.ValueChanged -= SelectedAmv.SetSizeY;
 		
+		_sizeX.ReleaseFocus();
+        _sizeX.GetLineEdit().ReleaseFocus();
+		_sizeY.ReleaseFocus();
+        _sizeY.GetLineEdit().ReleaseFocus();
+		_sizeZ.ReleaseFocus();
+        _sizeZ.GetLineEdit().ReleaseFocus();
+		
 		_probesX.ValueChanged -= SelectedAmv.SetProbesX;
 		_probesY.ValueChanged -= SelectedAmv.SetProbesY;
 		_probesZ.ValueChanged -= SelectedAmv.SetProbesZ;
+		
+		_probesX.ReleaseFocus();
+        _probesX.GetLineEdit().ReleaseFocus();
+		_probesY.ReleaseFocus();
+        _probesY.GetLineEdit().ReleaseFocus();
+		_probesZ.ReleaseFocus();
+        _probesZ.GetLineEdit().ReleaseFocus();
 
 		_rotation.ValueChanged -= SelectedAmv.SetRotation;
+		
+		_rotation.ReleaseFocus();
+		_rotation.GetLineEdit().ReleaseFocus();
 
 		_textureName.ValueChanged -= SetTextureName;
+		
+		_textureName.ReleaseFocus();
+		_textureName.GetLineEdit().ReleaseFocus();
 	}
 	
 }

@@ -220,7 +220,7 @@ tab_focus_mode = 1
 visible = false
 layout_mode = 2
 
-[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_blurSizeDropdown", "_blurStrengthSlider", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_blurSizeDropdown", "_blurStrengthSlider", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -228,7 +228,6 @@ _volumeModelContainer = NodePath("../../../../3D Scene View/AMV Model Container"
 _saveProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Save")
 _loadProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Load")
 _projectPanel = NodePath("../../Project Menu")
-_projectFolderBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/ProjectFolderBtn")
 _modelListItem = ExtResource("6_bb754")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")

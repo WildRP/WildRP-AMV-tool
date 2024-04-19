@@ -51,7 +51,7 @@ content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
 
-[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_probeInfoPanel", "_guid", "_rotation", "_randomizeUuidButton", "_probeContextMenu", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
+[node name="Reflection Probes" type="Control" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_loadModelButton", "_modelNameLabel", "_modelListContainer", "_controlToHide", "_volumeList", "_newProbeButton", "_bakeAllButton", "_probeInfoPanel", "_guid", "_rotation", "_randomizeUuidButton", "_probeContextMenu", "_centerOffsetX", "_centerOffsetY", "_centerOffsetZ", "_sizeX", "_sizeY", "_sizeZ", "_extentsX", "_extentsY", "_extentsZ")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -63,7 +63,6 @@ theme = ExtResource("1_v4fao")
 script = ExtResource("2_t473d")
 _saveProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Save")
 _loadProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Load")
-_projectFolderBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/ProjectFolderBtn")
 _modelListItem = ExtResource("3_7fc7g")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")

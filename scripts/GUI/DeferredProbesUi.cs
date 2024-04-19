@@ -242,6 +242,10 @@ public partial class DeferredProbesUi : Control
 			UpdateProbeGuiValues();
 			ConnectProbeGui();
 		}
+		else
+		{
+			_volumeList.DeselectAll();
+		}
 	}
 
 	private string EnsureUniqueName(string name)
@@ -269,6 +273,8 @@ public partial class DeferredProbesUi : Control
 	public override void _Process(double delta)
 	{
 		GuiVisible = Visible;
+		
+		if (Visible && Input.IsActionJustReleased("ui_cancel")) SelectProbe(null);
 	}
 
 	private void UpdateProbeGuiValues()
@@ -323,14 +329,38 @@ public partial class DeferredProbesUi : Control
 		_centerOffsetY.ValueChanged -= SelectedProbe.SetCenterOffsetZ;
 		_centerOffsetZ.ValueChanged -= SelectedProbe.SetCenterOffsetY;
 		
+		_centerOffsetX.ReleaseFocus();
+        _centerOffsetX.GetLineEdit().ReleaseFocus();
+		_centerOffsetY.ReleaseFocus();
+        _centerOffsetY.GetLineEdit().ReleaseFocus();
+		_centerOffsetZ.ReleaseFocus();
+        _centerOffsetZ.GetLineEdit().ReleaseFocus();
+		
 		_sizeX.ValueChanged -= SelectedProbe.SetSizeX;
 		_sizeY.ValueChanged -= SelectedProbe.SetSizeZ;
 		_sizeZ.ValueChanged -= SelectedProbe.SetSizeY;
+		
+		_sizeX.ReleaseFocus();
+        _sizeX.GetLineEdit().ReleaseFocus();
+		_sizeY.ReleaseFocus();
+        _sizeY.GetLineEdit().ReleaseFocus();
+		_sizeZ.ReleaseFocus();
+        _sizeZ.GetLineEdit().ReleaseFocus();
 		
 		_extentsX.ValueChanged -= SelectedProbe.SetExtentsX;
 		_extentsY.ValueChanged -= SelectedProbe.SetExtentsY;
 		_extentsZ.ValueChanged -= SelectedProbe.SetExtentsZ;
 
+		_extentsX.ReleaseFocus();
+        _extentsX.GetLineEdit().ReleaseFocus();
+		_extentsY.ReleaseFocus();
+        _extentsY.GetLineEdit().ReleaseFocus();
+		_extentsZ.ReleaseFocus();
+        _extentsZ.GetLineEdit().ReleaseFocus();
+		
 		_rotation.ValueChanged -= SelectedProbe.SetRotation;
+		
+		_rotation.ReleaseFocus();
+		_rotation.GetLineEdit().ReleaseFocus();
 	}
 }
