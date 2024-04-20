@@ -179,6 +179,7 @@ public partial class DeferredProbe : Volume
                 }
             }
             img.WriteToFile($"{gdir}/Color_{i}.png");
+            img.Dispose();
             colorList.Add($"{gdir}/Color_{i}.png");
         }
         
@@ -202,6 +203,7 @@ public partial class DeferredProbe : Volume
                 }
             }
             img.WriteToFile($"{gdir}/Normal_{i}.png");
+            img.Dispose();
             normalList.Add($"{gdir}/Normal_{i}.png");
         }
         
@@ -224,6 +226,7 @@ public partial class DeferredProbe : Volume
             }
             
             img.WriteToFile($"{gdir}/Depth_{i}.hdr");
+            img.Dispose();
             depthList.Add($"./{Guid}/Depth_{i}.hdr");
         }
         
@@ -286,7 +289,7 @@ public partial class DeferredProbe : Volume
                     { 
                         var p = Tex.Conv($"{ul_path}{tn}_0.dds", lo_path, size: 128, srgb: true);
                         p.Run();
-                        p.Exited += FinishExport;
+                        p.Exited += CleanupExport;
                     };
                 };
             };
@@ -312,7 +315,7 @@ public partial class DeferredProbe : Volume
                     {
                         var p = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128);
                         p.Run();
-                        p.Exited += FinishExport;
+                        p.Exited += CleanupExport;
                     };
                 };
             };
@@ -337,7 +340,7 @@ public partial class DeferredProbe : Volume
                     {
                         var p = Tex.Conv($"{ul_path}{tn}_d.dds", lo_path, size: 128, compress: false);
                         p.Run();
-                        p.Exited += FinishExport;
+                        p.Exited += CleanupExport;
                     };
                 };
             };
@@ -350,7 +353,7 @@ public partial class DeferredProbe : Volume
     }
 
     private int _exportCount = 0;
-    void FinishExport()
+    void CleanupExport()
     {
         _exportCount++;
         _bakeCounter++;
