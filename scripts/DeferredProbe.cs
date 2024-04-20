@@ -151,7 +151,6 @@ public partial class DeferredProbe : Volume
         if (Baked == false) return;
 
         var dir = SaveManager.GetProjectPath() + "/" + Guid;
-        var gdir = SaveManager.GetGlobalizedProjectPath() + "/" + Guid;
         if (DirAccess.DirExistsAbsolute(dir) == false)
             DirAccess.MakeDirAbsolute(dir);
         
@@ -178,9 +177,9 @@ public partial class DeferredProbe : Volume
                     img.SetPixelChannel(x, y, 3, a);
                 }
             }
-            img.WriteToFile($"{gdir}/Color_{i}.png");
+            img.WriteToFile($"{dir}/Color_{i}.png");
             img.Dispose();
-            colorList.Add($"{gdir}/Color_{i}.png");
+            colorList.Add($"{dir}/Color_{i}.png");
         }
         
         // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
@@ -202,9 +201,9 @@ public partial class DeferredProbe : Volume
                     img.SetPixelChannel(x, y, 3, a);
                 }
             }
-            img.WriteToFile($"{gdir}/Normal_{i}.png");
+            img.WriteToFile($"{dir}/Normal_{i}.png");
             img.Dispose();
-            normalList.Add($"{gdir}/Normal_{i}.png");
+            normalList.Add($"{dir}/Normal_{i}.png");
         }
         
         for (int i = 0; i < _depthTextures.Count; i++)
@@ -225,18 +224,18 @@ public partial class DeferredProbe : Volume
                 }
             }
             
-            img.WriteToFile($"{gdir}/Depth_{i}.hdr");
+            img.WriteToFile($"{dir}/Depth_{i}.hdr");
             img.Dispose();
             depthList.Add($"./{Guid}/Depth_{i}.hdr");
         }
         
-        using var f0 = FileAccess.Open($"{gdir}/color.txt", FileAccess.ModeFlags.Write);
+        using var f0 = FileAccess.Open($"{dir}/color.txt", FileAccess.ModeFlags.Write);
             colorList.ForEach(s => f0.StoreLine(s));
             
-        using var f1 = FileAccess.Open($"{gdir}/normal.txt", FileAccess.ModeFlags.Write);
+        using var f1 = FileAccess.Open($"{dir}/normal.txt", FileAccess.ModeFlags.Write);
             normalList.ForEach(s => f1.StoreLine(s));
         
-        using var f2 = FileAccess.Open($"{gdir}/depth.txt", FileAccess.ModeFlags.Write);
+        using var f2 = FileAccess.Open($"{dir}/depth.txt", FileAccess.ModeFlags.Write);
             depthList.ForEach(s => f2.StoreLine(s));
 
         var tn = TextureName();
@@ -245,10 +244,10 @@ public partial class DeferredProbe : Volume
         // every probe comes in different resolution sizes from 1024 to 128
         // so there will be lots of resizing here
 
-        string ul_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_ul\\"; // 1024
-        string hi_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_hi\\"; // 512
-        string std_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}\\"; // 256
-        string lo_path = $"{SaveManager.GetGlobalizedProjectPath()}\\{tn}_lo\\"; // 128
+        string ul_path = $"{SaveManager.GetProjectPath()}\\{tn}_ul\\"; // 1024
+        string hi_path = $"{SaveManager.GetProjectPath()}\\{tn}_hi\\"; // 512
+        string std_path = $"{SaveManager.GetProjectPath()}\\{tn}\\"; // 256
+        string lo_path = $"{SaveManager.GetProjectPath()}\\{tn}_lo\\"; // 128
 
         DirAccess.MakeDirAbsolute(ul_path);
         DirAccess.MakeDirAbsolute(hi_path);
@@ -372,27 +371,18 @@ public partial class DeferredProbe : Volume
         }
 
         DirAccess.RemoveAbsolute(path);
+
+        OS.ShellShowInFileManager(SaveManager.GetProjectPath());
     }
 
     public override string GetXml()
     {
-        
-        /*
-         * <Item>
-           <minExtents x="-8.42226" y="-4.802952" z="4.185595" /> 
-           <maxExtents x="-2.6022608" y="4.8970537" z="7.122675" />
-           <rotation x="0" y="0" z="0" w="1" />
-           <centerOffset x="0" y="0" z="0" />
-           <influenceExtents x="1" y="0.95" z="0.9" />
-           <probePriority value="255" />
-           <guid value="0x4285A9A3EB917D74" />
-          </Item>
-         */
         var minExtents = GlobalPosition - Size/2;
         var maxExtents = GlobalPosition + Size/2;
         var rotation = Quaternion.FromEuler(new Vector3(0, 0, -RotationDegrees.Y));
         
         return new XDocument(
+            new XComment(GuiListName),
             new XElement("Item",
                 new XElement("minExtents", new XAttribute("x", minExtents.X), new XAttribute("y", minExtents.Z), new XAttribute("z", minExtents.Y)),
                 new XElement("maxExtents", new XAttribute("x", maxExtents.X), new XAttribute("y", maxExtents.Z), new XAttribute("z", maxExtents.Y)),

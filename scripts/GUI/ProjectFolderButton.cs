@@ -6,6 +6,6 @@ public partial class ProjectFolderButton : Button
 {
     public override void _Ready()
     {
-        Pressed += () => ProjectMenu.Instance.Visible = true;
+        Pressed += () => OS.ShellShowInFileManager(SaveManager.GetProjectPath());
     }
 }

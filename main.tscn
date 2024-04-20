@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=41 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
@@ -26,6 +26,7 @@
 [ext_resource type="Script" path="res://scripts/GUI/ProjectFolderButton.cs" id="15_mu0ro"]
 [ext_resource type="PackedScene" uid="uid://c765i6qp7v1eu" path="res://objects/deferred_probe.tscn" id="15_ou0xa"]
 [ext_resource type="Script" path="res://scripts/GUI/RenamePopup.cs" id="25_6688d"]
+[ext_resource type="PackedScene" uid="uid://c02ifu558a17v" path="res://objects/error_popup.tscn" id="27_s0fil"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
 sky_top_color = Color(1, 1, 1, 1)
@@ -679,7 +680,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 text = "Cancel Bake"
 
-[node name="PopupPanel" type="PopupPanel" parent="CanvasLayer/GUI" node_paths=PackedStringArray("_textField", "_okButton", "_cancelButton")]
+[node name="RenamePopup" type="PopupPanel" parent="CanvasLayer/GUI" node_paths=PackedStringArray("_textField", "_okButton", "_cancelButton")]
 title = "Rename Item"
 size = Vector2i(400, 135)
 script = ExtResource("25_6688d")
@@ -687,7 +688,7 @@ _textField = NodePath("MarginContainer/VBoxContainer/MarginContainer/LineEdit")
 _okButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Button")
 _cancelButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Button2")
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/PopupPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/RenamePopup"]
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 396.0
@@ -697,27 +698,30 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/PopupPanel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/RenamePopup/MarginContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/PopupPanel/MarginContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_bottom = 15
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer/GUI/PopupPanel/MarginContainer/VBoxContainer/MarginContainer"]
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Enter new name"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/PopupPanel/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="Button" type="Button" parent="CanvasLayer/GUI/PopupPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Button" type="Button" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Rename"
 
-[node name="Button2" type="Button" parent="CanvasLayer/GUI/PopupPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Button2" type="Button" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Cancel
 "
+
+[node name="PopupPanel" parent="CanvasLayer/GUI" instance=ExtResource("27_s0fil")]
+visible = false

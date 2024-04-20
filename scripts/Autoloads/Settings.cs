@@ -128,6 +128,16 @@ public partial class Settings : Node
         }
     }
 
+    public static string ProjectFolder
+    {
+        get => _settingsFile.GetValue("Settings", "ProjectFolder", "").AsString();
+        set
+        {
+            _settingsFile.SetValue("Settings", "ProjectFolder", value);
+            _dirty = true;
+        }
+    }
+
     private static bool _dirty; // Marks that it's time to save settings
 
     public override void _Ready()

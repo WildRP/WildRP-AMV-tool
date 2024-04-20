@@ -21,7 +21,7 @@ public class Tex
         _process.StartInfo.RedirectStandardOutput = true;
         _process.StartInfo.RedirectStandardError = true;
         _process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-        _process.StartInfo.WorkingDirectory = SaveManager.GetGlobalizedProjectPath();
+        _process.StartInfo.WorkingDirectory = SaveManager.GetProjectPath();
         
         _process.Exited += (sender, args) =>
         {

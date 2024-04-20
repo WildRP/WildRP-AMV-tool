@@ -28,7 +28,7 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="Project Menu" type="PanelContainer" node_paths=PackedStringArray("_projectList", "_loadProjectBtn", "_newProjectBtn", "_returnToCurrentBtn", "_newProjectPanel", "_newProjectNameBox", "_createButton", "_cancelButton")]
+[node name="Project Menu" type="PanelContainer" node_paths=PackedStringArray("_projectList", "_loadProjectBtn", "_newProjectBtn", "_returnToCurrentBtn", "_changeProjectFolderButton", "_projectFolderDialog", "_newProjectPanel", "_newProjectNameBox", "_createButton", "_cancelButton")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -41,6 +41,8 @@ _projectList = NodePath("AspectRatioContainer/VBoxContainer/MarginContainer/Scro
 _loadProjectBtn = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/Load")
 _newProjectBtn = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/New")
 _returnToCurrentBtn = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/Cancel")
+_changeProjectFolderButton = NodePath("AspectRatioContainer/VBoxContainer/HBoxContainer/ProjectFolder")
+_projectFolderDialog = NodePath("FileDialog")
 _newProjectPanel = NodePath("NewProjectView")
 _newProjectNameBox = NodePath("NewProjectView/CenterContainer/HBoxContainer/LineEdit")
 _createButton = NodePath("NewProjectView/CenterContainer/HBoxContainer/Create")
@@ -66,7 +68,7 @@ theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="ScrollContainer" type="ScrollContainer" parent="AspectRatioContainer/VBoxContainer/MarginContainer"]
-custom_minimum_size = Vector2(250, 150)
+custom_minimum_size = Vector2(500, 300)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_iwv2c")
 horizontal_scroll_mode = 0
@@ -87,6 +89,12 @@ text = "New Project..."
 [node name="Load" type="Button" parent="AspectRatioContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 text = "Load Selected"
+
+[node name="ProjectFolder" type="Button" parent="AspectRatioContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Change Project Folder"
 
 [node name="Cancel" type="Button" parent="AspectRatioContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -116,3 +124,11 @@ text = "Create"
 layout_mode = 2
 text = "Cancel
 "
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Set Project Folder"
+ok_button_text = "Select Current Folder"
+mode_overrides_title = false
+file_mode = 2
+access = 2
+use_native_dialog = true

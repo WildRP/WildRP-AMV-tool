@@ -6,6 +6,7 @@ using System.Linq;
 using WildRP.AMVTool;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using WildRP.AMVTool.Autoloads;
 using FileAccess = Godot.FileAccess;
 
 public partial class SaveManager : Node
@@ -16,15 +17,28 @@ public partial class SaveManager : Node
 	private static Project _currentProject;
 	public static Project CurrentProject => _currentProject;
 
-	private const string ProjectsFolder = "user://projects";
+	private const string DefaultProjectsFolder = "user://projects";
 	private const string JsonFileName = "project.json";
 
-	public static string GetProjectPath() => $"{ProjectsFolder}/{_currentProject.Name}";
-	public static string GetGlobalizedProjectPath() => ProjectSettings.GlobalizePath(GetProjectPath());
+	private static string _projectsFolder = "";
+	private static string _currentProjectPath = "";
+
+	public static string GetProjectPath()
+	{
+		return _currentProjectPath;
+	}
+
+	public static string GetProjectsFolder()
+	{
+		return _projectsFolder == "" ? ProjectSettings.GlobalizePath(DefaultProjectsFolder) : _projectsFolder;
+	}
+
 	public override void _Ready()
 	{
-		if (DirAccess.DirExistsAbsolute(ProjectsFolder) == false)
-			DirAccess.MakeDirAbsolute(ProjectsFolder);
+		ChangeProjectFolder(Settings.ProjectFolder);
+		
+		if (DirAccess.DirExistsAbsolute(DefaultProjectsFolder) == false)
+			DirAccess.MakeDirAbsolute(DefaultProjectsFolder);
 	}
 	
 	public static bool HasProject() => _currentProject != null;
@@ -38,10 +52,10 @@ public partial class SaveManager : Node
 		
 		if (_currentProject.Volumes.Count == 0 && _currentProject.Probes.Count == 0) return;
 
-		if (DirAccess.DirExistsAbsolute(GetProjectPath()) == false)
-			DirAccess.MakeDirAbsolute(GetProjectPath());
+		if (DirAccess.DirExistsAbsolute(_currentProjectPath) == false)
+			DirAccess.MakeDirAbsolute(_currentProjectPath);
 		
-		using var f = FileAccess.Open($"{GetProjectPath()}/{JsonFileName}", FileAccess.ModeFlags.Write);
+		using var f = FileAccess.Open($"{_currentProjectPath}/{JsonFileName}", FileAccess.ModeFlags.Write);
 		if (f == null) return;
 		
 		var serialized = JsonSerializer.Serialize(_currentProject);
@@ -53,22 +67,28 @@ public partial class SaveManager : Node
 	public static void LoadProject(string name)
 	{
 		_currentProject = null;
+		_currentProjectPath = null;
 		AmvBaker.Instance.Clear();
+		DeferredProbeBaker.Instance.Clear();
 		
-		using var f = FileAccess.Open($"{ProjectsFolder}/{name}/{JsonFileName}", FileAccess.ModeFlags.Read);
+		using var f = FileAccess.Open($"{GetProjectsFolder()}/{name}/{JsonFileName}", FileAccess.ModeFlags.Read);
 		if (f == null) return; // error dialogs should be implemented at some point
 
+		_currentProjectPath = f.GetPath().GetBaseDir();
 		var jsonString = f.GetAsText();
 		_currentProject = JsonSerializer.Deserialize<Project>(jsonString);
 
 		ProjectLoaded(_currentProject);
 	}
 	
-	public static string[] GetProjectList() => DirAccess.GetDirectoriesAt(ProjectsFolder);
+	public static string[] GetProjectList() => DirAccess.GetDirectoriesAt(GetProjectsFolder());
 
 	public static void CreateProject(string name)
 	{
+		AmvBaker.Instance.Clear();
+		DeferredProbeBaker.Instance.Clear();
 		_currentProject = new Project() { Name = name};
+		_currentProjectPath = $"{GetProjectsFolder()}/{name}";
 		SaveProject();
 		ProjectLoaded(_currentProject);
 	}
@@ -106,7 +126,7 @@ public partial class SaveManager : Node
 	public static string CleanPath(string toCleanPath, string replaceWith = "-")
 	{  
 		//get just the filename - can't use Path.GetFileName since the path might be bad!  
-		var pathParts = toCleanPath.Split(new char[] { '\\' });  
+		var pathParts = toCleanPath.Split(['\\']);  
 		var newFileName = pathParts[^1];  
 		//get just the path  
 		var newPath = toCleanPath[..^newFileName.Length];   
@@ -117,8 +137,8 @@ public partial class SaveManager : Node
 		//remove duplicate "replaceWith" characters. ie: change "test-----file.txt" to "test-file.txt"  
 		if (string.IsNullOrWhiteSpace(replaceWith)) return newPath + newFileName;
 		
-		newPath = newPath.Replace(replaceWith.ToString() + replaceWith.ToString(), replaceWith.ToString());  
-		newFileName = newFileName.Replace(replaceWith.ToString() + replaceWith.ToString(), replaceWith.ToString());
+		newPath = newPath.Replace(replaceWith + replaceWith, replaceWith);  
+		newFileName = newFileName.Replace(replaceWith + replaceWith, replaceWith);
 		//return new, clean path:  
 		return newPath + newFileName;  
 	}
@@ -149,5 +169,25 @@ public partial class SaveManager : Node
 			var v = Variant.CreateFrom(value);
 			writer.WriteStringValue(GD.VarToStr(v));
 		}
+	}
+
+	public static Error ChangeProjectFolder(string path)
+	{
+		path = CleanPath(path);
+		if (path == "") return Error.Ok;
+		
+		var testFilePath = path + "/writetestfile";
+		using var f = FileAccess.Open(testFilePath, FileAccess.ModeFlags.Write);
+		if (f == null)
+		{
+			return FileAccess.GetOpenError();
+		}
+		f.Close();
+		DirAccess.RemoveAbsolute(testFilePath);
+
+		_projectsFolder = path;
+		Settings.ProjectFolder = path;
+		
+		return Error.Ok;
 	}
 }

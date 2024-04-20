@@ -109,6 +109,9 @@ public partial class AmbientMaskVolume : Volume
 
 			tx0.Exited += CleanupExport;
 			tx1.Exited += CleanupExport;
+			
+			tx0.Run();
+			tx1.Run();
 	}
 
 	private int _exportSteps = 0;
@@ -130,6 +133,8 @@ public partial class AmbientMaskVolume : Volume
 		}
 
 		DirAccess.RemoveAbsolute(path);
+
+		OS.ShellShowInFileManager(SaveManager.GetProjectPath());
 	}
 	
 	public void CaptureSample()
