@@ -21,7 +21,7 @@ public partial class BoundsPlane : MeshInstance3D
     [Export] private StaticBody3D _staticBody3D;
     [Export] private CollisionShape3D _collisionShape3D;
     
-    private AmbientMaskVolume _volume;
+    private Volume _volume;
     private QuadMesh _quadMesh;
     private BoxShape3D _colliderBox;
     private bool _mouseHovering;
@@ -30,10 +30,11 @@ public partial class BoundsPlane : MeshInstance3D
 
     private const float _minColliderSize = 0.01f;
     
-    public void Setup(AmbientMaskVolume amv, PlaneDirection dir)
+    public void Setup(Volume volume, PlaneDirection dir)
     {
-        _volume = amv;
+        _volume = volume;
         _volume.SizeChanged += UpdatePlane;
+        _volume.UiToggled += SetVisible;
 
         Mesh = Mesh.Duplicate() as Mesh;
         _quadMesh = Mesh as QuadMesh;
@@ -70,20 +71,18 @@ public partial class BoundsPlane : MeshInstance3D
         
         UpdatePlane();
         _normal = Position.Normalized();
-
-        AmvBakerGui.GuiToggled += SetVisible;
     }
 
     public override void _Process(double delta)
     {
         if (Visible == false) return;
         
-        if (_volume.Selected)
+        if (_volume.Selected())
             Transparency = _mouseHovering ? 0f : 0.5f;
         else
             Transparency = .9f;
 
-        _staticBody3D.InputRayPickable = _volume.Selected && AmvBaker.Instance.BakeInProgress == false;
+        _staticBody3D.InputRayPickable = _volume.Selected() && AmvBaker.Instance.BakeInProgress == false;
     }
 
     public override void _Input(InputEvent @event)
@@ -159,6 +158,6 @@ public partial class BoundsPlane : MeshInstance3D
 
     public override void _ExitTree()
     {
-        AmvBakerGui.GuiToggled -= SetVisible;
+        _volume.UiToggled -= SetVisible;
     }
 }

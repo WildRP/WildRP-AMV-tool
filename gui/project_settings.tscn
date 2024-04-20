@@ -1,0 +1,141 @@
+[gd_scene load_steps=5 format=3 uid="uid://bnf5rc1a22qxm"]
+
+[ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_xoshx"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectSettingsGui.cs" id="2_vqxqy"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectFolderButton.cs" id="3_fgod1"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_obxdo"]
+font_size = 12
+
+[node name="Project Settings" type="PanelContainer" node_paths=PackedStringArray("_ymapNameField", "_interiorNameField", "_ymapPosX", "_ymapPosY", "_ymapPosZ", "_saveProjectButton")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_xoshx")
+script = ExtResource("2_vqxqy")
+_ymapNameField = NodePath("MarginContainer/VBoxContainer/HBoxContainer/LineEdit")
+_interiorNameField = NodePath("MarginContainer/VBoxContainer/HBoxContainer2/LineEdit")
+_ymapPosX = NodePath("MarginContainer/VBoxContainer/HBoxContainer3/SpinBox")
+_ymapPosY = NodePath("MarginContainer/VBoxContainer/HBoxContainer3/SpinBox2")
+_ymapPosZ = NodePath("MarginContainer/VBoxContainer/HBoxContainer3/SpinBox3")
+_saveProjectButton = NodePath("MarginContainer/HBoxContainer/Button")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.8
+text = "YMap Name: "
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+placeholder_text = "example_map_name"
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "  If set, AMVs will be enabled only when this YMap is enabled."
+label_settings = SubResource("LabelSettings_obxdo")
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.8
+text = "Interior Name: "
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+placeholder_text = "example_int"
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "  Used to generate valid reflection probes names for interiors."
+label_settings = SubResource("LabelSettings_obxdo")
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.8
+text = "Ymap Position:  "
+
+[node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+prefix = "X:"
+
+[node name="SpinBox2" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+prefix = "Y:"
+
+[node name="SpinBox3" type="SpinBox" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.0
+allow_greater = true
+allow_lesser = true
+prefix = "Z:"
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "  Added to AMV positions to place them properly in world space."
+label_settings = SubResource("LabelSettings_obxdo")
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="Button2" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Open Project Folder"
+script = ExtResource("3_fgod1")
+
+[node name="Button" type="Button" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Save Project"

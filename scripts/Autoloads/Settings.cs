@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
@@ -34,26 +35,6 @@ public partial class Settings : Node
             _dirty = true;
         }
     }
-
-    public static string TexAssembleLocation
-    {
-        get => _settingsFile.GetValue("Settings", "TexAssemblePath", "").AsString();
-        set
-        {
-            _settingsFile.SetValue("Settings", "TexAssemblePath", value);
-            _dirty = true;
-        }
-    }
-
-    public static float MinBrightness
-    {
-        get => _settingsFile.GetValue("Settings", "MinBrightness", 0.002f).AsSingle();
-        set
-        {
-            _settingsFile.SetValue("Settings", "MinBrightness", value);
-            _dirty = true;
-        }
-    }
     
     public static int BounceCount
     {
@@ -75,8 +56,74 @@ public partial class Settings : Node
         }
     }
 
+    public static bool LoadMap
+    {
+        get => _settingsFile.GetValue("Settings", "LoadMap", true).AsBool();
+        set
+        {
+            _settingsFile.SetValue("Settings", "LoadMap", value);
+            _dirty = true;
+        }
+    }
+
+    public static int BlurSize
+    {
+        get
+        {
+            var size = _settingsFile.GetValue("Settings", "BlurSize", 5).AsInt32();
+            size = Mathf.Clamp(size, 3, 5);
+            if (size == 4) size = 5;
+            return size;
+        }
+        set
+        {
+            _settingsFile.SetValue("Settings", "BlurSize", value);
+            _dirty = true;
+        }
+    }
+
+    public static float BlurStrength
+    {
+        get => Mathf.Clamp(_settingsFile.GetValue("Settings", "BlurStrength", 0.8f).AsSingle(), 0f, 1f);
+        set
+        {
+            _settingsFile.SetValue("Settings", "BlurStrength", value);
+            _dirty = true;
+        }
+    }
+
+    public static Tex.TextureFormat AmvTextureFormat
+    {
+        get
+        {
+            var value = _settingsFile.GetValue("Settings", "AmvTextureFormat", "R11G11B10_FLOAT").AsString();
+            if (Enum.TryParse(value, true, out Tex.TextureFormat result) == false)
+                result = Tex.TextureFormat.R11G11B10_FLOAT;
+            return result;
+        }
+        set
+        {
+            _settingsFile.SetValue("Settings", "AmvTextureFormat", Enum.GetName(value));
+            _dirty = true;
+        }
+    }
+
+    public static string ProjectFolder
+    {
+        get => _settingsFile.GetValue("Settings", "ProjectFolder", "").AsString();
+        set
+        {
+            _settingsFile.SetValue("Settings", "ProjectFolder", value);
+            _dirty = true;
+        }
+    }
+
     private static bool _dirty; // Marks that it's time to save settings
 
+
+    private HttpRequest _texAssembleDownloader;
+    private HttpRequest _texConvDownloader;
+    
     public override void _Ready()
     {
         _settingsFile = new ConfigFile();
@@ -85,6 +132,42 @@ public partial class Settings : Node
         {
             SetDefaults();
             SaveSettings();
+        }
+        
+        if (FileAccess.FileExists("user://texassemble.exe") == false)
+        {
+            _texAssembleDownloader = new HttpRequest();
+            AddChild(_texAssembleDownloader);
+            _texAssembleDownloader.RequestCompleted += (result, code, headers, body) =>
+            {
+                GD.Print("Downloading texassemble:");
+                GD.Print($"Code {code}");
+                GD.Print(headers);
+                
+                using var f = FileAccess.Open("user://texassemble.exe", FileAccess.ModeFlags.Write);
+                f.StoreBuffer(body);
+                _texAssembleDownloader.QueueFree();
+            };
+            _texAssembleDownloader.Request(
+                "https://github.com/Microsoft/DirectXTex/releases/latest/download/texassemble.exe");
+        }
+        
+        if (FileAccess.FileExists("user://texconv.exe") == false)
+        {
+            _texConvDownloader = new HttpRequest();
+            AddChild(_texConvDownloader);
+            _texConvDownloader.RequestCompleted += (result, code, headers, body) =>
+            {
+                GD.Print("Downloading texassemble:");
+                GD.Print($"Code {code}");
+                GD.Print(headers);
+                
+                using var f = FileAccess.Open( "user://texconv.exe", FileAccess.ModeFlags.Write);
+                f.StoreBuffer(body);
+                _texConvDownloader.QueueFree();
+            };
+            _texConvDownloader.Request(
+                "https://github.com/Microsoft/DirectXTex/releases/latest/download/texconv.exe");
         }
     }
 
@@ -100,7 +183,8 @@ public partial class Settings : Node
 
     private static void SaveSettings()
     {
-        if (_dirty == false) return;
+        // Only save once a second to avoid a bunch of unecessary file writes
+        if (_dirty == false || Engine.GetProcessFrames() % 60 != 0) return;
 
         _dirty = false;
         _settingsFile.Save(SettingsPath);

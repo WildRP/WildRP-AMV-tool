@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=3 uid="uid://i02qsc7fr6co"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_3bhh4"]
-[ext_resource type="Script" path="res://gui/AmvMapGui.cs" id="2_nw1dj"]
+[ext_resource type="Script" path="res://scripts/GUI/AmvMapGui.cs" id="2_nw1dj"]
 [ext_resource type="PackedScene" uid="uid://cybmgfmox1xe6" path="res://objects/amv_map_object.tscn" id="3_kqffa"]
 [ext_resource type="Script" path="res://scripts/GUI/MapViewPanel.cs" id="4_cbxl5"]
 [ext_resource type="Script" path="res://scripts/gdscript/markdownlabel.gd" id="5_isht1"]
@@ -228,7 +228,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 bbcode_enabled = true
-text = "[font_size=19]Source[/font_size]
+text = "[font_size=22]Source[/font_size]
 position: (X, Y, Z)
 scale: (X, Y, Z)
 rotation: X

@@ -2,18 +2,18 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using WildRP.AMVTool.Autoloads;
 
 namespace WildRP.AMVTool.GUI;
 
 public partial class AmvBakerGui : Control
 {
-	[Export] private Node3D _sceneViewRoot;
+	[Export] private Node3D _volumeModelContainer;
 	
 	[ExportGroup("Save & Load")]
 		[Export] private Button _saveProjectBtn;
 		[Export] private Button _loadProjectBtn;
 		[Export] private Control _projectPanel;
-		[Export] private Button _projectFolderBtn;
 			
 	[ExportGroup("Model loading")]
 		[Export] private PackedScene _modelListItem;
@@ -27,9 +27,13 @@ public partial class AmvBakerGui : Control
 		[Export] private PackedScene _amvScene;
 		[Export] private Node3D _amvContainerNode;
 
+		[ExportSubgroup("Blur")]
+		[Export] private OptionButton _blurSizeDropdown;
+		[Export] private HSlider _blurStrengthSlider;
+		
 		[ExportSubgroup("UI Elements")]
 			[Export] private Control _controlToHide;
-			[Export] private AmvList _amvList;
+			[Export] private VolumeList _volumeList;
 			[Export] private AMVListContextMenu _amvListContextMenu;
 			[Export] private Button _newAmvButton;
 			[Export] private Button _bakeAllButton;
@@ -41,10 +45,6 @@ public partial class AmvBakerGui : Control
 			[Export] private SpinBox _textureName;
 			[Export] private SpinBox _rotation;
 			[Export] private Button _randomizeTextureNameButton;
-			[ExportSubgroup("YMAP Position")]
-				[Export] private SpinBox _ymapPositionX;
-				[Export] private SpinBox _ymapPositionY;
-				[Export] private SpinBox _ymapPositionZ;
 			[ExportSubgroup("Position")]
 				[Export] private SpinBox _positionX;
 				[Export] private SpinBox _positionY;
@@ -53,10 +53,11 @@ public partial class AmvBakerGui : Control
 				[Export] private SpinBox _sizeX;
 				[Export] private SpinBox _sizeY;
 				[Export] private SpinBox _sizeZ;
-			[ExportSubgroup("Size")]
+			[ExportSubgroup("Probe Count")]
 				[Export] private SpinBox _probesX;
 				[Export] private SpinBox _probesY;
 				[Export] private SpinBox _probesZ;
+			
 	
 	private readonly List<ModelListItem> _modelListItems = [];
 
@@ -72,6 +73,8 @@ public partial class AmvBakerGui : Control
 	public override void _Process(double delta)
 	{
 		GuiVisible = Visible;
+		
+		if (Visible && Input.IsActionJustReleased("ui_cancel")) SelectAmv(null);
 	}
 
 	public override void _Ready()
@@ -92,15 +95,15 @@ public partial class AmvBakerGui : Control
 		_newAmvButton.Pressed += CreateNewAmv;
 
 		// AMV Select and deselect
-		_amvList.ItemSelected += index => SelectAmv(AmvBaker.Instance.GetVolume(_amvList.GetItemText((int)index)));
-		_amvList.EmptyClicked += (position, index) =>
+		_volumeList.ItemSelected += index => SelectAmv(AmvBaker.Instance.GetVolume(_volumeList.GetItemText((int)index)));
+		_volumeList.EmptyClicked += (position, index) =>
 		{
 			SelectAmv(null);
-			_amvList.DeselectAll();
+			_volumeList.DeselectAll();
 		};
 		
 		// AMV List Context Menu
-		_amvList.OnRightClickItem += (name, pos) =>
+		_volumeList.OnRightClickItem += (name, pos) =>
 		{
 			_amvListContextMenu.Popup();
 			_amvListContextMenu.Position = new Vector2I(Mathf.RoundToInt(pos.X), Mathf.RoundToInt(pos.Y));
@@ -122,15 +125,9 @@ public partial class AmvBakerGui : Control
 		
 		_amvInfoPanel.Visible = false;
 
-		_saveProjectBtn.Pressed += () =>
-		{
-			AmvBaker.Instance.UpdateProjectAmvs();
-			SaveManager.SaveProject();
-		};
+		_saveProjectBtn.Pressed += SaveManager.SaveProject;
 
 		_loadProjectBtn.Pressed += () => _projectPanel.Visible = true;
-		
-		_projectFolderBtn.Pressed += () => OS.ShellOpen(SaveManager.GetGlobalizedProjectPath());
 
 		_exportTexturesBtn.Pressed += () =>
 		{
@@ -147,7 +144,30 @@ public partial class AmvBakerGui : Control
 		VisibilityChanged += () =>
 		{
 			GuiToggled?.Invoke(Visible);
+			_volumeModelContainer.Visible = Visible;
 		};
+		
+		_blurStrengthSlider.Value = Settings.BlurStrength;
+		_blurSizeDropdown.Select(_blurSizeDropdown.GetItemIndex(Settings.BlurSize));
+
+		_blurStrengthSlider.ValueChanged += value =>
+		{
+			if (Engine.GetProcessFrames() % 2 != 0) return;
+			Settings.BlurStrength = (float)value;
+			UpdateBlur();
+		};
+		_blurStrengthSlider.DragEnded += changed =>
+		{
+			Settings.BlurStrength = (float)_blurStrengthSlider.Value;
+			UpdateBlur();
+		};
+		_blurSizeDropdown.ItemSelected += index =>
+		{
+			Settings.BlurSize = _blurSizeDropdown.GetItemId((int)index);
+			UpdateBlur();
+		};
+
+		
 	}
 
 	private void UnloadModel()
@@ -186,7 +206,7 @@ public partial class AmvBakerGui : Control
 	private void CreateNewAmv()
 	{
 		var amv = _amvScene.Instantiate() as AmbientMaskVolume;
-		string name = EnsureUniqueName($"AMV {_amvList.ItemCount+1}");
+		string name = EnsureUniqueName($"AMV {_volumeList.ItemCount+1}");
 		
 		amv.Setup(name);
 		amv.TextureName = (ulong) _textureName.MinValue;
@@ -196,9 +216,10 @@ public partial class AmvBakerGui : Control
 		SaveManager.UpdateAmv(amv.GuiListName, amv.Save());
 
 		amv.Deleted += OnDeleteAmv;
+		amv.VolumeRenamed += RenameVolume;
 		
-		var item =_amvList.AddItem(name);
-		_amvList.Select(item);
+		var item =_volumeList.AddItem(name);
+		_volumeList.Select(item);
 		SelectAmv(amv);
 	}
 
@@ -217,25 +238,33 @@ public partial class AmvBakerGui : Control
 			var amv = _amvScene.Instantiate() as AmbientMaskVolume;
 			amv.Load(data);
 			
-			var item =_amvList.AddItem(data.Key);
+			var item =_volumeList.AddItem(data.Key);
 			
 			_amvContainerNode.AddChild(amv);
 			AmvBaker.Instance.RegisterAmv(amv);
 			amv.Deleted += OnDeleteAmv;
+			amv.VolumeRenamed += RenameVolume;
 		}
 	}
 
-	private void OnDeleteAmv(AmbientMaskVolume volume)
+	private void OnDeleteAmv(Volume volume)
 	{
-		for (int i = 0; i < _amvList.ItemCount; i++)
+		for (int i = 0; i < _volumeList.ItemCount; i++)
 		{
-			if (_amvList.GetItemText(i) != volume.GuiListName) continue;
-			_amvList.RemoveItem(i);
+			if (_volumeList.GetItemText(i) != volume.GuiListName) continue;
+			_volumeList.RemoveItem(i);
 			break;
 		}
 		if (SelectedAmv == volume) SelectAmv(null);
 	}
 
+	private void RenameVolume(string from, string to)
+	{
+		var uniqueName = EnsureUniqueName(to);
+		_volumeList.SetItemText(_volumeList.GetIndexByName(from), uniqueName);
+		AmvBaker.Instance.RenameVolume(from, uniqueName);
+	}
+	
 	private string EnsureUniqueName(string name)
 	{
 		var n = name;
@@ -250,9 +279,9 @@ public partial class AmvBakerGui : Control
 	
 	bool IsNameUnique(string name)
 	{
-		for (int i = 0; i < _amvList.ItemCount; i++)
+		for (int i = 0; i < _volumeList.ItemCount; i++)
 		{
-			if (_amvList.GetItemText(i) == name) return false;
+			if (_volumeList.GetItemText(i) == name) return false;
 		}
 
 		return true;
@@ -276,10 +305,16 @@ public partial class AmvBakerGui : Control
 			ConnectAmvGui();
 			UpdateAmvGuiValues();
 		}
-		
+		else
+		{
+			_volumeList.DeselectAll();
+		}
 	}
 
-	
+	private void UpdateBlur()
+	{
+		AmvBaker.Instance.UpdateBlur();
+	}
 	
 	private void UpdateAmvGuiValues()
 	{
@@ -311,21 +346,10 @@ public partial class AmvBakerGui : Control
         _probesY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Z) : "0" ;
 		_probesZ.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Y : 0);
         _probesZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Y) : "0" ;
-		
-		_ymapPositionX.SetValueNoSignal(v ? SelectedAmv.YmapPosition.X : 0);
-		_ymapPositionX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.X) : "0" ;
-		_ymapPositionY.SetValueNoSignal(v ? -SelectedAmv.YmapPosition.Z : 0);
-		_ymapPositionY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.Z) : "0" ;
-		_ymapPositionZ.SetValueNoSignal(v ? SelectedAmv.YmapPosition.Y : 0);
-		_ymapPositionZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.YmapPosition.Y) : "0" ;
 	}
 
 	private void ConnectAmvGui()
 	{
-		_ymapPositionX.ValueChanged += SelectedAmv.SetYmapPositionX;
-		_ymapPositionY.ValueChanged += SelectedAmv.SetYmapPositionZ;
-		_ymapPositionZ.ValueChanged += SelectedAmv.SetYmapPositionY;
-		
 		_positionX.ValueChanged += SelectedAmv.SetPositionX;
 		_positionY.ValueChanged += SelectedAmv.SetPositionZ;
 		_positionZ.ValueChanged += SelectedAmv.SetPositionY;
@@ -347,25 +371,49 @@ public partial class AmvBakerGui : Control
 	
 	private void DisconnectAmvGui()
 	{
-		_ymapPositionX.ValueChanged -= SelectedAmv.SetYmapPositionX;
-		_ymapPositionY.ValueChanged -= SelectedAmv.SetYmapPositionZ;
-		_ymapPositionZ.ValueChanged -= SelectedAmv.SetYmapPositionY;
 		
 		_positionX.ValueChanged -= SelectedAmv.SetPositionX;
 		_positionY.ValueChanged -= SelectedAmv.SetPositionZ;
 		_positionZ.ValueChanged -= SelectedAmv.SetPositionY;
 		
+		_positionX.ReleaseFocus();
+        _positionX.GetLineEdit().ReleaseFocus();
+		_positionY.ReleaseFocus();
+        _positionY.GetLineEdit().ReleaseFocus();
+		_positionZ.ReleaseFocus();
+        _positionZ.GetLineEdit().ReleaseFocus();
+		
 		_sizeX.ValueChanged -= SelectedAmv.SetSizeX;
 		_sizeY.ValueChanged -= SelectedAmv.SetSizeZ;
 		_sizeZ.ValueChanged -= SelectedAmv.SetSizeY;
 		
+		_sizeX.ReleaseFocus();
+        _sizeX.GetLineEdit().ReleaseFocus();
+		_sizeY.ReleaseFocus();
+        _sizeY.GetLineEdit().ReleaseFocus();
+		_sizeZ.ReleaseFocus();
+        _sizeZ.GetLineEdit().ReleaseFocus();
+		
 		_probesX.ValueChanged -= SelectedAmv.SetProbesX;
 		_probesY.ValueChanged -= SelectedAmv.SetProbesY;
 		_probesZ.ValueChanged -= SelectedAmv.SetProbesZ;
+		
+		_probesX.ReleaseFocus();
+        _probesX.GetLineEdit().ReleaseFocus();
+		_probesY.ReleaseFocus();
+        _probesY.GetLineEdit().ReleaseFocus();
+		_probesZ.ReleaseFocus();
+        _probesZ.GetLineEdit().ReleaseFocus();
 
 		_rotation.ValueChanged -= SelectedAmv.SetRotation;
+		
+		_rotation.ReleaseFocus();
+		_rotation.GetLineEdit().ReleaseFocus();
 
 		_textureName.ValueChanged -= SetTextureName;
+		
+		_textureName.ReleaseFocus();
+		_textureName.GetLineEdit().ReleaseFocus();
 	}
 	
 }

@@ -1,5 +1,6 @@
 using Godot;
 using WildRP.AMVTool;
+using WildRP.AMVTool.GUI;
 
 public partial class AMVListContextMenu : PopupMenu
 {
@@ -20,17 +21,14 @@ public partial class AMVListContextMenu : PopupMenu
 	{
 		switch (idx)
 		{
-			case 0: // Trigger bake
-				// NOT IMPLEMENTED
-				break;
-			case 1: // Include in full bake
+			case 0: // Include in full bake
 				_selectedVolume.IncludeInFullBake = !_selectedVolume.IncludeInFullBake;
 				break;
-			// Index 4 is a separator item and not clickable
-			case 3: // Rename
-				// NOT IMPLEMENTED
+			// Index 1 is a separator item and not clickable
+			case 2: // Rename
+				RenamePopup.Instance.Trigger(_selectedVolume);
 				break;
-			case 4: // Delete
+			case 3: // Delete
 				_selectedVolume.Delete();
 				break;
 		}

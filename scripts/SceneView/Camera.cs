@@ -70,7 +70,7 @@ public partial class SceneView
                 }
 
                 if (mouseButton.ButtonIndex is MouseButton.WheelDown or MouseButton.WheelUp && (_canScrollOrPan || AmvBaker.Instance.BakeInProgress))
-                    _scrollInput = mouseButton.ButtonIndex == MouseButton.WheelDown ? -1 : 1;
+                    _scrollInput = mouseButton.ButtonIndex == MouseButton.WheelDown ? 1 : -1;
 
                 if (mouseButton.ButtonIndex is MouseButton.Middle)
                     _middleMouseDown = mouseButton.Pressed;

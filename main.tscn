@@ -1,28 +1,39 @@
-[gd_scene load_steps=24 format=3 uid="uid://rkxojnujp02e"]
+[gd_scene load_steps=41 format=3 uid="uid://rkxojnujp02e"]
 
 [ext_resource type="Script" path="res://scripts/GUI/DpiScaling.cs" id="2_1i08n"]
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="2_dlwy7"]
 [ext_resource type="Script" path="res://scripts/AmvBaker.cs" id="2_lwufd"]
+[ext_resource type="Script" path="res://scripts/DeferredProbeBaker.cs" id="2_y4e7g"]
+[ext_resource type="Material" uid="uid://bysb8oiou3ugt" path="res://materials/ProbeMeshMat.tres" id="3_cfa5x"]
 [ext_resource type="Script" path="res://scripts/RedDeadMap.cs" id="3_jvogm"]
 [ext_resource type="Script" path="res://scripts/SceneView/SceneView.cs" id="3_w7hpc"]
 [ext_resource type="PackedScene" uid="uid://nsvut1wbybbw" path="res://objects/ambient_mask_volume.tscn" id="4_htupu"]
 [ext_resource type="PackedScene" uid="uid://d2f7n2tveheyo" path="res://gui/settings_ui.tscn" id="4_oxe1r"]
 [ext_resource type="Script" path="res://scripts/GUI/AmvBakerGui.cs" id="4_qsblh"]
+[ext_resource type="Material" uid="uid://pgy0wjc64mmc" path="res://materials/ProbeMeshMat_Decal.tres" id="4_stxj5"]
+[ext_resource type="Shader" path="res://shaders/deferredprobe_sky.gdshader" id="5_2qwli"]
+[ext_resource type="Shader" path="res://shaders/renderpass_filter.gdshader" id="5_axexi"]
+[ext_resource type="PackedScene" uid="uid://bnf5rc1a22qxm" path="res://gui/project_settings.tscn" id="6_84chb"]
 [ext_resource type="PackedScene" uid="uid://dj71k5dv71lby" path="res://gui/model_list_item.tscn" id="6_bb754"]
-[ext_resource type="Script" path="res://scripts/GUI/AmvList.cs" id="9_isvef"]
+[ext_resource type="Script" path="res://scripts/GUI/VolumeList.cs" id="9_isvef"]
 [ext_resource type="PackedScene" uid="uid://dwk3wagkg5qsx" path="res://gui/help_ui.tscn" id="10_hf7ko"]
 [ext_resource type="Script" path="res://scripts/GUI/SpinBoxFocusReleaser.cs" id="10_ir2tt"]
 [ext_resource type="Script" path="res://scripts/GUI/ViewPanel.cs" id="10_xk6cx"]
 [ext_resource type="PackedScene" uid="uid://i02qsc7fr6co" path="res://gui/amv_map_gui.tscn" id="11_cc11r"]
 [ext_resource type="Script" path="res://scripts/GUI/AMVListContextMenu.cs" id="11_gkj68"]
+[ext_resource type="PackedScene" uid="uid://c6rfggpw1cyt6" path="res://gui/deferredprobes_ui.tscn" id="12_2exl6"]
 [ext_resource type="PackedScene" uid="uid://coyv6kr8unfcu" path="res://gui/project_menu.tscn" id="12_vi4p3"]
+[ext_resource type="Script" path="res://scripts/GUI/ProjectFolderButton.cs" id="15_mu0ro"]
+[ext_resource type="PackedScene" uid="uid://c765i6qp7v1eu" path="res://objects/deferred_probe.tscn" id="15_ou0xa"]
+[ext_resource type="Script" path="res://scripts/GUI/RenamePopup.cs" id="25_6688d"]
+[ext_resource type="PackedScene" uid="uid://c02ifu558a17v" path="res://objects/error_popup.tscn" id="27_s0fil"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hhw8l"]
-sky_top_color = Color(0.945098, 0.952941, 0.952941, 1)
-sky_horizon_color = Color(0.501961, 0.501961, 0.501961, 1)
+sky_top_color = Color(1, 1, 1, 1)
+sky_horizon_color = Color(0.666667, 0.666667, 0.666667, 1)
 sky_curve = 1.5
 ground_bottom_color = Color(0.352941, 0.352941, 0.352941, 1)
-ground_horizon_color = Color(0.501961, 0.501961, 0.501961, 1)
+ground_horizon_color = Color(0.666667, 0.666667, 0.666667, 1)
 ground_curve = 0.75
 sun_angle_max = 0.0
 
@@ -33,6 +44,44 @@ sky_material = SubResource("ProceduralSkyMaterial_hhw8l")
 background_mode = 2
 sky = SubResource("Sky_tpun5")
 tonemap_mode = 3
+ssao_enabled = true
+ssao_light_affect = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d1crs"]
+shader = ExtResource("5_2qwli")
+
+[sub_resource type="Sky" id="Sky_12e27"]
+sky_material = SubResource("ShaderMaterial_d1crs")
+
+[sub_resource type="Environment" id="Environment_puche"]
+background_mode = 2
+background_color = Color(1, 1, 1, 1)
+sky = SubResource("Sky_12e27")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.2
+reflected_light_source = 1
+tonemap_mode = 3
+ssao_intensity = 1.0
+ssil_radius = 2.0
+sdfgi_use_occlusion = true
+sdfgi_min_cell_size = 0.05
+sdfgi_cascade0_distance = 3.2
+sdfgi_max_distance = 51.2
+sdfgi_y_scale = 0
+sdfgi_energy = 2.0
+
+[sub_resource type="World3D" id="World3D_mjs27"]
+environment = SubResource("Environment_puche")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_f2aa8"]
+render_priority = 0
+shader = ExtResource("5_axexi")
+
+[sub_resource type="QuadMesh" id="QuadMesh_3dkyg"]
+material = SubResource("ShaderMaterial_f2aa8")
+flip_faces = true
+size = Vector2(2, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8xwos"]
 
@@ -72,9 +121,36 @@ _anchor = NodePath("SpringArm3D")
 environment = SubResource("Environment_8ejdi")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="3D Scene View/WorldEnvironment"]
-transform = Transform3D(0.5, 0.707107, -0.5, 0.707107, -9.8352e-09, 0.707107, 0.5, -0.707107, -0.5, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+light_energy = 0.5
+light_bake_mode = 0
+shadow_enabled = true
+shadow_opacity = 0.5
 
-[node name="AMV Container" type="Node3D" parent="3D Scene View"]
+[node name="Deferred Probe Container" type="Node3D" parent="3D Scene View" node_paths=PackedStringArray("_renderViewport", "_mainCamera")]
+visible = false
+script = ExtResource("2_y4e7g")
+_renderViewport = NodePath("SubViewport")
+_mainCamera = NodePath("../SpringArm3D/Camera3D")
+_probeMeshMaterial = ExtResource("3_cfa5x")
+_decalMeshMaterial = ExtResource("4_stxj5")
+
+[node name="SubViewport" type="SubViewport" parent="3D Scene View/Deferred Probe Container"]
+own_world_3d = true
+world_3d = SubResource("World3D_mjs27")
+msaa_3d = 2
+sdf_scale = 0
+canvas_cull_mask = 4294443008
+size = Vector2i(1024, 1024)
+render_target_update_mode = 0
+
+[node name="PostProcess" type="MeshInstance3D" parent="3D Scene View/Deferred Probe Container/SubViewport"]
+layers = 524288
+sorting_offset = 10000.0
+cast_shadow = 0
+extra_cull_margin = 1500.0
+gi_mode = 0
+mesh = SubResource("QuadMesh_3dkyg")
 
 [node name="AMV Model Container" type="Node3D" parent="3D Scene View" node_paths=PackedStringArray("_placeholder")]
 script = ExtResource("2_lwufd")
@@ -84,15 +160,19 @@ _placeholder = NodePath("Placeholder")
 mesh = SubResource("BoxMesh_4veb7")
 skeleton = NodePath("")
 
+[node name="AMV Container" type="Node3D" parent="3D Scene View/AMV Model Container"]
+
 [node name="SpringArm3D" type="SpringArm3D" parent="3D Scene View"]
 collision_mask = 0
 
 [node name="Camera3D" type="Camera3D" parent="3D Scene View/SpringArm3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+cull_mask = 524287
 current = true
 fov = 60.0
 
 [node name="AMV Map View" type="Node2D" parent="."]
+visible = false
 script = ExtResource("3_jvogm")
 
 [node name="Camera2D" type="Camera2D" parent="AMV Map View"]
@@ -111,7 +191,15 @@ mouse_filter = 2
 theme = ExtResource("2_dlwy7")
 script = ExtResource("2_1i08n")
 
-[node name="FileDialog" type="FileDialog" parent="CanvasLayer/GUI"]
+[node name="AMVFileDialog" type="FileDialog" parent="CanvasLayer/GUI"]
+title = "Open a File"
+size = Vector2i(355, 154)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="ProbeFileDialog" type="FileDialog" parent="CanvasLayer/GUI"]
 title = "Open a File"
 size = Vector2i(355, 154)
 ok_button_text = "Open"
@@ -126,38 +214,42 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+current_tab = 1
 tab_focus_mode = 1
 
-[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_projectFolderBtn", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_controlToHide", "_amvList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_ymapPositionX", "_ymapPositionY", "_ymapPositionZ", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="Project Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("6_84chb")]
+visible = false
+layout_mode = 2
+
+[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_blurSizeDropdown", "_blurStrengthSlider", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
+_volumeModelContainer = NodePath("../../../../3D Scene View/AMV Model Container")
 _saveProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Save")
 _loadProjectBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/SaveLoad/Load")
 _projectPanel = NodePath("../../Project Menu")
-_projectFolderBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/ProjectFolderBtn")
 _modelListItem = ExtResource("6_bb754")
 _loadModelButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelBtn")
 _modelNameLabel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/LoadModelLabel")
-_fileDialog = NodePath("../../FileDialog")
+_fileDialog = NodePath("../../AMVFileDialog")
 _modelListContainer = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/Item List/MarginContainer/VBoxContainer")
 _amvScene = ExtResource("4_htupu")
-_amvContainerNode = NodePath("../../../../3D Scene View/AMV Container")
+_amvContainerNode = NodePath("../../../../3D Scene View/AMV Model Container/AMV Container")
+_blurSizeDropdown = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer/OptionButton")
+_blurStrengthSlider = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer/HSlider")
 _controlToHide = NodePath("HSplitContainer")
-_amvList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
+_volumeList = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV List/MarginContainer/ItemList")
 _amvListContextMenu = NodePath("../../AMVListContextMenu")
 _newAmvButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/New")
 _bakeAllButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Bake All")
 _exportTexturesBtn = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Buttons/Export All")
-_bakeProgressBar = NodePath("BakeProgress/ProgressBar")
-_cancelBakeBtn = NodePath("BakeProgress/CancelButton")
+_bakeProgressBar = NodePath("../../BakeProgress/ProgressBar")
+_cancelBakeBtn = NodePath("../../BakeProgress/CancelButton")
 _amvInfoPanel = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel")
 _textureName = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer/Texture Name")
 _rotation = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer/VBoxContainer2/Rotation")
 _randomizeTextureNameButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Button")
-_ymapPositionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/X")
-_ymapPositionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/Y")
-_ymapPositionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position/Z")
 _positionX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/X")
 _positionY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Y")
 _positionZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Pos Container/Z")
@@ -212,6 +304,7 @@ text = "Load Project... "
 [node name="ProjectFolderBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 text = "Open Project Folder"
+script = ExtResource("15_mu0ro")
 
 [node name="LoadModelBtn" type="Button" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
@@ -293,52 +386,43 @@ text = "Export All
 [node name="HSeparator2" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 
+[node name="BlurStrength" type="MarginContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+text = "Blur:"
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.025
+
+[node name="OptionButton" type="OptionButton" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/BlurStrength/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+item_count = 2
+selected = 1
+popup/item_0/text = "3x3x3"
+popup/item_0/id = 3
+popup/item_1/text = "5x5x5"
+popup/item_1/id = 5
+
+[node name="HSeparator3" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
+layout_mode = 2
+
 [node name="AMV Info Panel" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
-
-[node name="YMAP Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
-layout_mode = 2
-text = "YMAP Position
-"
-
-[node name="YMAP Position" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
-layout_mode = 2
-size_flags_horizontal = 0
-
-[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
-custom_minimum_size = Vector2(69.655, 0)
-layout_mode = 2
-max_value = 0.0
-step = 0.001
-allow_greater = true
-allow_lesser = true
-update_on_text_changed = true
-prefix = "X:"
-script = ExtResource("10_ir2tt")
-
-[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
-custom_minimum_size = Vector2(69.655, 0)
-layout_mode = 2
-max_value = 0.0
-step = 0.001
-allow_greater = true
-allow_lesser = true
-update_on_text_changed = true
-prefix = "Y:"
-script = ExtResource("10_ir2tt")
-
-[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/YMAP Position"]
-custom_minimum_size = Vector2(69.655, 0)
-layout_mode = 2
-max_value = 0.0
-step = 0.001
-allow_greater = true
-allow_lesser = true
-update_on_text_changed = true
-prefix = "Z:"
-script = ExtResource("10_ir2tt")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
 layout_mode = 2
@@ -527,18 +611,62 @@ mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_nun7o")
 script = ExtResource("10_xk6cx")
 
-[node name="BakeProgress" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs"]
+[node name="Deferred Probes" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_probeModelContainer", "_projectPanel", "_fileDialog", "_probeContainerNode", "_bakeProgressBar", "_cancelBakeBtn") instance=ExtResource("12_2exl6")]
+visible = false
+layout_mode = 2
+_probeModelContainer = NodePath("../../../../3D Scene View/Deferred Probe Container")
+_projectPanel = NodePath("../../Project Menu")
+_fileDialog = NodePath("../../ProbeFileDialog")
+_deferredProbeScene = ExtResource("15_ou0xa")
+_probeContainerNode = NodePath("../../../../3D Scene View/Deferred Probe Container")
+_bakeProgressBar = NodePath("../../BakeProgress/ProgressBar")
+_cancelBakeBtn = NodePath("../../BakeProgress/CancelButton")
+
+[node name="AMV Map" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_mapRoot", "_mapCamera") instance=ExtResource("11_cc11r")]
+visible = false
+layout_mode = 2
+_mapRoot = NodePath("../../../../AMV Map View")
+_mapCamera = NodePath("../../../../AMV Map View/Camera2D")
+
+[node name="Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("4_oxe1r")]
+visible = false
+layout_mode = 2
+
+[node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
+visible = false
+layout_mode = 2
+
+[node name="AMVListContextMenu" type="PopupMenu" parent="CanvasLayer/GUI"]
+item_count = 4
+item_0/text = "Include in full bake"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 4
+item_1/text = ""
+item_1/id = 2
+item_1/separator = true
+item_2/text = "Rename"
+item_2/id = 3
+item_3/text = "Delete"
+item_3/id = 1
+script = ExtResource("11_gkj68")
+
+[node name="Project Menu" parent="CanvasLayer/GUI" instance=ExtResource("12_vi4p3")]
+visible = false
+layout_mode = 1
+
+[node name="BakeProgress" type="HBoxContainer" parent="CanvasLayer/GUI"]
 visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -21.0
+offset_top = -34.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer/GUI/TabContainer/AMVs/BakeProgress"]
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer/GUI/BakeProgress"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -547,42 +675,53 @@ theme_override_constants/outline_size = 1
 max_value = 1.0
 value = 0.46
 
-[node name="CancelButton" type="Button" parent="CanvasLayer/GUI/TabContainer/AMVs/BakeProgress"]
+[node name="CancelButton" type="Button" parent="CanvasLayer/GUI/BakeProgress"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Cancel Bake"
 
-[node name="AMV Map" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_mapRoot", "_mapCamera") instance=ExtResource("11_cc11r")]
-visible = false
+[node name="RenamePopup" type="PopupPanel" parent="CanvasLayer/GUI" node_paths=PackedStringArray("_textField", "_okButton", "_cancelButton")]
+title = "Rename Item"
+size = Vector2i(400, 135)
+script = ExtResource("25_6688d")
+_textField = NodePath("MarginContainer/VBoxContainer/MarginContainer/LineEdit")
+_okButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Button")
+_cancelButton = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Button2")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/RenamePopup"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 396.0
+offset_bottom = 131.0
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GUI/RenamePopup/MarginContainer"]
 layout_mode = 2
-_mapRoot = NodePath("../../../../AMV Map View")
-_mapCamera = NodePath("../../../../AMV Map View/Camera2D")
 
-[node name="Help" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("10_hf7ko")]
-visible = false
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_constants/margin_bottom = 15
 
-[node name="Settings" parent="CanvasLayer/GUI/TabContainer" instance=ExtResource("4_oxe1r")]
-visible = false
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter new name"
 
-[node name="AMVListContextMenu" type="PopupMenu" parent="CanvasLayer/GUI"]
-item_count = 5
-item_0/text = "Bake"
-item_0/id = 0
-item_1/text = "Include in full bake"
-item_1/checkable = 1
-item_1/checked = true
-item_1/id = 4
-item_2/text = ""
-item_2/id = 2
-item_2/separator = true
-item_3/text = "Rename"
-item_3/id = 3
-item_4/text = "Delete"
-item_4/id = 1
-script = ExtResource("11_gkj68")
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
 
-[node name="Project Menu" parent="CanvasLayer/GUI" instance=ExtResource("12_vi4p3")]
+[node name="Button" type="Button" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Rename"
+
+[node name="Button2" type="Button" parent="CanvasLayer/GUI/RenamePopup/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel
+"
+
+[node name="PopupPanel" parent="CanvasLayer/GUI" instance=ExtResource("27_s0fil")]
 visible = false
-layout_mode = 1

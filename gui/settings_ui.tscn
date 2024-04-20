@@ -1,11 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://d2f7n2tveheyo"]
+[gd_scene load_steps=5 format=3 uid="uid://d2f7n2tveheyo"]
 
 [ext_resource type="Theme" uid="uid://b0c4jwsh62jan" path="res://amv_tool_theme.tres" id="1_7xdh4"]
 [ext_resource type="Script" path="res://scripts/GUI/SettingsGui.cs" id="1_50msa"]
+[ext_resource type="FontFile" uid="uid://ebkrlg2lnwfy" path="res://font/RobotoMono-Regular.ttf" id="3_wxyje"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texAssembleDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_minBrightSlider", "_minBrightLabel", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_textureFormatDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -13,18 +14,16 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_7xdh4")
 script = ExtResource("1_50msa")
-_texAssemblePath = NodePath("MarginContainer/VBoxContainer/TexAssemble/hbox/LineEdit")
-_texAssembleBrowse = NodePath("MarginContainer/VBoxContainer/TexAssemble/hbox/Button")
-_texAssembleDialog = NodePath("FileDialog")
+_texAssembleDialog = NodePath("")
+_texConvDialog = NodePath("")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
 _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2/Scale Value")
 _sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")
-_minBrightSlider = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/HSlider")
-_minBrightLabel = NodePath("MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3/Label")
 _bounceCountSlider = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/HSlider")
 _bounceCountLabel = NodePath("MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer3/Label")
 _bounceEnergySlider = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/HSlider")
 _bounceEnergyLabel = NodePath("MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer3/Label")
+_textureFormatDropdown = NodePath("MarginContainer/VBoxContainer/Texture Format/HBoxContainer/Dropdown")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -45,36 +44,9 @@ label_settings = SubResource("LabelSettings_ajkbg")
 layout_mode = 2
 theme_override_constants/margin_top = 10
 
-[node name="hbox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TexAssemble"]
+[node name="TexAssemble2" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-theme_override_constants/margin_right = 20
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TexAssemble/hbox/MarginContainer"]
-layout_mode = 2
-text = "texassemble.exe location"
-
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "Required to export textures!"
-
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-text = "Browse..."
-
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-theme_override_constants/margin_left = 15
-
-[node name="LinkButton" type="LinkButton" parent="MarginContainer/VBoxContainer/TexAssemble/hbox/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Download texassemble.exe here"
-uri = "https://github.com/microsoft/DirectXTex/releases/latest"
+theme_override_constants/margin_top = 10
 
 [node name="UI Scale" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -109,6 +81,7 @@ theme_override_constants/margin_left = 20
 
 [node name="Scale Value" type="Label" parent="MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_wxyje")
 text = "1.0"
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
@@ -121,7 +94,7 @@ layout_mode = 2
 
 [node name="Label2" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Rendering
+text = "AMV Rendering
 "
 label_settings = SubResource("LabelSettings_ajkbg")
 
@@ -142,7 +115,7 @@ text = "Probe Quality"
 
 [node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
-item_count = 6
+item_count = 8
 selected = 2
 popup/item_0/text = "256 Samples"
 popup/item_0/id = 7
@@ -150,58 +123,20 @@ popup/item_1/text = "512 Samples"
 popup/item_1/id = 8
 popup/item_2/text = "1024 Samples"
 popup/item_2/id = 9
-popup/item_3/text = "2048 Samples"
+popup/item_3/text = "2048 Samples (excessive)"
 popup/item_3/id = 10
-popup/item_4/text = "4096 Samples"
+popup/item_4/text = "4096 Samples (overkill)"
 popup/item_4/id = 11
-popup/item_5/text = "8192 Samples"
+popup/item_5/text = "8192 Samples (why?)"
 popup/item_5/id = 12
+popup/item_6/text = "16384 Samples (don't do it)"
+popup/item_6/id = 13
+popup/item_7/text = "32768 Samples (you will not see the light of heaven)"
+popup/item_7/id = 14
 
 [node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 50
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Sample Count/HBoxContainer/MarginContainer2"]
-layout_mode = 2
-text = "More samples means higher quality, but longer bakes. Bakes can be interrupted at any time and you will keep the result, though!"
-
-[node name="Min Bright" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_top = 10
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Min Bright"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-custom_minimum_size = Vector2(110, 0)
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Minimum Brightness"
-
-[node name="HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-max_value = 0.01
-step = 0.001
-
-[node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 15
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer3"]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "0
-"
-
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 50
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Min Bright/HBoxContainer/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Prevents black spots in the final baked texture, but flattens the lighting if pulled too high."
 
 [node name="BounceCount" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -211,7 +146,7 @@ theme_override_constants/margin_top = 10
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer"]
-custom_minimum_size = Vector2(110, 0)
+custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
 text = "# of Bounces"
 
@@ -227,6 +162,7 @@ theme_override_constants/margin_left = 15
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceCount/HBoxContainer/MarginContainer3"]
 layout_mode = 2
 size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("3_wxyje")
 text = "0
 "
 
@@ -247,7 +183,7 @@ theme_override_constants/margin_top = 10
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
-custom_minimum_size = Vector2(110, 0)
+custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
 text = "Bounce Energy"
 
@@ -255,7 +191,7 @@ text = "Bounce Energy"
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 max_value = 1.0
-step = 0.0
+step = 0.025
 
 [node name="MarginContainer3" type="MarginContainer" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer"]
 layout_mode = 2
@@ -264,6 +200,7 @@ theme_override_constants/margin_left = 15
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer3"]
 layout_mode = 2
 size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("3_wxyje")
 text = "0
 "
 
@@ -274,7 +211,29 @@ theme_override_constants/margin_left = 50
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/BounceStrength/HBoxContainer/MarginContainer2"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "How strong the bounced lighting should be."
+text = "How much light is preserved per bounce."
+
+[node name="Texture Format" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Texture Format"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Texture Format/HBoxContainer"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "Texture Format"
+
+[node name="Dropdown" type="OptionButton" parent="MarginContainer/VBoxContainer/Texture Format/HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "R11G11B10_FLOAT"
+popup/item_0/id = 0
+popup/item_1/text = "R8G8B8A8_UNORM_SRGB"
+popup/item_1/id = 1
 
 [node name="LinkButton" type="LinkButton" parent="MarginContainer"]
 layout_mode = 2
@@ -282,11 +241,3 @@ size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "View on GitHub"
 uri = "https://github.com/WildRP/WildRP-AMV-tool"
-
-[node name="FileDialog" type="FileDialog" parent="."]
-title = "Open a File"
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("texassemble.exe")
-use_native_dialog = true

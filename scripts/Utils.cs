@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
 using Godot;
+using StbImageWriteSharp;
 
 namespace WildRP.AMVTool;
 
@@ -34,6 +38,11 @@ public static class Utils
         h += (h << 15);
 
         return h;
+    }
+
+    public static int SignedJenkins(string text)
+    {
+        return unchecked((int)JenkinsHash(text));
     }
     
     // Input is first half of UUID, second half of UUID, and Jenkins has of interior name
@@ -109,5 +118,33 @@ public static class Utils
         }
     }
 
+    public static Aabb GlobalAabb(this VisualInstance3D v)
+    {
+        return v.GlobalTransform * v.GetAabb();
+    }
 
+    public static Color ToColor(this Vector3 v)
+    {
+        return new Color(v.X, v.Y, v.Z);
+    }
+
+    public static Vector3 ToVector(this Color c)
+    {
+        return new Vector3(c.R, c.G, c.B);
+    }
+    
+    public static float[] AlignPixelData(float[] data, int width, int height, int numChannels, int rowStrideIn)
+    {
+        var buffer = new float[width * height * numChannels * rowStrideIn];
+        for (int row = 0; row < height; ++row) {
+            for (int col = 0; col < width; ++col) {
+                for (int chan = 0; chan < numChannels; ++chan) {
+                    int idxIn = chan + rowStrideIn * row + col * numChannels;
+                    buffer[chan + numChannels * (col + width * row)] = data[idxIn];
+                }
+            }
+        }
+        return buffer;
+    }
+    
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using WildRP.AMVTool;
 using WildRP.AMVTool.Autoloads;
+using WildRP.AMVTool.GUI;
 
 public partial class AmvBaker : Node3D
 {
@@ -82,7 +83,10 @@ public partial class AmvBaker : Node3D
 	public override void _Ready()
 	{
 		if (Instance == null)
+		{
 			Instance = this;
+			AmvBakerGui.GuiToggled += b => Visible = b;
+		}
 		else
 			QueueFree();
 	}
@@ -121,6 +125,8 @@ public partial class AmvBaker : Node3D
 
 		modelState.Lights.Clear();
 		modelState.Cameras.Clear();
+		modelState.Materials.Clear();
+		modelState.Images.Clear();
 		
 		_modelRoot = modelDoc.GenerateScene(modelState);
 		AddChild(_modelRoot);
@@ -129,10 +135,17 @@ public partial class AmvBaker : Node3D
 		Utils.GetAllChildren(_modelRoot, nodes);
 
 		List<Tuple<MeshInstance3D, StaticBody3D>> result = [];
+
+		var amvMeshMaterial = new StandardMaterial3D();
+		amvMeshMaterial.AlbedoColor = Colors.White;
+		amvMeshMaterial.Roughness = 1;
 		
 		var meshes = nodes.OfType<MeshInstance3D>().ToList();
 		foreach (var m in meshes)
 		{
+			m.MaterialOverride = amvMeshMaterial;
+			m.GIMode = GeometryInstance3D.GIModeEnum.Disabled;
+			
 			var body = new StaticBody3D();
 			body.DisableMode = CollisionObject3D.DisableModeEnum.Remove;
 			body.CollisionLayer = 1;
@@ -157,14 +170,6 @@ public partial class AmvBaker : Node3D
 	{
 		AmbientMaskVolumes.Add(amv.GuiListName, amv);
 		amv.Deleted += volume => AmbientMaskVolumes.Remove(volume.GuiListName);
-	}
-
-	public void UpdateProjectAmvs()
-	{
-		foreach (var v in _ambientMaskVolumes)
-		{
-			SaveManager.UpdateAmv(v.Key, v.Value.Save());
-		}
 	}
 	
 	public void BakeAll()
@@ -193,4 +198,20 @@ public partial class AmvBaker : Node3D
 	}
 
 	public static int GetSampleCount() => 1 << BakeSamples;
+
+	public void RenameVolume(string oldname, string newname)
+	{
+		var probe = GetVolume(oldname);
+		AmbientMaskVolumes[oldname].GuiListName = newname;
+		AmbientMaskVolumes.Remove(oldname);
+		AmbientMaskVolumes.Add(newname, probe);
+	}
+
+	public void UpdateBlur()
+	{
+		foreach (var volume in _ambientMaskVolumes)
+		{
+			volume.Value.UpdateBlur();
+		}
+	}
 }
