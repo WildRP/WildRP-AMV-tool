@@ -50,16 +50,11 @@ public partial class AmbientMaskVolume : Volume
 		// Tex 1: RGB = XZY-
 		// Remember: Y is up in Godot. Z is up in RDR2.
 
-		var tex0Dir = $"{SaveManager.GetProjectPath()}/{TextureName.ToString()}_0";
-		var tex0DirG = ProjectSettings.GlobalizePath(tex0Dir);
-		var tex1Dir = $"{SaveManager.GetProjectPath()}/{TextureName.ToString()}_1";
-		var tex1DirG = ProjectSettings.GlobalizePath(tex1Dir);
+		var texDir = $"{SaveManager.GetProjectPath()}/{TextureName}";
+		var texDirGlobal = ProjectSettings.GlobalizePath(texDir);
 
-		if (DirAccess.DirExistsAbsolute(tex0Dir) == false)
-			DirAccess.MakeDirAbsolute(tex0Dir);
-
-		if (DirAccess.DirExistsAbsolute(tex1Dir) == false)
-			DirAccess.MakeDirAbsolute(tex1Dir);
+		if (DirAccess.DirExistsAbsolute(texDir) == false)
+			DirAccess.MakeDirAbsolute(texDir);
 
 		List<string> img0List = [];
 		List<string> img1List = [];
@@ -86,8 +81,8 @@ public partial class AmbientMaskVolume : Volume
 				}
 			}
 			
-			var tex0Name = $"{tex0DirG}/slice_{y}.hdr";
-			var tex1Name = $"{tex1DirG}/slice_{y}.hdr";
+			var tex0Name = $"{texDirGlobal}/slice_{y}_0.hdr";
+			var tex1Name = $"{texDirGlobal}/slice_{y}_1.hdr";
 			
 			img0.WriteToFile(tex0Name);
 			img1.WriteToFile(tex1Name);
@@ -99,24 +94,42 @@ public partial class AmbientMaskVolume : Volume
 			img1.Dispose();
 		}
 		
-		using var f0 = FileAccess.Open($"{tex0Dir}/imgs.txt", FileAccess.ModeFlags.Write);
+		using var f0 = FileAccess.Open($"{texDir}/imgs_0.txt", FileAccess.ModeFlags.Write);
 			img0List.ForEach(s => f0.StoreLine(s));
 			
-		using var f1 = FileAccess.Open($"{tex1Dir}/imgs.txt", FileAccess.ModeFlags.Write);
+		using var f1 = FileAccess.Open($"{texDir}/imgs_1.txt", FileAccess.ModeFlags.Write);
 			img1List.ForEach(s => f1.StoreLine(s));
-			
 
-			var tx0 = new Process();
-			tx0.StartInfo.FileName = Settings.TexAssembleLocation;
-			tx0.StartInfo.Arguments =
-				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_0.dds\" -l -y -if linear -f R11G11B10_FLOAT -fl 12.1 -flist \"{tex0DirG}\\imgs.txt\"";
-			tx0.Start();
-			
-			var tx1 = new Process();
-			tx1.StartInfo.FileName = Settings.TexAssembleLocation;
-			tx1.StartInfo.Arguments =
-				$"array -O \"{SaveManager.GetGlobalizedProjectPath()}\\{TextureName}_1.dds\" -l -y -if linear -f R11G11B10_FLOAT -fl 12.1 -flist \"{tex1DirG}\\imgs.txt\"";
-			tx1.Start();
+			var extraFlags = "";
+			if (Settings.AmvTextureFormat == Tex.TextureFormat.R8G8B8A8_UNORM_SRGB)
+				extraFlags = "-srgbo ";
+
+			var tx0 = Tex.Assemble($"{TextureName}/imgs_0.txt", $"{TextureName}_0.dds", Settings.AmvTextureFormat, extraFlags);
+			var tx1 = Tex.Assemble($"{TextureName}/imgs_1.txt", $"{TextureName}_1.dds", Settings.AmvTextureFormat, extraFlags);
+
+			tx0.Exited += CleanupExport;
+			tx1.Exited += CleanupExport;
+	}
+
+	private int _exportSteps = 0;
+
+	private void CleanupExport()
+	{
+		_exportSteps++;
+		if (_exportSteps < 2) return;
+
+		_exportSteps = 0;
+		
+		// Clean up files, leaving only the exported DDS files
+		var path = $"{SaveManager.GetProjectPath()}/{TextureName}";
+		var files = DirAccess.GetFilesAt(path);
+
+		foreach (var file in files)
+		{
+			DirAccess.RemoveAbsolute($"{path}/{file}");
+		}
+
+		DirAccess.RemoveAbsolute(path);
 	}
 	
 	public void CaptureSample()
