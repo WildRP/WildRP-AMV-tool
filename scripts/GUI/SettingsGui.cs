@@ -7,9 +7,6 @@ namespace WildRP.AMVTool.GUI;
 public partial class SettingsGui : Control
 {
 	
-	[Export] private FileDialog _texAssembleDialog;
-	[Export] private FileDialog _texConvDialog;
-	
 	[ExportGroup("UI")]
 	[Export] private HSlider _uiScaleSlider;
 	[Export] private Label _uiScaleLabel;
@@ -27,8 +24,6 @@ public partial class SettingsGui : Control
 	
  	public override void _Ready()
 	{
-		_texAssembleDialog.UseNativeDialog = true;
-		
 		_uiScaleSlider.ValueChanged += value => _uiScaleLabel.Text = value.ToString("0.#");
 		_uiScaleSlider.Value = Settings.UiScale;
 		_uiScaleSlider.DragEnded += changed =>

@@ -14,8 +14,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_7xdh4")
 script = ExtResource("1_50msa")
-_texAssembleDialog = NodePath("FileDialog_TA")
-_texConvDialog = NodePath("FileDialog_TC")
+_texAssembleDialog = NodePath("")
+_texConvDialog = NodePath("")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
 _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2/Scale Value")
 _sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")
@@ -241,20 +241,3 @@ size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "View on GitHub"
 uri = "https://github.com/WildRP/WildRP-AMV-tool"
-
-[node name="FileDialog_TA" type="FileDialog" parent="."]
-title = "Open a File"
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("texassemble.exe")
-use_native_dialog = true
-
-[node name="FileDialog_TC" type="FileDialog" parent="."]
-title = "Open a File"
-size = Vector2i(312, 154)
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-filters = PackedStringArray("texconv.exe")
-use_native_dialog = true
