@@ -44,8 +44,8 @@ public class Tex
 
     public void SetupTexAssemble(string fileList, string target, TextureFormat format, string extraFlags = "", bool run = true)
     {
-        _process.StartInfo.FileName = Settings.TexAssembleLocation;
-        _processName = Settings.TexAssembleLocation.GetFile();
+        _process.StartInfo.FileName = ProjectSettings.GlobalizePath("user://texassemble.exe");
+        _processName = "texassemble.exe";
 
         var args = $"array -nologo -O \"{target}\" -y {extraFlags}";
 
@@ -62,8 +62,8 @@ public class Tex
 
     public void SetupTexConv(string file, string outputFolder, bool compress = true, int size = 0, bool srgb = false, bool run = true, string extraFlags = "")
     {
-        _process.StartInfo.FileName = Settings.TexConvLocation;
-        _processName = Settings.TexConvLocation.GetFile();
+        _process.StartInfo.FileName = ProjectSettings.GlobalizePath("user://texconv.exe");
+        _processName = "texconv.exe";
 
         var args = $"-nologo -m 1 -y -O \"{outputFolder}\" ";
 

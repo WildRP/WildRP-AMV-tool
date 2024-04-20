@@ -6,7 +6,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssemblePath", "_texAssembleBrowse", "_texConvPath", "_texConvBrowse", "_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_textureFormatDropdown")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_textureFormatDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -14,10 +14,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_7xdh4")
 script = ExtResource("1_50msa")
-_texAssemblePath = NodePath("MarginContainer/VBoxContainer/TexAssemble/hbox/LineEdit")
-_texAssembleBrowse = NodePath("MarginContainer/VBoxContainer/TexAssemble/hbox/Button")
-_texConvPath = NodePath("MarginContainer/VBoxContainer/TexAssemble2/hbox/LineEdit")
-_texConvBrowse = NodePath("MarginContainer/VBoxContainer/TexAssemble2/hbox/Button")
 _texAssembleDialog = NodePath("FileDialog_TA")
 _texConvDialog = NodePath("FileDialog_TC")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
@@ -48,81 +44,9 @@ label_settings = SubResource("LabelSettings_ajkbg")
 layout_mode = 2
 theme_override_constants/margin_top = 10
 
-[node name="hbox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TexAssemble"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.2
-theme_override_constants/margin_right = 20
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TexAssemble/hbox/MarginContainer"]
-layout_mode = 2
-text = "texassemble.exe location"
-
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-placeholder_text = "Required to export textures"
-
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-text = "Browse..."
-
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble/hbox"]
-layout_mode = 2
-size_flags_horizontal = 10
-size_flags_stretch_ratio = 1.5
-theme_override_constants/margin_left = 15
-
-[node name="LinkButton" type="LinkButton" parent="MarginContainer/VBoxContainer/TexAssemble/hbox/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Download texassemble.exe here"
-uri = "https://github.com/Microsoft/DirectXTex/releases/latest/download/texassemble.exe"
-
 [node name="TexAssemble2" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 10
-
-[node name="hbox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/TexAssemble2"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble2/hbox"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.2
-theme_override_constants/margin_right = 20
-
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/TexAssemble2/hbox/MarginContainer"]
-layout_mode = 2
-text = "texconv.exe location"
-
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/TexAssemble2/hbox"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-placeholder_text = "Required for deferred probes"
-
-[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/TexAssemble2/hbox"]
-layout_mode = 2
-text = "Browse..."
-
-[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer/VBoxContainer/TexAssemble2/hbox"]
-layout_mode = 2
-size_flags_horizontal = 10
-size_flags_stretch_ratio = 1.5
-theme_override_constants/margin_left = 15
-
-[node name="LinkButton" type="LinkButton" parent="MarginContainer/VBoxContainer/TexAssemble2/hbox/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Download texconv.exe here"
-uri = "https://github.com/Microsoft/DirectXTex/releases/latest/download/texconv.exe"
 
 [node name="UI Scale" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

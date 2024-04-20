@@ -35,26 +35,6 @@ public partial class Settings : Node
             _dirty = true;
         }
     }
-
-    public static string TexAssembleLocation
-    {
-        get => _settingsFile.GetValue("Settings", "TexAssemblePath", "").AsString();
-        set
-        {
-            _settingsFile.SetValue("Settings", "TexAssemblePath", value);
-            _dirty = true;
-        }
-    }
-
-    public static string TexConvLocation
-    {
-        get => _settingsFile.GetValue("Settings", "TexConvPath", "").AsString();
-        set
-        {
-            _settingsFile.SetValue("Settings", "TexConvPath", value);
-            _dirty = true;
-        }
-    }
     
     public static int BounceCount
     {
@@ -140,6 +120,10 @@ public partial class Settings : Node
 
     private static bool _dirty; // Marks that it's time to save settings
 
+
+    private HttpRequest _texAssembleDownloader;
+    private HttpRequest _texConvDownloader;
+    
     public override void _Ready()
     {
         _settingsFile = new ConfigFile();
@@ -148,6 +132,42 @@ public partial class Settings : Node
         {
             SetDefaults();
             SaveSettings();
+        }
+        
+        if (FileAccess.FileExists("user://texassemble.exe") == false)
+        {
+            _texAssembleDownloader = new HttpRequest();
+            AddChild(_texAssembleDownloader);
+            _texAssembleDownloader.RequestCompleted += (result, code, headers, body) =>
+            {
+                GD.Print("Downloading texassemble:");
+                GD.Print($"Code {code}");
+                GD.Print(headers);
+                
+                using var f = FileAccess.Open("user://texassemble.exe", FileAccess.ModeFlags.Write);
+                f.StoreBuffer(body);
+                _texAssembleDownloader.QueueFree();
+            };
+            _texAssembleDownloader.Request(
+                "https://github.com/Microsoft/DirectXTex/releases/latest/download/texassemble.exe");
+        }
+        
+        if (FileAccess.FileExists("user://texconv.exe") == false)
+        {
+            _texConvDownloader = new HttpRequest();
+            AddChild(_texConvDownloader);
+            _texConvDownloader.RequestCompleted += (result, code, headers, body) =>
+            {
+                GD.Print("Downloading texassemble:");
+                GD.Print($"Code {code}");
+                GD.Print(headers);
+                
+                using var f = FileAccess.Open( "user://texconv.exe", FileAccess.ModeFlags.Write);
+                f.StoreBuffer(body);
+                _texConvDownloader.QueueFree();
+            };
+            _texConvDownloader.Request(
+                "https://github.com/Microsoft/DirectXTex/releases/latest/download/texconv.exe");
         }
     }
 

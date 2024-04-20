@@ -6,11 +6,6 @@ using WildRP.AMVTool.Autoloads;
 namespace WildRP.AMVTool.GUI;
 public partial class SettingsGui : Control
 {
-	[Export] private LineEdit _texAssemblePath;
-	[Export] private Button _texAssembleBrowse;
-	
-	[Export] private LineEdit _texConvPath;
-	[Export] private Button _texConvBrowse;
 	
 	[Export] private FileDialog _texAssembleDialog;
 	[Export] private FileDialog _texConvDialog;
@@ -44,26 +39,6 @@ public partial class SettingsGui : Control
 		_sampleQualityDropdown.Select(Settings.SampleCount-7);
 		_sampleQualityDropdown.ItemSelected += index => Settings.SampleCount = _sampleQualityDropdown.GetItemId((int)index);
 
-		_texAssembleBrowse.Pressed += () => _texAssembleDialog.Popup();
-		_texAssembleDialog.FileSelected += path =>
-		{
-			_texAssemblePath.Text = path;
-			Settings.TexAssembleLocation = path;
-		};
-
-		_texAssemblePath.Text = Settings.TexAssembleLocation;
-		_texAssemblePath.TextSubmitted += text => Settings.TexAssembleLocation = text;
-		
-		_texConvBrowse.Pressed += () => _texConvDialog.Popup();
-		_texConvDialog.FileSelected += path =>
-		{
-			_texConvPath.Text = path;
-			Settings.TexConvLocation = path;
-		};
-
-		_texConvPath.Text = Settings.TexConvLocation;
-		_texConvPath.TextSubmitted += text => Settings.TexConvLocation = text;
-
 		_bounceCountSlider.ValueChanged += value => _bounceCountLabel.Text = value.ToString("0");
 		_bounceCountSlider.DragEnded += changed => Settings.BounceCount = (int) _bounceCountSlider.Value;
 		_bounceCountSlider.Value = Settings.BounceCount;
@@ -86,6 +61,6 @@ public partial class SettingsGui : Control
 			Enum.TryParse(_textureFormatDropdown.GetItemText((int)index), true, out Tex.TextureFormat result);
 			Settings.AmvTextureFormat = result;
 		};
-
+		
 	}
 }
