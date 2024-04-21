@@ -231,8 +231,6 @@ public partial class AmvBakerGui : Control
 		if (path.Length > 0 && (path.EndsWith(".glb") || path.EndsWith(".gltf")))
 			LoadModel(project.ModelPath);
 		
-		//TODO: Clear existing AMVs on load because right now it causes issues
-		
 		foreach (var data in project.Volumes)
 		{
 			var amv = _amvScene.Instantiate() as AmbientMaskVolume;
@@ -310,12 +308,12 @@ public partial class AmvBakerGui : Control
 		{
 			SelectedAmv.SizeChanged += UpdateAmvGuiValues;
 			ConnectAmvGui();
-			UpdateAmvGuiValues();
 		}
 		else
 		{
 			_volumeList.DeselectAll();
 		}
+		UpdateAmvGuiValues();
 	}
 
 	private void UpdateBlur()
@@ -329,6 +327,7 @@ public partial class AmvBakerGui : Control
 		bool v = SelectedAmv != null;
 
 		_textureName.GetLineEdit().Text = v ? SelectedAmv.TextureName.ToString(CultureInfo.InvariantCulture) : _textureName.MinValue.ToString(CultureInfo.InvariantCulture);
+		_rotation.SetValueNoSignal(v ? SelectedAmv.RotationDegrees.Y : 0);
 		_rotation.GetLineEdit().Text = v ? (-SelectedAmv.RotationDegrees.Y).ToString(CultureInfo.InvariantCulture) : "0";
 		
 		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user

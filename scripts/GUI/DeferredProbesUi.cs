@@ -288,6 +288,7 @@ public partial class DeferredProbesUi : Control
 		bool v = SelectedProbe != null;
 
 		_guid.Text = v ? "0x"+SelectedProbe.Guid.ToString("x16") : "";
+		_rotation.SetValueNoSignal(v ? SelectedProbe.RotationDegrees.Y : 0);
 		_rotation.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.RotationDegrees.Y) : "0";
 		
 		_centerOffsetX.SetValueNoSignal(v ? SelectedProbe.CenterOffset.X : 0);
