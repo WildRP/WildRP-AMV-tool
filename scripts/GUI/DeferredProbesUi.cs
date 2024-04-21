@@ -124,6 +124,13 @@ public partial class DeferredProbesUi : Control
 		_probeInfoPanel.Visible = false;
 	}
 
+	private void Reset()
+	{
+		_volumeList.Clear();
+		DeferredProbeBaker.Instance.Clear();
+		UnloadModel();
+	}
+
 	void UpdateBakeProgress(float progress)
 	{
 		_bakeProgressBar.Value = progress;
@@ -171,11 +178,10 @@ public partial class DeferredProbesUi : Control
 	
 	private void LoadProject(SaveManager.Project project)
 	{
+		Reset();
 		var path = project.ReflectionModelPath;
 		if (path.Length > 0 && (path.EndsWith(".glb") || path.EndsWith(".gltf")))
 			LoadModel(project.ReflectionModelPath);
-		else
-			UnloadModel(); // Project doesn't have a valid model file
 		
 		foreach (var data in project.Probes)
 		{

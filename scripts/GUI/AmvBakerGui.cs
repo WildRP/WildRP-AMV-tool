@@ -225,11 +225,11 @@ public partial class AmvBakerGui : Control
 
 	private void LoadProject(SaveManager.Project project)
 	{
+		Reset();
+		
 		var path = project.ModelPath;
 		if (path.Length > 0 && (path.EndsWith(".glb") || path.EndsWith(".gltf")))
 			LoadModel(project.ModelPath);
-		else
-			UnloadModel(); // Project doesn't have a valid model file
 		
 		//TODO: Clear existing AMVs on load because right now it causes issues
 		
@@ -258,6 +258,13 @@ public partial class AmvBakerGui : Control
 		if (SelectedAmv == volume) SelectAmv(null);
 	}
 
+	private void Reset()
+	{
+		_volumeList.Clear();
+		AmvBaker.Instance.Clear();
+		UnloadModel();
+	}
+	
 	private void RenameVolume(string from, string to)
 	{
 		var uniqueName = EnsureUniqueName(to);
