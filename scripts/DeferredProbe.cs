@@ -371,8 +371,6 @@ public partial class DeferredProbe : Volume
         }
 
         DirAccess.RemoveAbsolute(path);
-
-        OS.ShellShowInFileManager(SaveManager.GetProjectPath());
     }
 
     public override string GetXml()

@@ -77,6 +77,17 @@ public partial class DeferredProbeBaker : Node3D
 			    _bakeQueue.Clear();
 			    _mainCamera.Current = true;
 			    UpdateBakeProgress?.Invoke(1f);
+			    
+			    var xml = "";
+			    foreach (var probe in _deferredProbes)
+			    {
+				    probe.Value.GenerateTextures();
+				    xml += probe.Value.GetXml();
+			    }
+	    
+			    using var f = FileAccess.Open($"{SaveManager.GetProjectPath()}/probe_data.xml", FileAccess.ModeFlags.Write);
+			    f.StoreString(xml);
+			    
 		    }
 	    }
 	    
@@ -123,20 +134,6 @@ public partial class DeferredProbeBaker : Node3D
 			    break;
 	    }
     }
-
-    public void ExportAll()
-    {
-	    var xml = "";
-	    foreach (var p in _deferredProbes)
-	    {
-		    p.Value.GenerateTextures();
-		    xml += p.Value.GetXml();
-	    }
-	    
-	    using var f = FileAccess.Open($"{SaveManager.GetProjectPath()}/probe_data.xml", FileAccess.ModeFlags.Write);
-			f.StoreString(xml);
-    }
-    
     public void Clear()
     {
 	    _deferredProbes.Clear();
