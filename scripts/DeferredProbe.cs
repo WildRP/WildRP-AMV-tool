@@ -181,19 +181,19 @@ public partial class DeferredProbe : Volume
             img.WriteToFile($"{dir}/Color_{i}.png");
             img.Dispose();
             colorList.Add($"{dir}/Color_{i}.png");
+            _occlusionTextures[i].SavePng($"{dir}/AO_{i}.png");
         }
         
         // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
         for (int i = 0; i < _normalTextures.Count; i++)
         {
-            _normalTextures[i].SrgbToLinear();
             var img = new SimpleImageIO.Image(size.X, size.Y, 4);
             for (int x = 0; x < size.X; x++)
             {
                 for (int y = 0; y < size.Y; y++)
                 {
-                    var col = _normalTextures[i].GetPixel(x, y);
-                    var a = _windowMaskTextures[i].GetPixel(x, y).Luminance > .5f ? 1f : 0f;
+                    var col = _normalTextures[i].GetPixel(x, y).SrgbToLinear();
+                    var a = _windowMaskTextures[i].GetPixel(x, y).Luminance > .2f ? 1f : 0f;
                     
                     //_normalTextures[i].SetPixel(x, y, v.ToColor());
                     img.SetPixelChannel(x, y, 0, col.R);
@@ -215,11 +215,11 @@ public partial class DeferredProbe : Volume
                 for (int y = 0; y < size.Y; y++)
                 {
                     var val = _depthTextures[i].GetPixel(x, y).R;
-                    val *= 250;
+                    /*val *= 150;
 
                     // turn linear depth into logarithmic depth
                     const float c = 1f;
-                    val = 2f*Mathf.Log(val * c/0.1f) / Mathf.Log(50f/.1f) - 1f;
+                    val = 2f*Mathf.Log(val * c/0.1f) / Mathf.Log(150f/.1f) - 1f;*/
                     
                     img.AtomicAdd(x,y, val);
                 }
@@ -277,19 +277,19 @@ public partial class DeferredProbe : Volume
                 
             p.Exited += () =>
             { 
-                var p = Tex.Conv($"{ul_path}{tn}_0.dds", hi_path, size: 512, srgb: true);
-                p.Run();
+                var p1 = Tex.Conv($"{ul_path}{tn}_0.dds", hi_path, size: 512, srgb: true);
+                p1.Run();
                 
-                p.Exited += () =>
+                p1.Exited += () =>
                 { 
-                    var p = Tex.Conv($"{ul_path}{tn}_0.dds", std_path, size: 256, srgb: true);
-                    p.Run();
+                    var p2 = Tex.Conv($"{ul_path}{tn}_0.dds", std_path, size: 256, srgb: true);
+                    p2.Run();
                     
-                    p.Exited += () =>
+                    p2.Exited += () =>
                     { 
-                        var p = Tex.Conv($"{ul_path}{tn}_0.dds", lo_path, size: 128, srgb: true);
-                        p.Run();
-                        p.Exited += CleanupExport;
+                        var p3 = Tex.Conv($"{ul_path}{tn}_0.dds", lo_path, size: 128, srgb: true);
+                        p3.Run();
+                        p3.Exited += CleanupExport;
                     };
                 };
             };
@@ -303,19 +303,19 @@ public partial class DeferredProbe : Volume
             
             p.Exited += () =>
             {
-                var p = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512, extraFlags:"-srgb ");
-                p.Run();
+                var p1 = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512, extraFlags:"-srgb ");
+                p1.Run();
                 
-                p.Exited += () =>
+                p1.Exited += () =>
                 {
-                    var p = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256, extraFlags:"-srgb ");
-                    p.Run();
+                    var p2 = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256, extraFlags:"-srgb ");
+                    p2.Run();
                     
-                    p.Exited += () =>
+                    p2.Exited += () =>
                     {
-                        var p = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128, extraFlags:"-srgb ");
-                        p.Run();
-                        p.Exited += CleanupExport;
+                        var p3 = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128, extraFlags:"-srgb ");
+                        p3.Run();
+                        p3.Exited += CleanupExport;
                     };
                 };
             };
@@ -328,19 +328,19 @@ public partial class DeferredProbe : Volume
             
             p.Exited += () =>
             {
-                var p = Tex.Conv($"{ul_path}{tn}_d.dds", hi_path, size: 512, compress: false);
-                p.Run();
+                var p1 = Tex.Conv($"{ul_path}{tn}_d.dds", hi_path, size: 512, compress: false);
+                p1.Run();
                 
-                p.Exited += () =>
+                p1.Exited += () =>
                 {
-                    var p = Tex.Conv($"{ul_path}{tn}_d.dds", std_path, size: 256, compress: false);
-                    p.Run();
+                    var p2 = Tex.Conv($"{ul_path}{tn}_d.dds", std_path, size: 256, compress: false);
+                    p2.Run();
                     
-                    p.Exited += () =>
+                    p2.Exited += () =>
                     {
-                        var p = Tex.Conv($"{ul_path}{tn}_d.dds", lo_path, size: 128, compress: false);
-                        p.Run();
-                        p.Exited += CleanupExport;
+                        var p3 = Tex.Conv($"{ul_path}{tn}_d.dds", lo_path, size: 128, compress: false);
+                        p3.Run();
+                        p3.Exited += CleanupExport;
                     };
                 };
             };

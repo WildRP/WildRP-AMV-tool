@@ -1,11 +1,13 @@
 shader_type spatial;
-render_mode unshaded, depth_prepass_alpha;
+render_mode unshaded, depth_prepass_alpha, cull_disabled;
 
 uniform bool blend = false;
 uniform sampler2D ab : source_color;
 uniform sampler2D nm : hint_normal;
 
 global uniform int probe_rendering_pass;
+
+uniform bool isWindow = false;
 
 varying float vertAlpha;
 varying vec3 worldNormal;
@@ -25,10 +27,12 @@ void fragment() {
 	
 	if (probe_rendering_pass == 1) // normal map pass
 	{
-		vec4 n = INV_PROJECTION_MATRIX * vec4(NORMAL,1.0);
-		//n = INV_VIEW_MATRIX * n;
-		ALBEDO = normalize(worldNormal.xzy) * 0.5 + 0.5;
 		ALPHA = 0.0;
+	}
+	if (probe_rendering_pass == 3 && isWindow)
+	{
+		ALPHA = 1.0;
+		ALBEDO = vec3(0.0);
 	}
 }
 
