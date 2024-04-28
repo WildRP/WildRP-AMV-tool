@@ -40,7 +40,7 @@ public partial class SettingsGui : Control
 		
 		_bounceEnergySlider.ValueChanged += value => _bounceEnergyLabel.Text = value.ToString("##%");
 		_bounceEnergySlider.DragEnded += changed => Settings.BounceEnergy = (float) _bounceEnergySlider.Value;
-		_bounceEnergySlider.Value = Settings.BounceCount;
+		_bounceEnergySlider.Value = Settings.BounceEnergy;
 		
 		for (int i = 0; i < _textureFormatDropdown.ItemCount; i++)
 		{
