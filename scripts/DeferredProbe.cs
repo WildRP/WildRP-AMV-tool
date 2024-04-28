@@ -9,6 +9,7 @@ using Godot.Collections;
 using StbImageWriteSharp;
 using WildRP.AMVTool.GUI;
 using WildRP.AMVTool;
+using WildRP.AMVTool.Autoloads;
 using FileAccess = Godot.FileAccess;
 using Image = Godot.Image;
 
