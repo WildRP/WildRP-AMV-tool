@@ -35,7 +35,7 @@ public partial class DeferredProbeBaker : Node3D
 	    Albedo = 0,
 	    Normal,
 	    Occlusion,
-	    SkyMask,
+	    WindowMask,
 	    Depth
     }
     
@@ -48,6 +48,7 @@ public partial class DeferredProbeBaker : Node3D
 		    _aoBakeMat = new StandardMaterial3D();
 		    _aoBakeMat.Roughness = 1;
 		    _aoBakeMat.AlbedoColor = Colors.White;
+		    _aoBakeMat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 	    }
 	    else
 	    {
@@ -81,6 +82,7 @@ public partial class DeferredProbeBaker : Node3D
 			    var xml = "";
 			    foreach (var probe in _deferredProbes)
 			    {
+				    probe.Value.SetBaking(false);
 				    probe.Value.GenerateTextures();
 				    xml += probe.Value.GetXml();
 			    }
@@ -101,6 +103,7 @@ public partial class DeferredProbeBaker : Node3D
 	    foreach (var p in _bakeQueue)
 	    {
 		    p.Clear();
+		    p.SetBaking(true);
 	    }
     }
 
@@ -119,7 +122,7 @@ public partial class DeferredProbeBaker : Node3D
 			    break;
 		    case BakePass.Albedo:
 		    case BakePass.Normal:
-		    case BakePass.SkyMask:
+		    case BakePass.WindowMask:
 		    case BakePass.Depth:
 			    foreach (var m in _renderMeshes)
 			    {

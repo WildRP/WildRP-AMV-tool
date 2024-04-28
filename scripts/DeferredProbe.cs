@@ -26,7 +26,7 @@ public partial class DeferredProbe : Volume
     private List<Image> _colorTextures = [];
     private List<Image> _normalTextures = [];
     private List<Image> _depthTextures = [];
-    private List<Image> _skyMaskTextures = [];
+    private List<Image> _windowMaskTextures = [];
     private List<Image> _occlusionTextures = [];
     
     private SubViewport _viewport;
@@ -37,7 +37,7 @@ public partial class DeferredProbe : Volume
     public new bool Baked => _colorTextures.Count >= 6
                              && _normalTextures.Count >= 6
                              && _depthTextures.Count >= 6
-                             && _skyMaskTextures.Count >= 6
+                             && _windowMaskTextures.Count >= 6
                              && _occlusionTextures.Count >= 6;
 
     public bool Exported { get; private set; }
@@ -76,8 +76,8 @@ public partial class DeferredProbe : Volume
             RenderColor(_colorTextures.Count);
         else if (_normalTextures.Count < 6)
             RenderNormal(_normalTextures.Count);
-        else if (_skyMaskTextures.Count < 6)
-            RenderSkymask(_skyMaskTextures.Count);
+        else if (_windowMaskTextures.Count < 6)
+            RenderWindowMask(_windowMaskTextures.Count);
         else if (_depthTextures.Count < 6)
             RenderDepth(_depthTextures.Count);
         else if (_occlusionTextures.Count < 6)
@@ -112,12 +112,12 @@ public partial class DeferredProbe : Volume
         RenderingServer.FramePostDraw += GrabTex;
     }
     
-    private void RenderSkymask(int cam)
+    private void RenderWindowMask(int cam)
     {
-        GD.Print($"Render Skymask {cam}");
+        GD.Print($"Render Window Mask {cam}");
         _renderCameras[cam].Current = true;
-        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.SkyMask);
-        _renderList = _skyMaskTextures;
+        DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.WindowMask);
+        _renderList = _windowMaskTextures;
         RenderingServer.FramePostDraw += GrabTex;
     }
     
@@ -192,12 +192,12 @@ public partial class DeferredProbe : Volume
                 for (int y = 0; y < size.Y; y++)
                 {
                     var col = _normalTextures[i].GetPixel(x, y);
-                    var a = _skyMaskTextures[i].GetPixel(x, y).Luminance;
+                    var a = _windowMaskTextures[i].GetPixel(x, y).Luminance > .5f ? 1f : 0f;
                     
                     //_normalTextures[i].SetPixel(x, y, v.ToColor());
-                    img.SetPixelChannel(x, y, 0, Mathf.Pow(col.R, 2.2f));
-                    img.SetPixelChannel(x, y, 1, Mathf.Pow(col.G, 2.2f));
-                    img.SetPixelChannel(x, y, 2, Mathf.Pow(col.B, 2.2f));
+                    img.SetPixelChannel(x, y, 0, col.R);
+                    img.SetPixelChannel(x, y, 1, col.G);
+                    img.SetPixelChannel(x, y, 2, col.B);
                     img.SetPixelChannel(x, y, 3, a);
                 }
             }
@@ -217,8 +217,8 @@ public partial class DeferredProbe : Volume
                     val *= 250;
 
                     // turn linear depth into logarithmic depth
-                    var c = 0.01f;
-                    val = Mathf.Log(val + c) / Mathf.Log(150 + c);
+                    const float c = 1f;
+                    val = 2f*Mathf.Log(val * c/0.1f) / Mathf.Log(50f/.1f) - 1f;
                     
                     img.AtomicAdd(x,y, val);
                 }
@@ -297,22 +297,22 @@ public partial class DeferredProbe : Volume
         
         tx1.Exited += () =>
         {
-            var p = Tex.Conv($"{ul_path}{tn}_1.dds", ul_path);
+            var p = Tex.Conv($"{ul_path}{tn}_1.dds", ul_path, extraFlags:"-srgb ");
             p.Run();
             
             p.Exited += () =>
             {
-                var p = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512);
+                var p = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512, extraFlags:"-srgb ");
                 p.Run();
                 
                 p.Exited += () =>
                 {
-                    var p = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256);
+                    var p = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256, extraFlags:"-srgb ");
                     p.Run();
                     
                     p.Exited += () =>
                     {
-                        var p = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128);
+                        var p = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128, extraFlags:"-srgb ");
                         p.Run();
                         p.Exited += CleanupExport;
                     };
@@ -360,6 +360,8 @@ public partial class DeferredProbe : Volume
         
         Exported = true;
         _exportCount = 0;
+
+        if (Settings.DontDeleteImages) return;
         
         // Clean up files, leaving only the exported DDS files
         var path = $"{SaveManager.GetProjectPath()}/{Guid}";
@@ -396,7 +398,7 @@ public partial class DeferredProbe : Volume
     {
         _colorTextures.Clear();
         _normalTextures.Clear();
-        _skyMaskTextures.Clear();
+        _windowMaskTextures.Clear();
         _depthTextures.Clear();
         Exported = false;
     }
