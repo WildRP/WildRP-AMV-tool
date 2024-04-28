@@ -97,12 +97,6 @@ public partial class DeferredProbeBaker : Node3D
     {
 	    _bakeQueue.AddRange(_deferredProbes.Values);
 	    _probeBakeCounter = 0;
-
-	    foreach (var m in _renderMeshes)
-	    {
-		    // TODO: hide decal/transparent meshes in AO bake pass
-		    m.MaterialOverride = _aoBakeMat;
-	    }
 	    
 	    foreach (var p in _bakeQueue)
 	    {

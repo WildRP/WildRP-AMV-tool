@@ -149,15 +149,13 @@ public partial class DeferredProbesUi : Control
 		{
 			item.Remove();
 		}
-		
-		SaveManager.SetProbeModel("");
 	}
 	
 	private void LoadModel(string path)
 	{
-		var result = DeferredProbeBaker.Instance.LoadModel(path);
-		
 		UnloadModel();
+		
+		var result = DeferredProbeBaker.Instance.LoadModel(path);
 		
 		if (result == null) return; // display an error message here probably
 		

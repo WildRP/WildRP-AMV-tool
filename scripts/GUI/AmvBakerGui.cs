@@ -177,15 +177,12 @@ public partial class AmvBakerGui : Control
 		{
 			item.Remove();
 		}
-		
-		SaveManager.SetModel("");
 	}
 	
 	private void LoadModel(string path)
 	{
-		var (e, result) = AmvBaker.Instance.LoadModel(path);
-		
 		UnloadModel();
+		var (e, result) = AmvBaker.Instance.LoadModel(path);
 		
 		if (e != Error.Ok) return; // display an error message here probably
 		
