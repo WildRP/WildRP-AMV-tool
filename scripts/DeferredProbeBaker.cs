@@ -130,6 +130,10 @@ public partial class DeferredProbeBaker : Node3D
     }
     public void Clear()
     {
+	    foreach (var volume in _deferredProbes)
+	    {
+		    volume.Value.QueueFree();
+	    }
 	    _deferredProbes.Clear();
     }
 
