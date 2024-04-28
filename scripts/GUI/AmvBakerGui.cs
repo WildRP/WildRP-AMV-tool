@@ -177,15 +177,12 @@ public partial class AmvBakerGui : Control
 		{
 			item.Remove();
 		}
-		
-		SaveManager.SetModel("");
 	}
 	
 	private void LoadModel(string path)
 	{
-		var (e, result) = AmvBaker.Instance.LoadModel(path);
-		
 		UnloadModel();
+		var (e, result) = AmvBaker.Instance.LoadModel(path);
 		
 		if (e != Error.Ok) return; // display an error message here probably
 		
@@ -225,13 +222,11 @@ public partial class AmvBakerGui : Control
 
 	private void LoadProject(SaveManager.Project project)
 	{
+		Reset();
+		
 		var path = project.ModelPath;
 		if (path.Length > 0 && (path.EndsWith(".glb") || path.EndsWith(".gltf")))
 			LoadModel(project.ModelPath);
-		else
-			UnloadModel(); // Project doesn't have a valid model file
-		
-		//TODO: Clear existing AMVs on load because right now it causes issues
 		
 		foreach (var data in project.Volumes)
 		{
@@ -258,6 +253,13 @@ public partial class AmvBakerGui : Control
 		if (SelectedAmv == volume) SelectAmv(null);
 	}
 
+	private void Reset()
+	{
+		_volumeList.Clear();
+		AmvBaker.Instance.Clear();
+		UnloadModel();
+	}
+	
 	private void RenameVolume(string from, string to)
 	{
 		var uniqueName = EnsureUniqueName(to);
@@ -303,12 +305,12 @@ public partial class AmvBakerGui : Control
 		{
 			SelectedAmv.SizeChanged += UpdateAmvGuiValues;
 			ConnectAmvGui();
-			UpdateAmvGuiValues();
 		}
 		else
 		{
 			_volumeList.DeselectAll();
 		}
+		UpdateAmvGuiValues();
 	}
 
 	private void UpdateBlur()
@@ -322,6 +324,7 @@ public partial class AmvBakerGui : Control
 		bool v = SelectedAmv != null;
 
 		_textureName.GetLineEdit().Text = v ? SelectedAmv.TextureName.ToString(CultureInfo.InvariantCulture) : _textureName.MinValue.ToString(CultureInfo.InvariantCulture);
+		_rotation.SetValueNoSignal(v ? SelectedAmv.RotationDegrees.Y : 0);
 		_rotation.GetLineEdit().Text = v ? (-SelectedAmv.RotationDegrees.Y).ToString(CultureInfo.InvariantCulture) : "0";
 		
 		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user

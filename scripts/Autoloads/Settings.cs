@@ -118,6 +118,12 @@ public partial class Settings : Node
         }
     }
 
+    public static bool DontDeleteImages
+    {
+        get => _settingsFile.GetValue("Debug", "DontDeleteImages", true).AsBool();
+        set => _settingsFile.SetValue("Debug", "DontDeleteImages", value);
+    }
+
     private static bool _dirty; // Marks that it's time to save settings
 
 

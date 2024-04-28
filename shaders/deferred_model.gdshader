@@ -27,6 +27,10 @@ void fragment() {
 		//n = INV_VIEW_MATRIX * n;
 		ALBEDO = normalize(worldNormal.xzy) * 0.5 + 0.5;
 	}
+	else if (probe_rendering_pass == 3)
+	{
+		ALBEDO = vec3(1.0);
+	}
 }
 
 //void light() {

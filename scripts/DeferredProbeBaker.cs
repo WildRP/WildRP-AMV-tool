@@ -15,6 +15,8 @@ public partial class DeferredProbeBaker : Node3D
 	[Export] private ShaderMaterial _probeMeshMaterial;
 	[Export] private ShaderMaterial _decalMeshMaterial;
 
+	[Export] private MeshInstance3D _postProcessMesh;
+
     private Node _modelRoot;
     private Node3D _visibleModelRoot;
     public static DeferredProbeBaker Instance;
@@ -35,7 +37,7 @@ public partial class DeferredProbeBaker : Node3D
 	    Albedo = 0,
 	    Normal,
 	    Occlusion,
-	    SkyMask,
+	    WindowMask,
 	    Depth
     }
     
@@ -43,11 +45,13 @@ public partial class DeferredProbeBaker : Node3D
     {
 	    if (Instance == null)
 	    {
+		    const float aobase = .25f;
 		    Instance = this;
 		    DeferredProbesUi.GuiToggled += b => Visible = b;
 		    _aoBakeMat = new StandardMaterial3D();
 		    _aoBakeMat.Roughness = 1;
-		    _aoBakeMat.AlbedoColor = Colors.White;
+		    _aoBakeMat.AlbedoColor = new Color(aobase, aobase, aobase);
+		    _aoBakeMat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
 	    }
 	    else
 	    {
@@ -77,6 +81,17 @@ public partial class DeferredProbeBaker : Node3D
 			    _bakeQueue.Clear();
 			    _mainCamera.Current = true;
 			    UpdateBakeProgress?.Invoke(1f);
+			    
+			    var xml = "";
+			    foreach (var probe in _deferredProbes)
+			    {
+				    probe.Value.SetBaking(false);
+				    probe.Value.GenerateTextures();
+				    xml += probe.Value.GetXml();
+			    }
+	    
+			    using var f = FileAccess.Open($"{SaveManager.GetProjectPath()}/probe_data.xml", FileAccess.ModeFlags.Write);
+			    f.StoreString(xml);
 		    }
 	    }
 	    
@@ -86,16 +101,11 @@ public partial class DeferredProbeBaker : Node3D
     {
 	    _bakeQueue.AddRange(_deferredProbes.Values);
 	    _probeBakeCounter = 0;
-
-	    foreach (var m in _renderMeshes)
-	    {
-		    // TODO: hide decal/transparent meshes in AO bake pass
-		    m.MaterialOverride = _aoBakeMat;
-	    }
 	    
 	    foreach (var p in _bakeQueue)
 	    {
 		    p.Clear();
+		    p.SetBaking(true);
 	    }
     }
 
@@ -103,42 +113,37 @@ public partial class DeferredProbeBaker : Node3D
     {
 	    RenderingServer.GlobalShaderParameterSet("probe_rendering_pass", (int)p);
 	    
+	    foreach (var m in _renderMeshes)
+	    {
+		    m.MaterialOverride = null;
+		    m.Visible = true;
+		    _postProcessMesh.Visible = true;
+	    }
+	    
 	    switch (p)
 	    {
 		    case BakePass.Occlusion:
 			    foreach (var m in _renderMeshes)
 			    {
-				    // TODO: hide decal/transparent meshes in AO bake pass
+				    m.Visible = !m.GetMeta("transparent", false).AsBool();
 				    m.MaterialOverride = _aoBakeMat;
 			    }
 			    break;
 		    case BakePass.Albedo:
+			    _postProcessMesh.Visible = false;
+			    break;
+		    case BakePass.WindowMask:
 		    case BakePass.Normal:
-		    case BakePass.SkyMask:
 		    case BakePass.Depth:
-			    foreach (var m in _renderMeshes)
-			    {
-				    m.MaterialOverride = null;
-			    }
 			    break;
 	    }
     }
-
-    public void ExportAll()
-    {
-	    var xml = "";
-	    foreach (var p in _deferredProbes)
-	    {
-		    p.Value.GenerateTextures();
-		    xml += p.Value.GetXml();
-	    }
-	    
-	    using var f = FileAccess.Open($"{SaveManager.GetProjectPath()}/probe_data.xml", FileAccess.ModeFlags.Write);
-			f.StoreString(xml);
-    }
-    
     public void Clear()
     {
+	    foreach (var volume in _deferredProbes)
+	    {
+		    volume.Value.QueueFree();
+	    }
 	    _deferredProbes.Clear();
     }
 
@@ -189,9 +194,14 @@ public partial class DeferredProbeBaker : Node3D
 		        var mat = m.Mesh.SurfaceGetMaterial(i) as StandardMaterial3D;
 
 		        ShaderMaterial newMat;
-		        
+
 		        if (mat.Transparency != BaseMaterial3D.TransparencyEnum.Disabled)
-					newMat = _decalMeshMaterial.Duplicate() as ShaderMaterial;
+		        {
+
+			        newMat = _decalMeshMaterial.Duplicate() as ShaderMaterial;
+			        m.SetMeta("transparent", true);
+			        if (m.Name.ToString().Contains("window")) newMat.SetShaderParameter("isWindow", true);
+		        }
 		        else
 					newMat = _probeMeshMaterial.Duplicate() as ShaderMaterial;
 		        
@@ -215,12 +225,12 @@ public partial class DeferredProbeBaker : Node3D
         _voxelGi = new VoxelGI();
         _voxelGi.Data = new VoxelGIData();
         _voxelGi.Data.Interior = false;
-        _voxelGi.Data.NormalBias = 1f;
+        _voxelGi.Data.NormalBias = .5f;
         _voxelGi.Data.Bias = 1f;
         _voxelGi.Subdiv = VoxelGI.SubdivEnum.Subdiv256;
         _voxelGi.Data.UseTwoBounces = true;
-        _voxelGi.Data.Propagation = .33f;
-        _voxelGi.Data.Energy = 1;
+        _voxelGi.Data.Propagation = .00f;
+        _voxelGi.Data.Energy = 4;
         _voxelGi.Data.DynamicRange = 2f;
 		_renderViewport.AddChild(_voxelGi);
 		_voxelGi.SetLayerMaskValue(20, true);

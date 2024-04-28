@@ -6,7 +6,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_ajkbg"]
 
-[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_texAssembleDialog", "_texConvDialog", "_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_textureFormatDropdown")]
+[node name="Settings" type="PanelContainer" node_paths=PackedStringArray("_uiScaleSlider", "_uiScaleLabel", "_sampleQualityDropdown", "_bounceCountSlider", "_bounceCountLabel", "_bounceEnergySlider", "_bounceEnergyLabel", "_textureFormatDropdown")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -14,8 +14,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_7xdh4")
 script = ExtResource("1_50msa")
-_texAssembleDialog = NodePath("")
-_texConvDialog = NodePath("")
 _uiScaleSlider = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/Scale Slider")
 _uiScaleLabel = NodePath("MarginContainer/VBoxContainer/UI Scale/HBoxContainer/MarginContainer2/Scale Value")
 _sampleQualityDropdown = NodePath("MarginContainer/VBoxContainer/Sample Count/HBoxContainer/OptionButton")

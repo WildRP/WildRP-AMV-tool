@@ -13,14 +13,8 @@ void vertex() {
 }
 
 void fragment() {
-	if (probe_rendering_pass <= 2) // Albedo, Occlusion, Normal
+	if (probe_rendering_pass <= 3) // Albedo, Occlusion, Normal
 		ALBEDO = texture(screen_texture, SCREEN_UV).rgb;
-	if (probe_rendering_pass == 3) // Sky mask (really it's a window mask but who's counting)
-	{
-		float depth = texture(depth_texture, SCREEN_UV).r;
-		
-		ALBEDO = vec3(depth > 0.99 ? 0.0 : 1.0);
-	}	
 	if (probe_rendering_pass == 4) // Depth
 	{
 		float depth = texture(depth_texture, SCREEN_UV).r;
@@ -28,7 +22,13 @@ void fragment() {
 		vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
 	  	view.xyz /= view.w;
 	  	float linear_depth = -view.z;
-		ALBEDO = vec3(linear_depth/150.0);
+		
+		if (linear_depth > 149.0)
+			ALBEDO = vec3(1.0);
+		else
+		{
+			ALBEDO = vec3(clamp(linear_depth, 0.0,0.95));
+		}
 	}
 		
 }

@@ -124,6 +124,13 @@ public partial class DeferredProbesUi : Control
 		_probeInfoPanel.Visible = false;
 	}
 
+	private void Reset()
+	{
+		_volumeList.Clear();
+		DeferredProbeBaker.Instance.Clear();
+		UnloadModel();
+	}
+
 	void UpdateBakeProgress(float progress)
 	{
 		_bakeProgressBar.Value = progress;
@@ -142,15 +149,13 @@ public partial class DeferredProbesUi : Control
 		{
 			item.Remove();
 		}
-		
-		SaveManager.SetProbeModel("");
 	}
 	
 	private void LoadModel(string path)
 	{
-		var result = DeferredProbeBaker.Instance.LoadModel(path);
-		
 		UnloadModel();
+		
+		var result = DeferredProbeBaker.Instance.LoadModel(path);
 		
 		if (result == null) return; // display an error message here probably
 		
@@ -171,11 +176,10 @@ public partial class DeferredProbesUi : Control
 	
 	private void LoadProject(SaveManager.Project project)
 	{
+		Reset();
 		var path = project.ReflectionModelPath;
 		if (path.Length > 0 && (path.EndsWith(".glb") || path.EndsWith(".gltf")))
 			LoadModel(project.ReflectionModelPath);
-		else
-			UnloadModel(); // Project doesn't have a valid model file
 		
 		foreach (var data in project.Probes)
 		{
@@ -282,6 +286,7 @@ public partial class DeferredProbesUi : Control
 		bool v = SelectedProbe != null;
 
 		_guid.Text = v ? "0x"+SelectedProbe.Guid.ToString("x16") : "";
+		_rotation.SetValueNoSignal(v ? SelectedProbe.RotationDegrees.Y : 0);
 		_rotation.GetLineEdit().Text = v ? Convert.ToString(SelectedProbe.RotationDegrees.Y) : "0";
 		
 		_centerOffsetX.SetValueNoSignal(v ? SelectedProbe.CenterOffset.X : 0);

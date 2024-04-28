@@ -76,6 +76,7 @@ public partial class SaveManager : Node
 
 		_currentProjectPath = f.GetPath().GetBaseDir();
 		var jsonString = f.GetAsText();
+		GD.Print(jsonString);
 		_currentProject = JsonSerializer.Deserialize<Project>(jsonString);
 
 		ProjectLoaded(_currentProject);

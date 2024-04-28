@@ -93,6 +93,10 @@ public partial class AmvBaker : Node3D
 
 	public void Clear()
 	{
+		foreach (var volume in _ambientMaskVolumes)
+		{
+			volume.Value.QueueFree();
+		}
 		_ambientMaskVolumes.Clear();
 	}
 
