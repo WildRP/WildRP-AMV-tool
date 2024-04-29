@@ -18,8 +18,8 @@ namespace WildRP.AMVTool;
 public partial class DeferredProbe : Volume
 {
     public ulong Guid;
-    public Vector3 InfluenceExtents;
-    public Vector3 CenterOffset;
+    public Vector3 InfluenceExtents = Vector3.One;
+    public Vector3 CenterOffset = Vector3.Zero;
 
     [Export] private Node3D _centerNode;
     [Export] private Array<Camera3D> _renderCameras;
@@ -57,18 +57,17 @@ public partial class DeferredProbe : Volume
     {
         _viewport = v;
     }
-    
-    public override void _ExitTree()
-    {
-        base._ExitTree();
-        SaveManager.SavingProject -= SaveToProject;
-    }
 
     void UpdateCenter()
     {
         _centerNode.Position = CenterOffset;
     }
-    
+
+    public override void _Process(double delta)
+    {
+        _centerNode.GlobalRotation = Vector3.Zero;
+    }
+
     public void BakeNext()
     {
         if (Baked == false) Reparent(_viewport, true);
@@ -149,7 +148,8 @@ public partial class DeferredProbe : Volume
 
     public void GenerateTextures()
     {
-        if (Baked == false) return;
+        if (Baked == false || Exported) return;
+        Exported = true;
 
         var dir = SaveManager.GetProjectPath() + "/" + Guid;
         if (DirAccess.DirExistsAbsolute(dir) == false)
@@ -181,7 +181,6 @@ public partial class DeferredProbe : Volume
             img.WriteToFile($"{dir}/Color_{i}.png");
             img.Dispose();
             colorList.Add($"{dir}/Color_{i}.png");
-            _occlusionTextures[i].SavePng($"{dir}/AO_{i}.png");
         }
         
         // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
@@ -359,10 +358,9 @@ public partial class DeferredProbe : Volume
         _bakeCounter++;
         if (_exportCount < 3) return;
         
-        Exported = true;
         _exportCount = 0;
 
-        if (Settings.DontDeleteImages) return;
+        //if (Settings.DontDeleteImages) return;
         
         // Clean up files, leaving only the exported DDS files
         var path = $"{SaveManager.GetProjectPath()}/{Guid}";
@@ -380,7 +378,7 @@ public partial class DeferredProbe : Volume
     {
         var minExtents = GlobalPosition - Size/2;
         var maxExtents = GlobalPosition + Size/2;
-        var rotation = Quaternion.FromEuler(new Vector3(0, 0, -RotationDegrees.Y));
+        var rotation = Quaternion.FromEuler(new Vector3(0, 0, -GlobalRotationDegrees.Y));
         
         return new XDocument(
             new XComment(GuiListName),

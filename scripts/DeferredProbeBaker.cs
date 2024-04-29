@@ -85,8 +85,6 @@ public partial class DeferredProbeBaker : Node3D
 			    var xml = "";
 			    foreach (var probe in _deferredProbes)
 			    {
-				    probe.Value.SetBaking(false);
-				    probe.Value.GenerateTextures();
 				    xml += probe.Value.GetXml();
 			    }
 	    
@@ -105,7 +103,6 @@ public partial class DeferredProbeBaker : Node3D
 	    foreach (var p in _bakeQueue)
 	    {
 		    p.Clear();
-		    p.SetBaking(true);
 	    }
     }
 
@@ -125,7 +122,7 @@ public partial class DeferredProbeBaker : Node3D
 		    case BakePass.Occlusion:
 			    foreach (var m in _renderMeshes)
 			    {
-				    m.Visible = !m.GetMeta("transparent", false).AsBool();
+				    m.Visible = !m.GetMeta("window", false).AsBool();
 				    m.MaterialOverride = _aoBakeMat;
 			    }
 			    break;
@@ -200,7 +197,11 @@ public partial class DeferredProbeBaker : Node3D
 
 			        newMat = _decalMeshMaterial.Duplicate() as ShaderMaterial;
 			        m.SetMeta("transparent", true);
-			        if (m.Name.ToString().Contains("window")) newMat.SetShaderParameter("isWindow", true);
+			        if (m.Name.ToString().Contains("window"))
+			        {
+				        newMat.SetShaderParameter("isWindow", true);
+				        m.SetMeta("window", true);
+			        }
 		        }
 		        else
 					newMat = _probeMeshMaterial.Duplicate() as ShaderMaterial;

@@ -221,15 +221,6 @@ public partial class AmbientMaskVolume : Volume
 		SaveManager.SavingProject += SaveToProject;
 	}
 
-	public override void _ExitTree()
-	{
-		base._ExitTree();
-		SaveManager.SavingProject -= SaveToProject;
-		AmvBakerGui.GuiToggled -= OnUiToggled;
-		ProbeCountChanged -= UpdateProbes;
-		SizeChanged -= UpdateProbePositions;
-	}
-
 	private void SaveToProject() => SaveManager.UpdateAmv(GuiListName,Save());
 	
 	private int _prevProbeCount = 0;

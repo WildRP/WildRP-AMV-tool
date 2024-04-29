@@ -126,7 +126,4 @@ public partial class Volume : Node3D
     }
 
     public virtual bool Selected() => false;
-    public event Action<bool> BakeStatusChanged;
-
-    public void SetBaking(bool status) => BakeStatusChanged?.Invoke(!status);
 }
