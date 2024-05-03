@@ -1,6 +1,6 @@
 # WildRP AMV Tool
 
-This tool was created to help bake **Ambient Mask Volumes** for use in Red Dead Redemption 2 modding. AMVs are used 
+This tool was created to help bake **Ambient Mask Volumes** and **Deferred Probes** (aka Reflection Probes) for use in Red Dead Redemption 2 modding. AMVs are used 
 by the game to create ambient lighting - they are essentially 3D textures with baked ambient occlusion.
 
 The tool has been written using the Godot engine, which uses a different coordinate system from Red Dead Redemption 
@@ -40,8 +40,7 @@ repo](https://github.com/jeanropke/RDOMap/tree/master).
   for the help page, to convert markdown files into BBCode.
 - Uses [Async Resource Loader C#](https://github.com/ProFiLeR4100/AsyncResourceLoaderForCS) for map tile loading
 - Thanks to dexyfex, Któs, and CP on the CodeWalker discord for their prior research into AMVs.
-- Huge thanks to alexguirre, Tafé, and SevenLife on the same discord, who finally figured out the reflection probe texture naming. 
-  (reflection probe feature is on the way!)
+- Huge thanks to alexguirre, Tafé, and SevenLife on the same discord, who finally figured out the reflection probe texture naming.
 
 This project uses the [Godot Jolt](https://github.com/godot-jolt/godot-jolt) addon for improved physics performance. It includes 
 version 0.12.0.
