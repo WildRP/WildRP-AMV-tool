@@ -280,4 +280,9 @@ public partial class DeferredProbeBaker : Node3D
 	    DeferredProbes.Remove(oldname);
 	    DeferredProbes.Add(newname, probe);
     }
+
+    public void EnableDebugProbeView()
+    {
+	    _deferredProbes.First().Value.EnableDebugView();
+    }
 }

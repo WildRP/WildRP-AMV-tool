@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode unshaded, world_vertex_coords;
+render_mode unshaded, ensure_correct_normals;
 
 uniform bool blend = false;
 uniform sampler2D ab : source_color;
@@ -7,11 +7,29 @@ uniform sampler2D nm : hint_normal;
 
 global uniform int probe_rendering_pass;
 
+// Converts a color from linear light gamma to sRGB gamma
+vec3 fromLinear(vec3 linearRGB)
+{
+    bvec3 cutoff = lessThan(linearRGB.rgb, vec3(0.0031308));
+    vec3 higher = vec3(1.055)*pow(linearRGB.rgb, vec3(1.0/2.4)) - vec3(0.055);
+    vec3 lower = linearRGB.rgb * vec3(12.92);
+
+    return mix(higher, lower, cutoff);
+}
+
+// Converts a color from sRGB gamma to linear light gamma
+vec3 toLinear(vec3 sRGB)
+{
+    bvec3 cutoff = lessThan(sRGB.rgb, vec3(0.04045));
+    vec3 higher = pow((sRGB.rgb + vec3(0.055))/vec3(1.055), vec3(2.4));
+    vec3 lower = sRGB.rgb/vec3(12.92);
+
+    return mix(higher, lower, cutoff);
+}
+
 varying vec3 worldNormal;
 void vertex() {
-	vec3 n = NORMAL;
-	n.z *= -1.0;
-	worldNormal = n;
+	worldNormal = MODEL_NORMAL_MATRIX * NORMAL;
 }
 
 void fragment() {
@@ -20,14 +38,7 @@ void fragment() {
 	vec4 tex = texture(ab, UV);
 	ALBEDO = tex.rgb;
 	//NORMAL_MAP = texture(nm, UV).rgb;
-	
-	if (probe_rendering_pass == 1) // normal map pass
-	{
-		vec4 n = INV_PROJECTION_MATRIX * vec4(NORMAL,1.0);
-		//n = INV_VIEW_MATRIX * n;
-		ALBEDO = normalize(worldNormal.xzy) * 0.5 + 0.5;
-	}
-	else if (probe_rendering_pass == 3)
+	if (probe_rendering_pass == 3)
 	{
 		ALBEDO = vec3(1.0);
 	}

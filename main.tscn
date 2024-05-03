@@ -43,7 +43,6 @@ sky_material = SubResource("ProceduralSkyMaterial_hhw8l")
 [sub_resource type="Environment" id="Environment_8ejdi"]
 background_mode = 2
 sky = SubResource("Sky_tpun5")
-tonemap_mode = 3
 ssao_enabled = true
 ssao_light_affect = 1.0
 
@@ -53,7 +52,7 @@ shader = ExtResource("5_2qwli")
 [sub_resource type="Sky" id="Sky_12e27"]
 sky_material = SubResource("ShaderMaterial_d1crs")
 
-[sub_resource type="Environment" id="Environment_puche"]
+[sub_resource type="Environment" id="Environment_cajuw"]
 background_mode = 2
 background_color = Color(1, 1, 1, 1)
 background_energy_multiplier = 3.0
@@ -76,7 +75,7 @@ sdfgi_y_scale = 0
 sdfgi_energy = 2.0
 
 [sub_resource type="World3D" id="World3D_mjs27"]
-environment = SubResource("Environment_puche")
+environment = SubResource("Environment_cajuw")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f2aa8"]
 render_priority = 0
@@ -141,13 +140,15 @@ _decalMeshMaterial = ExtResource("4_stxj5")
 _postProcessMesh = NodePath("SubViewport/PostProcess")
 
 [node name="SubViewport" type="SubViewport" parent="3D Scene View/Deferred Probe Container"]
-own_world_3d = true
 world_3d = SubResource("World3D_mjs27")
 msaa_3d = 2
 sdf_scale = 0
 canvas_cull_mask = 4294443008
 size = Vector2i(1024, 1024)
 render_target_update_mode = 0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="3D Scene View/Deferred Probe Container/SubViewport"]
+environment = SubResource("Environment_cajuw")
 
 [node name="PostProcess" type="MeshInstance3D" parent="3D Scene View/Deferred Probe Container/SubViewport"]
 layers = 524288
