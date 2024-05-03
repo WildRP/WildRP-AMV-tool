@@ -183,16 +183,20 @@ public partial class DeferredProbe : Volume
             colorList.Add($"{dir}/Color_{i}.png");
         }
         
-        // we have to correct the vectors in post because godot doesnt really let me do rendering to textures properly
         for (int i = 0; i < _normalTextures.Count; i++)
         {
+            _normalTextures[i].SrgbToLinear();
             var img = new SimpleImageIO.Image(size.X, size.Y, 4);
             for (int x = 0; x < size.X; x++)
             {
                 for (int y = 0; y < size.Y; y++)
                 {
-                    var col = _normalTextures[i].GetPixel(x, y).SrgbToLinear();
+                    var col = _normalTextures[i].GetPixel(x, y);
                     var a = _windowMaskTextures[i].GetPixel(x, y).Luminance > .2f ? 1f : 0f;
+
+                    Vector3 n = col.ToVector();
+                    n = n * 2.0f - Vector3.One;
+                    col = (n.Normalized() * 0.5f + Vector3.One*0.5f).ToColor().LinearToSrgb();
                     
                     //_normalTextures[i].SetPixel(x, y, v.ToColor());
                     img.SetPixelChannel(x, y, 0, col.R);
@@ -214,13 +218,11 @@ public partial class DeferredProbe : Volume
                 for (int y = 0; y < size.Y; y++)
                 {
                     var val = _depthTextures[i].GetPixel(x, y).R;
-                    /*val *= 150;
 
-                    // turn linear depth into logarithmic depth
-                    const float c = 1f;
-                    val = 2f*Mathf.Log(val * c/0.1f) / Mathf.Log(150f/.1f) - 1f;*/
+                    // this is not an accurate depth mapping but the correct mapping is Mysterious so this will do
+                    val = Mathf.Remap(val, 0f, 1f, 0.45f, 1f);
                     
-                    img.AtomicAdd(x,y, val);
+                    img.AtomicAdd(x,y, val * 150f);
                 }
             }
             
@@ -267,7 +269,7 @@ public partial class DeferredProbe : Volume
             Tex.TextureFormat.R8G8B8A8_UNORM);
 
         var txd = Tex.Assemble($"./{Guid}/depth.txt", $"{ul_path}{tn}_d.dds",
-            Tex.TextureFormat.R16_UNORM);
+            Tex.TextureFormat.R16_UNORM, extraFlags: "-tonemap ");
 
         tx0.Exited += () =>
         { 
@@ -297,22 +299,22 @@ public partial class DeferredProbe : Volume
         
         tx1.Exited += () =>
         {
-            var p = Tex.Conv($"{ul_path}{tn}_1.dds", ul_path, extraFlags:"-srgb ");
+            var p = Tex.Conv($"{ul_path}{tn}_1.dds", ul_path);
             p.Run();
             
             p.Exited += () =>
             {
-                var p1 = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512, extraFlags:"-srgb ");
+                var p1 = Tex.Conv($"{ul_path}{tn}_1.dds", hi_path, size: 512);
                 p1.Run();
                 
                 p1.Exited += () =>
                 {
-                    var p2 = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256, extraFlags:"-srgb ");
+                    var p2 = Tex.Conv($"{ul_path}{tn}_1.dds", std_path, size: 256);
                     p2.Run();
                     
                     p2.Exited += () =>
                     {
-                        var p3 = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128, extraFlags:"-srgb ");
+                        var p3 = Tex.Conv($"{ul_path}{tn}_1.dds", lo_path, size: 128);
                         p3.Run();
                         p3.Exited += CleanupExport;
                     };
@@ -360,7 +362,7 @@ public partial class DeferredProbe : Volume
         
         _exportCount = 0;
 
-        //if (Settings.DontDeleteImages) return;
+        if (true) return;
         
         // Clean up files, leaving only the exported DDS files
         var path = $"{SaveManager.GetProjectPath()}/{Guid}";
@@ -376,9 +378,22 @@ public partial class DeferredProbe : Volume
 
     public override string GetXml()
     {
-        var minExtents = GlobalPosition - Size/2;
-        var maxExtents = GlobalPosition + Size/2;
-        var rotation = Quaternion.FromEuler(new Vector3(0, 0, -GlobalRotationDegrees.Y));
+        // CenterOffset in the XML actually just seems to be the rotation point?
+        // Which means that in practice the Z value of it does nothing
+        
+        // We use centeroffset to move the capture point relative to the bounding box though
+        var minExtents = CenterOffset - Size/2;
+        var maxExtents = CenterOffset + Size/2;
+
+        var rdrPos = Position;
+        rdrPos.Z *= -1;
+        
+        minExtents += rdrPos;
+        maxExtents += rdrPos;
+
+        var rotation = Basis.GetRotationQuaternion();
+        rotation.Z = rotation.Y;
+        rotation.Y = 0;
         
         return new XDocument(
             new XComment(GuiListName),
@@ -386,7 +401,7 @@ public partial class DeferredProbe : Volume
                 new XElement("minExtents", new XAttribute("x", minExtents.X), new XAttribute("y", minExtents.Z), new XAttribute("z", minExtents.Y)),
                 new XElement("maxExtents", new XAttribute("x", maxExtents.X), new XAttribute("y", maxExtents.Z), new XAttribute("z", maxExtents.Y)),
                 new XElement("rotation", new XAttribute("x", rotation.X), new XAttribute("y", rotation.Y), new XAttribute("z", rotation.Z), new XAttribute("w", rotation.W)),
-                new XElement("centerOffset", new XAttribute("x", CenterOffset.X), new XAttribute("y", CenterOffset.Z), new XAttribute("z", CenterOffset.Y)),
+                new XElement("centerOffset", new XAttribute("x", Position.X), new XAttribute("y", Position.Z), new XAttribute("z", Position.Y)),
                 new XElement("influenceExtents", new XAttribute("x", InfluenceExtents.X), new XAttribute("y", InfluenceExtents.Z), new XAttribute("z", InfluenceExtents.Y)),
                 new XElement("probePriority", new XAttribute("value", 255)),
                 new XElement("guid", new XAttribute("value", "0x"+Guid.ToString("x16")))
@@ -417,6 +432,11 @@ public partial class DeferredProbe : Volume
     }
 
     private void SaveToProject() => SaveManager.UpdateDeferredProbe(GuiListName,Save());
+
+    public void EnableDebugView()
+    {
+        _renderCameras[5].Current = true;
+    }
     
     public DeferredProbeData Save()
     {

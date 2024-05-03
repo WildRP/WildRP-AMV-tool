@@ -18,27 +18,26 @@ public partial class SceneView : Node3D
         ProcessCamera(dt);
     }
 
+    private int _debugRenderPass;
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event is InputEventKey {Pressed: true} key)
         {
-            int pass = 0;
-            if (key.Keycode == Key.Key1)
-                pass = 0;
-            if (key.Keycode == Key.Key2)
-                pass = 1;
-            if (key.Keycode == Key.Key3)
-                pass = 2;
-            if (key.Keycode == Key.Key4)
-                pass = 3;
-            if (key.Keycode == Key.Key5)
-                pass = 4;
-            if (key.Keycode == Key.Key6)
-                pass = 5;
-            if (key.Keycode == Key.Key7)
-                pass = 6;
+            _debugRenderPass = key.Keycode switch
+            {
+                Key.Key1 => 0,
+                Key.Key2 => 1,
+                Key.Key3 => 2,
+                Key.Key4 => 3,
+                Key.Key5 => 4,
+                Key.Key6 => 5,
+                Key.Key7 => 6,
+                _ => _debugRenderPass
+            };
+            RenderingServer.GlobalShaderParameterSet("probe_rendering_pass", _debugRenderPass);
 
-            RenderingServer.GlobalShaderParameterSet("probe_rendering_pass", pass);
+            if (key.Keycode == Key.C && OS.HasFeature("editor"))
+                DeferredProbeBaker.Instance.EnableDebugProbeView();
         }
         
         CameraInput(@event);

@@ -23,10 +23,13 @@ public partial class SceneView
     public static bool RotatingCamera { get; private set; }
     private float _scrollInput;
 
+    public static Camera3D Camera { get; private set; }
+    
     private void SetupCamera()
     {
         _anchor.SpringLength = _defaultCamDistance;
         _cameraRotation = _anchor.Transform.Basis.GetRotationQuaternion().GetEuler();
+        Camera = _cameraNode;
     }
     
     private void ProcessCamera(float delta)
