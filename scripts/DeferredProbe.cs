@@ -146,6 +146,31 @@ public partial class DeferredProbe : Volume
         RenderingServer.FramePostDraw -= GrabTex;
     }
 
+    private float GetPlaneDistance(int index)
+    {
+        var cam = _renderCameras[index];
+        
+        var minExtents = CenterOffset - Size/2;
+        var maxExtents = CenterOffset + Size/2;
+        //var depths = new[] {maxExtents.X, minExtents.X, maxExtents.Y, minExtents.Y, maxExtents.Z, minExtents.Z};
+    
+        var dir = cam.GlobalBasis.Z.Rotated(Vector3.Up, -GlobalRotationDegrees.Y).Normalized();
+
+        var intersect = IntersectAABB(Vector3.Zero, dir, minExtents, maxExtents);
+
+        return intersect.Y;
+    }
+
+    private Vector2 IntersectAABB(Vector3 rayOrigin, Vector3 rayDir, Vector3 boxMin, Vector3 boxMax) {
+        Vector3 tMin = (boxMin - rayOrigin) / rayDir;
+        Vector3 tMax = (boxMax - rayOrigin) / rayDir;
+        Vector3 t1 = Utils.V3Min(tMin, tMax);
+        Vector3 t2 = Utils.V3Max(tMin, tMax);
+        float tNear = Mathf.Max(Mathf.Max(t1.X, t1.Y), t1.Z);
+        float tFar = Mathf.Min(Mathf.Min(t2.X, t2.Y), t2.Z);
+        return new Vector2(tNear, tFar);
+    }
+    
     public void GenerateTextures()
     {
         if (Baked == false || Exported) return;
@@ -212,6 +237,7 @@ public partial class DeferredProbe : Volume
         
         for (int i = 0; i < _depthTextures.Count; i++)
         {
+            var planeDistance = GetPlaneDistance(i);
             var img = new SimpleImageIO.MonochromeImage(size.X, size.Y);
             for (int x = 0; x < size.X; x++)
             {
@@ -219,10 +245,11 @@ public partial class DeferredProbe : Volume
                 {
                     var val = _depthTextures[i].GetPixel(x, y).R;
 
-                    // this is not an accurate depth mapping but the correct mapping is Mysterious so this will do
-                    val = Mathf.Remap(val, 0f, 1f, 0.45f, 1f);
+                    val *= 150f;
+
+                    float depth = val > 149f ? 1.0f : 0.999999f;
                     
-                    img.AtomicAdd(x,y, val * 150f);
+                    img.AtomicAdd(x,y, depth);
                 }
             }
             
@@ -269,7 +296,7 @@ public partial class DeferredProbe : Volume
             Tex.TextureFormat.R8G8B8A8_UNORM);
 
         var txd = Tex.Assemble($"./{Guid}/depth.txt", $"{ul_path}{tn}_d.dds",
-            Tex.TextureFormat.R16_UNORM, extraFlags: "-tonemap ");
+            Tex.TextureFormat.R16_UNORM);
 
         tx0.Exited += () =>
         { 
@@ -382,15 +409,13 @@ public partial class DeferredProbe : Volume
         // Which means that in practice the Z value of it does nothing
         
         // We use centeroffset to move the capture point relative to the bounding box though
-        var minExtents = CenterOffset - Size/2;
-        var maxExtents = CenterOffset + Size/2;
 
         var rdrPos = Position;
         rdrPos.Z *= -1;
-        
-        minExtents += rdrPos;
-        maxExtents += rdrPos;
 
+        var minExtents = rdrPos - Size/2;
+        var maxExtents = rdrPos + Size/2;
+        
         var rotation = Basis.GetRotationQuaternion();
         rotation.Z = rotation.Y;
         rotation.Y = 0;
@@ -401,7 +426,7 @@ public partial class DeferredProbe : Volume
                 new XElement("minExtents", new XAttribute("x", minExtents.X), new XAttribute("y", minExtents.Z), new XAttribute("z", minExtents.Y)),
                 new XElement("maxExtents", new XAttribute("x", maxExtents.X), new XAttribute("y", maxExtents.Z), new XAttribute("z", maxExtents.Y)),
                 new XElement("rotation", new XAttribute("x", rotation.X), new XAttribute("y", rotation.Y), new XAttribute("z", rotation.Z), new XAttribute("w", rotation.W)),
-                new XElement("centerOffset", new XAttribute("x", Position.X), new XAttribute("y", Position.Z), new XAttribute("z", Position.Y)),
+                new XElement("centerOffset", new XAttribute("x", CenterOffset.X), new XAttribute("y", CenterOffset.Z), new XAttribute("z", CenterOffset.Y)),
                 new XElement("influenceExtents", new XAttribute("x", InfluenceExtents.X), new XAttribute("y", InfluenceExtents.Z), new XAttribute("z", InfluenceExtents.Y)),
                 new XElement("probePriority", new XAttribute("value", 255)),
                 new XElement("guid", new XAttribute("value", "0x"+Guid.ToString("x16")))

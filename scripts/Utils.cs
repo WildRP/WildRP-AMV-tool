@@ -132,19 +132,14 @@ public static class Utils
     {
         return new Vector3(c.R, c.G, c.B);
     }
-    
-    public static float[] AlignPixelData(float[] data, int width, int height, int numChannels, int rowStrideIn)
+
+    public static Vector3 V3Min(Vector3 a, Vector3 b)
     {
-        var buffer = new float[width * height * numChannels * rowStrideIn];
-        for (int row = 0; row < height; ++row) {
-            for (int col = 0; col < width; ++col) {
-                for (int chan = 0; chan < numChannels; ++chan) {
-                    int idxIn = chan + rowStrideIn * row + col * numChannels;
-                    buffer[chan + numChannels * (col + width * row)] = data[idxIn];
-                }
-            }
-        }
-        return buffer;
+        return new Vector3(Mathf.Min(a.X, b.X), Mathf.Min(a.Y, b.Y), Mathf.Min(a.Z, a.Z));
     }
     
+    public static Vector3 V3Max(Vector3 a, Vector3 b)
+    {
+        return new Vector3(Mathf.Max(a.X, b.X), Mathf.Max(a.Y, b.Y), Mathf.Max(a.Z, a.Z));
+    }
 }
