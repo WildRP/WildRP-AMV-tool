@@ -388,9 +388,6 @@ public partial class DeferredProbe : Volume
         if (_exportCount < 3) return;
         
         _exportCount = 0;
-
-        if (true) return;
-        
         // Clean up files, leaving only the exported DDS files
         var path = $"{SaveManager.GetProjectPath()}/{Guid}";
         var files = DirAccess.GetFilesAt(path);
