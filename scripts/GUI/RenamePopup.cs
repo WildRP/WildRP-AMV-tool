@@ -47,6 +47,7 @@ public partial class RenamePopup : PopupPanel
 	public void Trigger(Volume v)
 	{
 		_targetVolume = v;
+		_textField.Text = "";
 		PopupCentered();
 		GD.Print($"Rename popup triggered with target {v.GuiListName}");
 	}
