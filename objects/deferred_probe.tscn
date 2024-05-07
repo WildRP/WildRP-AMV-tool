@@ -15,7 +15,7 @@ height = 0.2
 [node name="AmbientMaskVolume" type="Node3D" node_paths=PackedStringArray("_centerNode", "_renderCameras")]
 script = ExtResource("1_dwt6b")
 _centerNode = NodePath("CenterPoint")
-_renderCameras = [NodePath("CenterPoint/0 X- Cam"), NodePath("CenterPoint/1 X+ Cam"), NodePath("CenterPoint/2 Z- Cam"), NodePath("CenterPoint/3 Z+ Cam"), NodePath("CenterPoint/4 Y+ Cam"), NodePath("CenterPoint/5 Y- Cam")]
+_renderCameras = [NodePath("CenterPoint/Node3D/0 X- Cam"), NodePath("CenterPoint/Node3D/1 X+ Cam"), NodePath("CenterPoint/Node3D/2 Z- Cam"), NodePath("CenterPoint/Node3D/3 Z+ Cam"), NodePath("CenterPoint/Node3D/4 Y+ Cam"), NodePath("CenterPoint/Node3D/5 Y- Cam")]
 
 [node name="Bounds" type="MeshInstance3D" parent="." node_paths=PackedStringArray("_planesNode")]
 gi_mode = 0
@@ -31,26 +31,29 @@ _boundsPlaneScene = ExtResource("4_3wumw")
 gi_mode = 0
 mesh = SubResource("SphereMesh_b17rb")
 
-[node name="0 X- Cam" parent="CenterPoint" instance=ExtResource("4_5whmx")]
-transform = Transform3D(3.82138e-15, -1.31134e-07, -1, -1, -4.37114e-08, 1.91068e-15, -4.37114e-08, 1, -1.31134e-07, 0, 0, 0)
+[node name="Node3D" type="Node3D" parent="CenterPoint"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+
+[node name="0 X- Cam" parent="CenterPoint/Node3D" instance=ExtResource("4_5whmx")]
+transform = Transform3D(3.82138e-15, -1.31134e-07, -1, -1, -4.37114e-08, 1.91067e-15, -4.37114e-08, 1, -1.31134e-07, 0, 0, 0)
 cull_mask = 1048574
 
-[node name="1 X+ Cam" parent="CenterPoint" instance=ExtResource("4_5whmx")]
+[node name="1 X+ Cam" parent="CenterPoint/Node3D" instance=ExtResource("4_5whmx")]
 transform = Transform3D(-8.74228e-08, -4.37114e-08, 1, 1, 4.37114e-08, 8.74228e-08, -4.37114e-08, 1, 4.37114e-08, 0, 0, 0)
 cull_mask = 1048574
 
-[node name="2 Z- Cam" parent="CenterPoint" instance=ExtResource("4_5whmx")]
-transform = Transform3D(1, 3.82137e-15, 8.74228e-08, -3.82137e-15, -1, 8.74228e-08, 8.74228e-08, -8.74228e-08, -1, 0, 0, 0)
+[node name="2 Z- Cam" parent="CenterPoint/Node3D" instance=ExtResource("4_5whmx")]
+transform = Transform3D(1, 3.82138e-15, 8.74228e-08, -3.82137e-15, -1, 8.74228e-08, 8.74228e-08, -8.74228e-08, -1, 0, 0, 0)
 cull_mask = 1048574
 
-[node name="3 Z+ Cam" parent="CenterPoint" instance=ExtResource("4_5whmx")]
+[node name="3 Z+ Cam" parent="CenterPoint/Node3D" instance=ExtResource("4_5whmx")]
 transform = Transform3D(1, 0, 2.13163e-14, 0, 1, 0, -2.13163e-14, 0, 1, 0, 0, 0)
 cull_mask = 1048574
 
-[node name="4 Y+ Cam" parent="CenterPoint" instance=ExtResource("4_5whmx")]
+[node name="4 Y+ Cam" parent="CenterPoint/Node3D" instance=ExtResource("4_5whmx")]
 transform = Transform3D(1, -4.37114e-08, 4.37114e-08, 4.37114e-08, -4.37114e-08, -1, 4.37114e-08, 1, -4.37114e-08, 0, 0, 0)
 cull_mask = 1048574
 
-[node name="5 Y- Cam" parent="CenterPoint" instance=ExtResource("4_5whmx")]
+[node name="5 Y- Cam" parent="CenterPoint/Node3D" instance=ExtResource("4_5whmx")]
 transform = Transform3D(-1, -1.31134e-07, 4.37114e-08, 4.37114e-08, 4.37114e-08, 1, -1.31134e-07, 1, -4.37114e-08, 0, 0, 0)
 cull_mask = 1048574
