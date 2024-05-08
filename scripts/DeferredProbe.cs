@@ -51,6 +51,12 @@ public partial class DeferredProbe : Volume
         SaveManager.SavingProject += SaveToProject;
         SizeChanged += UpdateCenter;
         _originalParent = GetParent();
+        
+        TreeExiting += () =>
+        {
+            SaveManager.SavingProject -= SaveToProject;
+            AmvBakerGui.GuiToggled -= OnUiToggled;
+        };
     }
 
     public void SetViewport(SubViewport v)

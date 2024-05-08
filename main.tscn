@@ -43,6 +43,7 @@ sky_material = SubResource("ProceduralSkyMaterial_hhw8l")
 [sub_resource type="Environment" id="Environment_8ejdi"]
 background_mode = 2
 sky = SubResource("Sky_tpun5")
+tonemap_mode = 3
 ssao_enabled = true
 ssao_light_affect = 1.0
 
@@ -227,7 +228,7 @@ tab_focus_mode = 1
 visible = false
 layout_mode = 2
 
-[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_blurSizeDropdown", "_blurStrengthSlider", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ")]
+[node name="AMVs" type="Control" parent="CanvasLayer/GUI/TabContainer" node_paths=PackedStringArray("_volumeModelContainer", "_saveProjectBtn", "_loadProjectBtn", "_projectPanel", "_loadModelButton", "_modelNameLabel", "_fileDialog", "_modelListContainer", "_amvContainerNode", "_blurSizeDropdown", "_blurStrengthSlider", "_controlToHide", "_volumeList", "_amvListContextMenu", "_newAmvButton", "_bakeAllButton", "_exportTexturesBtn", "_bakeProgressBar", "_cancelBakeBtn", "_amvInfoPanel", "_textureName", "_rotation", "_randomizeTextureNameButton", "_positionX", "_positionY", "_positionZ", "_sizeX", "_sizeY", "_sizeZ", "_probesX", "_probesY", "_probesZ", "_topLayerButton", "_order", "_falloffPower", "_falloffScaleMinX", "_falloffScaleMinY", "_falloffScaleMinZ", "_falloffScaleMaxX", "_falloffScaleMaxY", "_falloffScaleMaxZ", "_interiorCheck", "_exteriorCheck", "_doorCheck")]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("4_qsblh")
@@ -265,6 +266,18 @@ _sizeZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV In
 _probesX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container/X")
 _probesY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container/Y")
 _probesZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container/Z")
+_topLayerButton = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/CheckButton")
+_order = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer2/SpinBox")
+_falloffPower = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer3/SpinBox")
+_falloffScaleMinX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMinContainer/X")
+_falloffScaleMinY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMinContainer/Y")
+_falloffScaleMinZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMinContainer/Z")
+_falloffScaleMaxX = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMaxContainer/X")
+_falloffScaleMaxY = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMaxContainer/Y")
+_falloffScaleMaxZ = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMaxContainer/Z")
+_interiorCheck = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/GridContainer/InteriorCheck")
+_exteriorCheck = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/GridContainer/ExteriorCheck")
+_doorCheck = NodePath("HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/GridContainer/ExteriorCheck2")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/GUI/TabContainer/AMVs"]
 layout_mode = 1
@@ -354,7 +367,7 @@ text = "AMVs
 "
 
 [node name="AMV List" type="ScrollContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
-custom_minimum_size = Vector2(0, 75)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_iwv2c")
@@ -447,6 +460,7 @@ min_value = 1e+18
 max_value = 9.22337e+18
 value = 1e+18
 rounded = true
+editable = false
 script = ExtResource("10_ir2tt")
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer"]
@@ -566,7 +580,7 @@ size_flags_horizontal = 0
 [node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
-min_value = 2.0
+min_value = 1.0
 value = 4.0
 allow_greater = true
 update_on_text_changed = true
@@ -577,7 +591,7 @@ script = ExtResource("10_ir2tt")
 [node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
-min_value = 2.0
+min_value = 1.0
 max_value = 10.0
 value = 4.0
 allow_greater = true
@@ -589,7 +603,7 @@ script = ExtResource("10_ir2tt")
 [node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/Count Container"]
 custom_minimum_size = Vector2(69.655, 0)
 layout_mode = 2
-min_value = 2.0
+min_value = 1.0
 max_value = 10.0
 value = 4.0
 allow_greater = true
@@ -603,8 +617,135 @@ layout_mode = 2
 tooltip_text = "Randomize texture name"
 text = "Randomize Texture Name"
 
+[node name="HSeparator4" type="HSeparator" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+
+[node name="CheckButton" type="CheckButton" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Top Layer"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+theme_override_constants/separation = 80
+
+[node name="Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer2"]
+layout_mode = 2
+text = "Order:"
+
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+value = 1.0
+script = ExtResource("10_ir2tt")
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="Label" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer3"]
+layout_mode = 2
+text = "Falloff Power:"
+
+[node name="SpinBox" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 4
+min_value = 1.0
+value = 4.0
+script = ExtResource("10_ir2tt")
+
+[node name="FalloffSizeMin" type="Label" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+text = "Falloff Size Min-Max
+"
+
+[node name="FalloffSizeMinContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMinContainer"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.001
+value = 1.0
+prefix = "X:"
+script = ExtResource("10_ir2tt")
+
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMinContainer"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.001
+value = 1.0
+prefix = "Y:"
+script = ExtResource("10_ir2tt")
+
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMinContainer"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.001
+value = 1.0
+prefix = "Z:"
+script = ExtResource("10_ir2tt")
+
+[node name="FalloffSizeMaxContainer" type="HBoxContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="X" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMaxContainer"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.001
+value = 1.25
+prefix = "X:"
+script = ExtResource("10_ir2tt")
+
+[node name="Y" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMaxContainer"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.001
+value = 1.25
+prefix = "Y:"
+script = ExtResource("10_ir2tt")
+
+[node name="Z" type="SpinBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/FalloffSizeMaxContainer"]
+custom_minimum_size = Vector2(69.655, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 2.0
+step = 0.001
+value = 1.25
+prefix = "Z:"
+script = ExtResource("10_ir2tt")
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel"]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 2
+
+[node name="InteriorCheck" type="CheckBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/GridContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Interior"
+
+[node name="ExteriorCheck" type="CheckBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/GridContainer"]
+layout_mode = 2
+text = "Exterior"
+
+[node name="ExteriorCheck2" type="CheckBox" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer/AMV Info Panel/GridContainer"]
+layout_mode = 2
+text = "Door"
+
 [node name="Bottom Filler" type="PanelContainer" parent="CanvasLayer/GUI/TabContainer/AMVs/HSplitContainer/Left Panel/Margin/Left Panel Organizer"]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1

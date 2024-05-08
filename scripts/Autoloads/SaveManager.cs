@@ -57,8 +57,13 @@ public partial class SaveManager : Node
 		
 		using var f = FileAccess.Open($"{_currentProjectPath}/{JsonFileName}", FileAccess.ModeFlags.Write);
 		if (f == null) return;
-		
-		var serialized = JsonSerializer.Serialize(_currentProject);
+
+
+		var options = new JsonSerializerOptions
+		{
+			WriteIndented = true
+		};
+		var serialized = JsonSerializer.Serialize(_currentProject, options);
 		f.StoreString(serialized);
 		GD.Print(serialized);
 		GD.Print(_currentProject);
@@ -162,6 +167,7 @@ public partial class SaveManager : Node
 	{
 		public override Vector3 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
+			
 			return GD.StrToVar(reader.GetString()).AsVector3();
 		}
 

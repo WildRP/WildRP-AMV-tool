@@ -8,7 +8,7 @@ namespace WildRP.AMVTool;
 public partial class Volume : Node3D
 {
     public string GuiListName { get; set; }
-    public void Setup(string name) => GuiListName = name;
+    public virtual void Setup(string name) => GuiListName = name;
     public bool Baked
     {
         get;

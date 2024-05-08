@@ -87,13 +87,14 @@ public partial class AmvProbe : MeshInstance3D
 		
 	}
 
-	public void Blur(Vector3I Axis)
+	public void Blur(Vector3I axis)
 	{
 		int offsetSize = 2;
 		float[] weights = [0.0625f, 0.25f, 0.375f, 0.25f, 0.0625f];
 		
 		if (Settings.BlurSize == 3)
 		{
+			offsetSize = 1;
 			weights = [0.25f, 0.5f, 0.25f];
 		}
 
@@ -102,7 +103,7 @@ public partial class AmvProbe : MeshInstance3D
 		for (int i = 0; i < weights.Length; i++)
 		{
 			int offset = i - offsetSize;
-			_blurredSample += ParentVolume.GetCellValueRelative(CellPosition, Axis * offset) * weights[i];
+			_blurredSample += ParentVolume.GetCellValueRelative(CellPosition, axis * offset) * weights[i];
 		}
 	}
 
@@ -144,10 +145,12 @@ public partial class AmvProbe : MeshInstance3D
 	
 	private float RayHit(Vector3 dir)
 	{
-		var d = SampleHemisphere(ToGlobal(dir)).Normalized();
+		var d = SampleHemisphere(dir, 0.5f);
 
-		var randDir = new Vector3((float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0), (float)GD.Randfn(1, 0)).Normalized();
+		var randDir = new Vector3((float)GD.Randfn(0,1), (float)GD.Randfn(0, 1), (float)GD.Randfn(0,1)).Normalized();
 
+		randDir *= Mathf.Sign(randDir.Normalized().Dot(d));
+		
 		randDir *= _variance;
 		var varianceHit = Raycast(GlobalPosition, randDir, this, _rayMask);
 		if (varianceHit != null) // Extra check so we don't move inside walls for this
