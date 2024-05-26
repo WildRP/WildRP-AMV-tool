@@ -32,10 +32,11 @@ void fragment() {
 	blend /= dot(blend, vec3(1.0));
 	float result = x * blend.x + y * blend.y + z * blend.z;
 	
-	if (OUTPUT_IS_SRGB) result = ToSRGB(result);
+	vec3 blend1 = vec3(positive_occlusion.x,negative_occlusion.x,positive_occlusion.z);
+	vec3 blend2 = vec3(negative_occlusion.z,positive_occlusion.y,negative_occlusion.y);
+	vec3 avg = (blend1+blend2)/2.0;
 	
-	ALBEDO = vec3(result);
-	
+	ALBEDO = mix(vec3(result), avg, 0.0);
 }
 
 //void light() {

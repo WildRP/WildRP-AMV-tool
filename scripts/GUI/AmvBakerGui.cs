@@ -57,6 +57,20 @@ public partial class AmvBakerGui : Control
 				[Export] private SpinBox _probesX;
 				[Export] private SpinBox _probesY;
 				[Export] private SpinBox _probesZ;
+
+		[ExportGroup("AMV Render Details")]
+		[Export] private CheckButton _topLayerButton;
+		[Export] private SpinBox _order;
+		[Export] private SpinBox _falloffPower;
+		[Export] private SpinBox _falloffScaleMinX;
+		[Export] private SpinBox _falloffScaleMinY;
+		[Export] private SpinBox _falloffScaleMinZ;
+		[Export] private SpinBox _falloffScaleMaxX;
+		[Export] private SpinBox _falloffScaleMaxY;
+		[Export] private SpinBox _falloffScaleMaxZ;
+		[Export] private CheckBox _interiorCheck;
+		[Export] private CheckBox _exteriorCheck;
+		[Export] private CheckBox _doorCheck;
 			
 	
 	private readonly List<ModelListItem> _modelListItems = [];
@@ -166,8 +180,6 @@ public partial class AmvBakerGui : Control
 			Settings.BlurSize = _blurSizeDropdown.GetItemId((int)index);
 			UpdateBlur();
 		};
-
-		
 	}
 
 	private void UnloadModel()
@@ -205,7 +217,7 @@ public partial class AmvBakerGui : Control
 		var amv = _amvScene.Instantiate() as AmbientMaskVolume;
 		string name = EnsureUniqueName($"AMV {_volumeList.ItemCount+1}");
 		
-		amv.Setup(name);
+		amv.SetupNew(name, 0);
 		amv.TextureName = (ulong) _textureName.MinValue;
 		_amvContainerNode.AddChild(amv);
 		
@@ -325,7 +337,7 @@ public partial class AmvBakerGui : Control
 
 		_textureName.GetLineEdit().Text = v ? SelectedAmv.TextureName.ToString(CultureInfo.InvariantCulture) : _textureName.MinValue.ToString(CultureInfo.InvariantCulture);
 		_rotation.SetValueNoSignal(v ? SelectedAmv.RotationDegrees.Y : 0);
-		_rotation.GetLineEdit().Text = v ? (-SelectedAmv.RotationDegrees.Y).ToString(CultureInfo.InvariantCulture) : "0";
+		_rotation.GetLineEdit().Text = v ? (-SelectedAmv.RotationDegrees.Y).ToString("0.0#") : "0";
 		
 		// Note that we swap Z and Y here to present RDR2-style coordinates to the end user
 		// Z also gets inverted
@@ -349,6 +361,31 @@ public partial class AmvBakerGui : Control
         _probesY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Z) : "0" ;
 		_probesZ.SetValueNoSignal(v ? SelectedAmv.ProbeCount.Y : 0);
         _probesZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.ProbeCount.Y) : "0" ;
+        
+        _falloffScaleMaxX.SetValueNoSignal(v ? SelectedAmv.FalloffScaleMax.X : 0);
+        _falloffScaleMaxX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.FalloffScaleMax.X) : "0" ;
+        _falloffScaleMaxY.SetValueNoSignal(v ? SelectedAmv.FalloffScaleMax.Z : 0);
+        _falloffScaleMaxY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.FalloffScaleMax.Z) : "0" ;
+        _falloffScaleMaxZ.SetValueNoSignal(v ? SelectedAmv.FalloffScaleMax.Y : 0);
+        _falloffScaleMaxZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.FalloffScaleMax.Y) : "0" ;
+        
+        _falloffScaleMinX.SetValueNoSignal(v ? SelectedAmv.FalloffScaleMin.X : 0);
+        _falloffScaleMinX.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.FalloffScaleMin.X) : "0" ;
+        _falloffScaleMinY.SetValueNoSignal(v ? SelectedAmv.FalloffScaleMin.Z : 0);
+        _falloffScaleMinY.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.FalloffScaleMin.Z) : "0" ;
+        _falloffScaleMinZ.SetValueNoSignal(v ? SelectedAmv.FalloffScaleMin.Y : 0);
+        _falloffScaleMinZ.GetLineEdit().Text = v ? Convert.ToString(SelectedAmv.FalloffScaleMin.Y) : "0" ;
+
+        _topLayerButton.ButtonPressed = v && SelectedAmv.Layer == 1;
+        _order.SetValueNoSignal(v ? SelectedAmv.Order : 0);
+        _order.GetLineEdit().Text = v ? SelectedAmv.Order.ToString("0") : "1";
+        
+        _falloffPower.SetValueNoSignal(v ? SelectedAmv.FalloffPower : 0);
+        _falloffPower.GetLineEdit().Text = v ? SelectedAmv.FalloffPower.ToString("0.##") : "1";
+
+        _interiorCheck.ButtonPressed = v && SelectedAmv.Interior;
+        _exteriorCheck.ButtonPressed = v && SelectedAmv.Exterior;
+        _doorCheck.ButtonPressed = v && SelectedAmv.AttachedToDoor;
 	}
 
 	private void ConnectAmvGui()
@@ -368,6 +405,23 @@ public partial class AmvBakerGui : Control
 		_rotation.ValueChanged += SelectedAmv.SetRotation;
 
 		_textureName.ValueChanged += SetTextureName;
+
+		_topLayerButton.Toggled += SelectedAmv.SetLayer;
+		_order.ValueChanged += SelectedAmv.SetOrder;
+		_falloffPower.ValueChanged += SelectedAmv.SetFalloffPower;
+
+		_falloffScaleMinX.ValueChanged += SelectedAmv.SetFalloffScaleMinX;
+		_falloffScaleMinY.ValueChanged += SelectedAmv.SetFalloffScaleMinY;
+		_falloffScaleMinZ.ValueChanged += SelectedAmv.SetFalloffScaleMinZ;
+		
+		_falloffScaleMaxX.ValueChanged += SelectedAmv.SetFalloffScaleMaxX;
+		_falloffScaleMaxY.ValueChanged += SelectedAmv.SetFalloffScaleMaxY;
+		_falloffScaleMaxZ.ValueChanged += SelectedAmv.SetFalloffScaleMaxZ;
+
+		_interiorCheck.Toggled += SelectedAmv.SetInterior;
+		_exteriorCheck.Toggled += SelectedAmv.SetExterior;
+		_doorCheck.Toggled += SelectedAmv.SetAttachedToDoor;
+
 	}
 	
 	private void SetTextureName(double value) => SelectedAmv.TextureName = Convert.ToUInt64(Math.Round(value));
@@ -417,6 +471,43 @@ public partial class AmvBakerGui : Control
 		
 		_textureName.ReleaseFocus();
 		_textureName.GetLineEdit().ReleaseFocus();
+		
+		
+		_topLayerButton.Toggled -= SelectedAmv.SetLayer;
+		_order.ValueChanged -= SelectedAmv.SetOrder;
+		_falloffPower.ValueChanged -= SelectedAmv.SetFalloffPower;
+
+		_falloffScaleMinX.ValueChanged -= SelectedAmv.SetFalloffScaleMinX;
+		_falloffScaleMinY.ValueChanged -= SelectedAmv.SetFalloffScaleMinY;
+		_falloffScaleMinZ.ValueChanged -= SelectedAmv.SetFalloffScaleMinZ;
+		
+		_falloffScaleMaxX.ValueChanged -= SelectedAmv.SetFalloffScaleMaxX;
+		_falloffScaleMaxY.ValueChanged -= SelectedAmv.SetFalloffScaleMaxY;
+		_falloffScaleMaxZ.ValueChanged -= SelectedAmv.SetFalloffScaleMaxZ;
+
+		_interiorCheck.Toggled -= SelectedAmv.SetInterior;
+		_exteriorCheck.Toggled -= SelectedAmv.SetExterior;
+		_doorCheck.Toggled -= SelectedAmv.SetAttachedToDoor;
+		
+		_order.ReleaseFocus();
+		_order.GetLineEdit().ReleaseFocus();
+		
+		_falloffPower.ReleaseFocus();
+		_falloffPower.GetLineEdit().ReleaseFocus();
+		
+		_falloffScaleMinX.ReleaseFocus();
+		_falloffScaleMinX.GetLineEdit().ReleaseFocus();
+		_falloffScaleMinY.ReleaseFocus();
+		_falloffScaleMinY.GetLineEdit().ReleaseFocus();
+		_falloffScaleMinZ.ReleaseFocus();
+		_falloffScaleMinZ.GetLineEdit().ReleaseFocus();
+		
+		_falloffScaleMaxX.ReleaseFocus();
+		_falloffScaleMaxX.GetLineEdit().ReleaseFocus();
+		_falloffScaleMaxY.ReleaseFocus();
+		_falloffScaleMaxY.GetLineEdit().ReleaseFocus();
+		_falloffScaleMaxZ.ReleaseFocus();
+		_falloffScaleMaxZ.GetLineEdit().ReleaseFocus();
 	}
 	
 }

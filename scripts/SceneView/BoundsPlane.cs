@@ -85,6 +85,7 @@ public partial class BoundsPlane : MeshInstance3D
         _staticBody3D.InputRayPickable = _volume.Selected() && AmvBaker.Instance.BakeInProgress == false;
     }
 
+    private bool _warped;
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventMouseButton { ButtonIndex: MouseButton.Left } btn)
@@ -94,10 +95,10 @@ public partial class BoundsPlane : MeshInstance3D
         
         if (@event is InputEventMouseMotion motion && _dragging)
         {
-            // TODO: This is very much a first implementation. Drag directions become inverted if the bounds rotate too far.
-            // Would happily accept a pull request to make this work consistently.
-            var mouseMotion = motion.Relative / GetViewport().GetWindow().Size;
-            mouseMotion *= 8;
+            var viewportSize = GetViewport().GetWindow().Size;
+
+            var mouseMotion = motion.Relative / viewportSize;
+            mouseMotion *= 16;
             
             bool positive = _planeDirection is PlaneDirection.XPos or PlaneDirection.YPos or PlaneDirection.ZPos;
             var move = 0f;

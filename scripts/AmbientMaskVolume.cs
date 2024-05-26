@@ -10,6 +10,7 @@ using WildRP.AMVTool.Autoloads;
 using WildRP.AMVTool.GUI;
 using WildRP.AMVTool.Sceneview;
 using FileAccess = Godot.FileAccess;
+using Image = Godot.Image;
 
 namespace WildRP.AMVTool;
 
@@ -43,6 +44,16 @@ public partial class AmbientMaskVolume : Volume
 	public ulong TextureName { get; set; }
 	public event Action ProbeCountChanged;
 
+	public int Layer;
+	public int Order;
+	public float FalloffPower;
+	public Vector3 FalloffScaleMin = Vector3.One;
+	public Vector3 FalloffScaleMax = Vector3.One * 1.25f;
+	public bool Interior;
+	public bool Exterior;
+	public bool AttachedToDoor;
+	
+
 	public void GenerateTextures()
 	{
 		// Channel mapping:
@@ -62,9 +73,8 @@ public partial class AmbientMaskVolume : Volume
 		for (int y = 0; y < ProbeCount.Y; y++)
 		{
 			// Generate a new iamge per layer
-			RgbImage img0 = new(ProbeCount.X, ProbeCount.Z);
-			RgbImage img1 = new(ProbeCount.X, ProbeCount.Z);
-			
+			var img0 = new RgbImage(ProbeCount.X, ProbeCount.Z);
+			var img1 = new RgbImage(ProbeCount.X, ProbeCount.Z);
 			for (int x = 0; x < ProbeCount.X; x++)
 			{
 				for (int z = 0; z < ProbeCount.Z; z++)
@@ -72,17 +82,18 @@ public partial class AmbientMaskVolume : Volume
 					var idx = CellToIndex(new Vector3I(x, y, z));
 					var p = _probes[idx].GetValue();
 					
+					
 					// flip Z because Godot's Z axis is backwards
-					var col0 = new RgbColor((float) p.X.Positive, (float) p.X.Negative, (float) p.Z.Negative);
-					var col1 = new RgbColor((float) p.Z.Positive, (float) p.Y.Positive, (float) p.Y.Negative);
+					var col0 = new RgbColor(Mathf.Abs((float) p.X.Positive), Mathf.Abs((float) p.X.Negative), Mathf.Abs((float) p.Z.Negative));
+					var col1 = new RgbColor(Mathf.Abs((float) p.Z.Positive), Mathf.Abs((float) p.Y.Positive), Mathf.Abs((float) p.Y.Negative));
 					
 					img0.SetPixel(x,ProbeCount.Z - 1 - z, col0);
 					img1.SetPixel(x,ProbeCount.Z - 1 - z, col1);
 				}
 			}
 			
-			var tex0Name = $"{texDirGlobal}/slice_{y}_0.hdr";
-			var tex1Name = $"{texDirGlobal}/slice_{y}_1.hdr";
+			var tex0Name = $"{texDirGlobal}/slice_{y}_0.png";
+			var tex1Name = $"{texDirGlobal}/slice_{y}_1.png";
 			
 			img0.WriteToFile(tex0Name);
 			img1.WriteToFile(tex1Name);
@@ -100,12 +111,8 @@ public partial class AmbientMaskVolume : Volume
 		using var f1 = FileAccess.Open($"{texDir}/imgs_1.txt", FileAccess.ModeFlags.Write);
 			img1List.ForEach(s => f1.StoreLine(s));
 
-			var extraFlags = "";
-			if (Settings.AmvTextureFormat == Tex.TextureFormat.R8G8B8A8_UNORM_SRGB)
-				extraFlags = "-srgbo ";
-
-			var tx0 = Tex.Assemble($"{TextureName}/imgs_0.txt", $"{TextureName}_0.dds", Settings.AmvTextureFormat, extraFlags);
-			var tx1 = Tex.Assemble($"{TextureName}/imgs_1.txt", $"{TextureName}_1.dds", Settings.AmvTextureFormat, extraFlags);
+			var tx0 = Tex.Assemble($"{TextureName}/imgs_0.txt", $"{TextureName}_0.dds", Settings.AmvTextureFormat);
+			var tx1 = Tex.Assemble($"{TextureName}/imgs_1.txt", $"{TextureName}_1.dds", Settings.AmvTextureFormat);
 
 			tx0.Exited += CleanupExport;
 			tx1.Exited += CleanupExport;
@@ -122,7 +129,8 @@ public partial class AmbientMaskVolume : Volume
 		if (_exportSteps < 2) return;
 
 		_exportSteps = 0;
-		
+
+		return;
 		// Clean up files, leaving only the exported DDS files
 		var path = $"{SaveManager.GetProjectPath()}/{TextureName}";
 		var files = DirAccess.GetFilesAt(path);
@@ -133,8 +141,6 @@ public partial class AmbientMaskVolume : Volume
 		}
 
 		DirAccess.RemoveAbsolute(path);
-
-		OS.ShellShowInFileManager(SaveManager.GetProjectPath());
 	}
 	
 	public void CaptureSample()
@@ -219,8 +225,13 @@ public partial class AmbientMaskVolume : Volume
 		AmvBakerGui.GuiToggled += OnUiToggled;
 
 		SaveManager.SavingProject += SaveToProject;
-	}
 
+		TreeExiting += () =>
+		{
+			SaveManager.SavingProject -= SaveToProject;
+			AmvBakerGui.GuiToggled -= OnUiToggled;
+		};
+	}
 	private void SaveToProject() => SaveManager.UpdateAmv(GuiListName,Save());
 	
 	private int _prevProbeCount = 0;
@@ -296,7 +307,12 @@ public partial class AmbientMaskVolume : Volume
 	
 	public ProbeSample GetCellValueRelative(Vector3I origin, Vector3I target)
 	{
-		var pos = origin;
+		var originalProbe = GetCellValue(origin);
+
+		if (target.X < 0 || target.Y < 0 || target.Z < 0 ||
+		    target.X > ProbeCount.X - 1 || target.Y > ProbeCount.Y - 1 || target.Z > ProbeCount.Z - 1)
+			return originalProbe;
+		
 		var targetDir = target.Clamp(-Vector3I.One, Vector3I.One);
 		var steps = target.Abs()[(int)target.Abs().MaxAxisIndex()];
 		var value = new ProbeSample(0);
@@ -330,6 +346,15 @@ public partial class AmbientMaskVolume : Volume
 		var rot = RotationDegrees;
 		rot.Y = data.Value.Rotation;
 		RotationDegrees = rot;
+
+		Layer = data.Value.Layer;
+		Order = data.Value.Order;
+		FalloffPower = data.Value.FalloffPower;
+		FalloffScaleMax = data.Value.FalloffScaleMax;
+		FalloffScaleMin = data.Value.FalloffScaleMin;
+		Interior = data.Value.Interior;
+		Exterior = data.Value.Exterior;
+		AttachedToDoor = data.Value.AttachedToDoor;
 	}
 
 	public AmvData Save()
@@ -342,7 +367,31 @@ public partial class AmbientMaskVolume : Volume
 		data.ProbeCount = ProbeCount;
 		data.Rotation = RotationDegrees.Y;
 
+		data.Layer = Layer;
+		data.Order = Order;
+		data.FalloffPower = FalloffPower;
+		data.FalloffScaleMax = FalloffScaleMax;
+		data.FalloffScaleMin = FalloffScaleMin;
+		data.Interior = Interior;
+		data.Exterior = Exterior;
+		data.AttachedToDoor = AttachedToDoor;
+		
+		
 		return data;
+	}
+
+	public void SetupNew(string name, int order)
+	{
+		base.Setup(name);
+
+		Layer = 0;
+		Order = order;
+		FalloffPower = 2f;
+		FalloffScaleMin = Vector3.One;
+		FalloffScaleMax = Vector3.One * 1.25f;
+		Interior = true;
+		Exterior = false;
+		AttachedToDoor = false;
 	}
 
 	public override string GetXml()
@@ -361,10 +410,10 @@ public partial class AmbientMaskVolume : Volume
 				new XElement("position", new XAttribute("x", ymapPosition.X + Position.X), new XAttribute("y", ymapPosition.Y - Position.Z), new XAttribute("z", ymapPosition.Z + Position.Y)),
 				new XElement("rotation", new XAttribute("x", -RotationDegrees.Y), new XAttribute("y", 0), new XAttribute("z", 0)),
 				new XElement("scale", new XAttribute("x", xmlSize.X), new XAttribute("y", xmlSize.Z), new XAttribute("z", xmlSize.Y)),
-				new XElement("falloffScaleMin", new XAttribute("x", 1f), new XAttribute("y", 1f), new XAttribute("z", 1f)),
-				new XElement("falloffScaleMax", new XAttribute("x", 1.25f), new XAttribute("y", 1.25f), new XAttribute("z", 1.25f)),
+				new XElement("falloffScaleMin", new XAttribute("x", FalloffScaleMin.X), new XAttribute("y", FalloffScaleMin.Z), new XAttribute("z", FalloffScaleMin.Y)),
+				new XElement("falloffScaleMax", new XAttribute("x", FalloffScaleMax.X), new XAttribute("y", FalloffScaleMax.Z), new XAttribute("z", FalloffScaleMax.Y)),
 				new XElement("samplingOffsetStrength", new XAttribute("value", 0)), // Guessing: Pushes sample point off of walls in direction of normal
-				new XElement("falloffPower", new XAttribute("value", 8)),
+				new XElement("falloffPower", new XAttribute("value", FalloffPower)),
 				new XElement("distance", new XAttribute("value", -1)),
 				new XElement("cellCountX", new XAttribute("value", ProbeCount.X)),
 				new XElement("cellCountY", new XAttribute("value", ProbeCount.Z)),
@@ -378,12 +427,12 @@ public partial class AmbientMaskVolume : Volume
 				new XElement("clipPlaneBlend2", new XAttribute("value", 0)),
 				new XElement("clipPlaneBlend3", new XAttribute("value", 0)),
 				new XElement("blendingMode", "BM_Lerp"),
-				new XElement("layer", new XAttribute("value", 0)),
-				new XElement("order", new XAttribute("value", 10)),
+				new XElement("layer", new XAttribute("value", Layer)),
+				new XElement("order", new XAttribute("value", Order)),
 				new XElement("natural", new XAttribute("value", true)),
-				new XElement("attachedToDoor", new XAttribute("value", false)),
-				new XElement("interior", new XAttribute("value", true)),
-				new XElement("exterior", new XAttribute("value", false)),
+				new XElement("attachedToDoor", new XAttribute("value", AttachedToDoor)),
+				new XElement("interior", new XAttribute("value", Interior)),
+				new XElement("exterior", new XAttribute("value", Exterior)),
 				new XElement("vehicleInterior", new XAttribute("value", false)),
 				new XElement("sourceFolder", GuiListName),
 				new XElement("uuid", new XAttribute("value", TextureName)),
@@ -399,6 +448,15 @@ public partial class AmbientMaskVolume : Volume
 		public ulong TextureName = 0;
 		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3IJsonConverter))]
 		public Vector3I ProbeCount = Vector3I.One * 2;
+
+		[JsonInclude] public int Layer = 0;
+		[JsonInclude] public int Order = 1;
+		[JsonInclude] public float FalloffPower = 2;
+		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))] public Vector3 FalloffScaleMin = Vector3.One;
+		[JsonInclude, JsonConverter(typeof(SaveManager.Vector3JsonConverter))] public Vector3 FalloffScaleMax = Vector3.One * 1.25f;
+		[JsonInclude] public bool Interior = true;
+		[JsonInclude] public bool Exterior = false;
+		[JsonInclude] public bool AttachedToDoor = false;
 	}
 	
 	// These are used to connect to the UI
@@ -427,6 +485,21 @@ public partial class AmbientMaskVolume : Volume
 		ProbeCount = v;
 		ProbeCountChanged();
 	}
-	
+
+	public void SetLayer(bool v) => Layer = v ? 1 : 0;
+	public void SetOrder(double n) => Order = (int) n;
+
+	public void SetFalloffPower(double n) => FalloffPower = (float) n;
+	public void SetFalloffScaleMinX(double n) => FalloffScaleMin.X = (float) n;
+	public void SetFalloffScaleMinY(double n) => FalloffScaleMin.Y = (float) n;
+	public void SetFalloffScaleMinZ(double n) => FalloffScaleMin.Z = (float) n;
+	public void SetFalloffScaleMaxX(double n) => FalloffScaleMax.X = (float) n;
+	public void SetFalloffScaleMaxY(double n) => FalloffScaleMax.Y = (float) n;
+	public void SetFalloffScaleMaxZ(double n) => FalloffScaleMax.Z = (float) n;
+
+	public void SetInterior(bool b) => Interior = b;
+	public void SetExterior(bool b) => Exterior = b;
+	public void SetAttachedToDoor(bool b) => AttachedToDoor = b;
+
 	#endregion
 }
