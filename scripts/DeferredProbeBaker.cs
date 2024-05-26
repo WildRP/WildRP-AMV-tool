@@ -246,7 +246,11 @@ public partial class DeferredProbeBaker : Node3D
         for (int i = 0; i < meshes.Count; i++)
         {
 	        var m = meshes[i];
-	        m.GIMode = GeometryInstance3D.GIModeEnum.Static;
+	        if (m.Name.ToString().Contains("background"))
+	        {
+		        m.GIMode = GeometryInstance3D.GIModeEnum.Disabled;
+		        continue;
+	        }
 	        avgpos += m.GlobalPosition;
 	        aabb.Merge(m.GlobalAabb());
         }

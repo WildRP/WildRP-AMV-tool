@@ -47,8 +47,8 @@ public partial class AmbientMaskVolume : Volume
 	public int Layer;
 	public int Order;
 	public float FalloffPower;
-	public Vector3 FalloffScaleMin;
-	public Vector3 FalloffScaleMax;
+	public Vector3 FalloffScaleMin = Vector3.One;
+	public Vector3 FalloffScaleMax = Vector3.One * 1.25f;
 	public bool Interior;
 	public bool Exterior;
 	public bool AttachedToDoor;
@@ -387,7 +387,7 @@ public partial class AmbientMaskVolume : Volume
 		Layer = 0;
 		Order = order;
 		FalloffPower = 2f;
-		FalloffScaleMax = Vector3.One;
+		FalloffScaleMin = Vector3.One;
 		FalloffScaleMax = Vector3.One * 1.25f;
 		Interior = true;
 		Exterior = false;

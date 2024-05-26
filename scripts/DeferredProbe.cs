@@ -98,10 +98,11 @@ public partial class DeferredProbe : Volume
         }
     }
 
-
+    private int _currentCam = 0;
     private List<Image> _renderList;
     private void RenderColor(int cam)
     {
+        _currentCam = cam;
         GD.Print($"Render Color {cam}");
         _renderCameras[cam].Current = true;
         DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Albedo);
@@ -111,6 +112,7 @@ public partial class DeferredProbe : Volume
     
     private void RenderNormal(int cam)
     {
+        _currentCam = cam;
         GD.Print($"Render Normal {cam}");
         _renderCameras[cam].Current = true;
         DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Normal);
@@ -120,6 +122,7 @@ public partial class DeferredProbe : Volume
     
     private void RenderWindowMask(int cam)
     {
+        _currentCam = cam;
         GD.Print($"Render Window Mask {cam}");
         _renderCameras[cam].Current = true;
         DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.WindowMask);
@@ -129,6 +132,7 @@ public partial class DeferredProbe : Volume
     
     private void RenderDepth(int cam)
     {
+        _currentCam = cam;
         GD.Print($"Render Depth {cam}");
         _renderCameras[cam].Current = true;
         DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Depth);
@@ -138,6 +142,7 @@ public partial class DeferredProbe : Volume
     
     private void RenderOcclusion(int cam)
     {
+        _currentCam = cam;
         GD.Print($"Render Occlusion {cam}");
         _renderCameras[cam].Current = true;
         DeferredProbeBaker.Instance.RequestPass(DeferredProbeBaker.BakePass.Occlusion);
@@ -148,6 +153,25 @@ public partial class DeferredProbe : Volume
     private void GrabTex()
     {
         var tex = _viewport.GetTexture().GetImage();
+
+        switch (_currentCam)
+        {
+            case 0:
+                tex.Rotate90(ClockDirection.Counterclockwise);
+                break;
+            case 1:
+                tex.Rotate90(ClockDirection.Clockwise);
+                break;
+            case 2:
+                tex.Rotate180();
+                break;
+        }
+        
+        if (_currentCam is 0 or 1 or 4)
+            tex.FlipY();
+        else
+            tex.FlipX();
+        
         _renderList.Add(tex);
         RenderingServer.FramePostDraw -= GrabTex;
     }
@@ -424,7 +448,7 @@ public partial class DeferredProbe : Volume
         rotation.Y = 0;
         
         return new XDocument(
-            new XComment(GuiListName),
+            new XComment($"{GuiListName} - Texture {TextureName()}"),
             new XElement("Item",
                 new XElement("minExtents", new XAttribute("x", minExtents.X), new XAttribute("y", minExtents.Z), new XAttribute("z", minExtents.Y)),
                 new XElement("maxExtents", new XAttribute("x", maxExtents.X), new XAttribute("y", maxExtents.Z), new XAttribute("z", maxExtents.Y)),

@@ -47,6 +47,8 @@ tonemap_mode = 3
 ssao_enabled = true
 ssao_light_affect = 1.0
 
+[sub_resource type="World3D" id="World3D_mjs27"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d1crs"]
 shader = ExtResource("5_2qwli")
 
@@ -74,9 +76,6 @@ sdfgi_cascade0_distance = 3.2
 sdfgi_max_distance = 51.2
 sdfgi_y_scale = 0
 sdfgi_energy = 2.0
-
-[sub_resource type="World3D" id="World3D_mjs27"]
-environment = SubResource("Environment_cajuw")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f2aa8"]
 render_priority = 0
