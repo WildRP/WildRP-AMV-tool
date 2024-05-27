@@ -1,14 +1,10 @@
-# Instructions
+# AMV Instructions
 
 Hello! Welcome to the WildRP AMV Tool. This is a barebones instructional guide for the pre-release version of this 
 tool.
 
 And yes - there are bugs. Many. I recommend saving your project every time you do anything - and restart the program 
 every time you make a new volume inside the same project.
-
-## Before first use
-
-Go to the settings tab and make sure you download TexAssemble. Texture export doesn't work without it.
 
 ## Usage:
 1. Load your model with the load model button. The model has to be in GLTF format - this was the easiest format to 
