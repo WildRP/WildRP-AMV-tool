@@ -51,18 +51,6 @@ public partial class DeferredProbe : Volume
         SaveManager.SavingProject += SaveToProject;
         SizeChanged += UpdateCenter;
         _originalParent = GetParent();
-
-        TreeEntered += () =>
-        {
-            SaveManager.SavingProject += SaveToProject;
-            AmvBakerGui.GuiToggled += OnUiToggled;
-        };
-        
-        TreeExited += () =>
-        {
-            SaveManager.SavingProject -= SaveToProject;
-            AmvBakerGui.GuiToggled -= OnUiToggled;
-        };
     }
 
     public void SetViewport(SubViewport v)
@@ -489,7 +477,7 @@ public partial class DeferredProbe : Volume
         RotationDegrees = rot;
     }
 
-    private void SaveToProject() => SaveManager.UpdateDeferredProbe(GuiListName,Save());
+    public void SaveToProject() => SaveManager.UpdateDeferredProbe(GuiListName,Save());
 
     public void EnableDebugView()
     {

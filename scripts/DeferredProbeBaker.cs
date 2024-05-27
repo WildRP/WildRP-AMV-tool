@@ -52,6 +52,9 @@ public partial class DeferredProbeBaker : Node3D
 		    _aoBakeMat.Roughness = 1;
 		    _aoBakeMat.AlbedoColor = new Color(aobase, aobase, aobase);
 		    _aoBakeMat.CullMode = BaseMaterial3D.CullModeEnum.Disabled;
+
+		    SaveManager.SavingProject += SaveProbes;
+		    DeferredProbesUi.GuiToggled += UiToggled;
 	    }
 	    else
 	    {
@@ -93,6 +96,22 @@ public partial class DeferredProbeBaker : Node3D
 		    }
 	    }
 	    
+    }
+
+    private void SaveProbes()
+    {
+	    foreach (var (key, deferredProbe) in _deferredProbes)
+	    {
+		    deferredProbe.SaveToProject();
+	    }
+    }
+    
+    private void UiToggled(bool obj)
+    {
+	    foreach (var (key, probe) in _deferredProbes)
+	    {
+		    probe.OnUiToggled(obj);
+	    }
     }
 
     public void BakeAll()
