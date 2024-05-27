@@ -77,7 +77,7 @@ public partial class DeferredProbeBaker : Node3D
 		    p.BakeNext();
 		    _probeBakeCounter++;
 		    var progress = _bakeQueue.Average(probe => probe.BakeProgress);
-		    UpdateBakeProgress.Invoke(progress);
+		    UpdateBakeProgress?.Invoke(progress);
 		    
 		    if (_bakeQueue.All(p => p.Baked && p.Exported))
 		    {
