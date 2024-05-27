@@ -51,8 +51,14 @@ public partial class DeferredProbe : Volume
         SaveManager.SavingProject += SaveToProject;
         SizeChanged += UpdateCenter;
         _originalParent = GetParent();
+
+        TreeEntered += () =>
+        {
+            SaveManager.SavingProject += SaveToProject;
+            AmvBakerGui.GuiToggled += OnUiToggled;
+        };
         
-        TreeExiting += () =>
+        TreeExited += () =>
         {
             SaveManager.SavingProject -= SaveToProject;
             AmvBakerGui.GuiToggled -= OnUiToggled;
