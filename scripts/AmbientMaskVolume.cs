@@ -222,17 +222,8 @@ public partial class AmbientMaskVolume : Volume
 		UpdateProbePositions();
 		SizeChanged += UpdateProbePositions;
 		ProbeCountChanged += UpdateProbes;
-		AmvBakerGui.GuiToggled += OnUiToggled;
-
-		SaveManager.SavingProject += SaveToProject;
-
-		TreeExiting += () =>
-		{
-			SaveManager.SavingProject -= SaveToProject;
-			AmvBakerGui.GuiToggled -= OnUiToggled;
-		};
 	}
-	private void SaveToProject() => SaveManager.UpdateAmv(GuiListName,Save());
+	public void SaveToProject() => SaveManager.UpdateAmv(GuiListName,Save());
 	
 	private int _prevProbeCount = 0;
 

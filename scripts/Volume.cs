@@ -35,7 +35,7 @@ public partial class Volume : Node3D
     protected void OnDeleted() => Deleted?.Invoke(this);
     protected void OnSizeChanged() => SizeChanged?.Invoke();
 
-    protected void OnUiToggled(bool v) => UiToggled?.Invoke(v);
+    public void OnUiToggled(bool v) => UiToggled?.Invoke(v);
     
     public void ChangeSizeWithGizmo(Vector3 diff, bool positive)
     {

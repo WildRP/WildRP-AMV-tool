@@ -85,12 +85,30 @@ public partial class AmvBaker : Node3D
 		if (Instance == null)
 		{
 			Instance = this;
-			AmvBakerGui.GuiToggled += b => Visible = b;
+			AmvBakerGui.GuiToggled += UiToggled;
+			SaveManager.SavingProject += SaveAmvs;
 		}
 		else
 			QueueFree();
 	}
 
+	private void SaveAmvs()
+	{
+		foreach (var (key, v) in _ambientMaskVolumes)
+		{
+			v.SaveToProject();
+		}
+	}
+    
+	private void UiToggled(bool obj)
+	{
+		Visible = obj;
+		foreach (var (key, v) in _ambientMaskVolumes)
+		{
+			v.OnUiToggled(obj);
+		}
+	}
+	
 	public void Clear()
 	{
 		foreach (var volume in _ambientMaskVolumes)
