@@ -300,8 +300,10 @@ public partial class AmbientMaskVolume : Volume
 	{
 		var originalProbe = GetCellValue(origin);
 
-		if (target.X < 0 || target.Y < 0 || target.Z < 0 ||
-		    target.X > ProbeCount.X - 1 || target.Y > ProbeCount.Y - 1 || target.Z > ProbeCount.Z - 1)
+		var targetPos = origin + target;
+		
+		if (targetPos.X < 0 || targetPos.Y < 0 || targetPos.Z < 0 ||
+		    targetPos.X > ProbeCount.X - 1 || targetPos.Y > ProbeCount.Y - 1 || targetPos.Z > ProbeCount.Z - 1)
 			return originalProbe;
 		
 		var targetDir = target.Clamp(-Vector3I.One, Vector3I.One);
