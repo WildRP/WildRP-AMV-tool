@@ -393,9 +393,9 @@ public partial class AmbientMaskVolume : Volume
 		//xmlSize += Size / ProbeCount / 2;
 		var ymapPosition = SaveManager.CurrentProject.YMapPosition;
 
-		var iplHash = 0U;
+		var iplHash = "0";
 		if (SaveManager.CurrentProject.YMapName != "")
-			iplHash = Utils.JenkinsHash(SaveManager.CurrentProject.YMapName);
+			iplHash = SaveManager.CurrentProject.YMapName;
 		
 		return new XDocument(
 			new XElement("Item",

@@ -469,6 +469,7 @@ public partial class DeferredProbe : Volume
         Guid = data.Value.Guid;
         Position = data.Value.Position;
         CenterOffset = data.Value.CenterOffset;
+        UpdateCenter();
         Size = data.Value.Size;
         InfluenceExtents = data.Value.InfluenceExtents;
 
